@@ -1,0 +1,25 @@
+/*
+Theme Name: Roova
+Theme URI: https://example.com/roova
+Author: Roova
+Author URI: https://example.com
+Description: A hotel-group booking theme for WooCommerce. Manage multiple properties as Hotel products, sell rooms per night with real date-based availability, and take every payment through WooCommerce checkout and orders.
+Version: 1.0.0
+Requires at least: 6.4
+Tested up to: 6.7
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: roova
+Tags: e-commerce, custom-colors, custom-logo, custom-menu, featured-images, translation-ready, full-width-template
+WC requires at least: 8.0
+WC tested up to: 9.5
+
+Roova is distributed under the terms of the GNU GPL v2 or later.
+*/
+
+/*
+ * The theme stylesheet lives in assets/css/theme.css so it can be enqueued with
+ * a version string for cache busting. This file only carries the theme header
+ * that WordPress reads on the Appearance screen.
+ */

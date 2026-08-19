@@ -1,0 +1,38 @@
+/**
+ * Print styles — mostly for guests printing a booking confirmation.
+ */
+
+.roova-nav,
+.roova-footer,
+.roova-hero__waves,
+.roova-search,
+.roova-slider__nav,
+.roova-gallery__arrow,
+.roova-modal,
+.roova-booking-box,
+.roova-map {
+	display: none !important;
+}
+
+body {
+	background: #fff;
+	color: #000;
+	font-size: 12pt;
+}
+
+.roova-layout {
+	display: block;
+}
+
+.roova-card {
+	border: 1px solid #ccc;
+	break-inside: avoid;
+	page-break-inside: avoid;
+	margin-bottom: 12pt;
+}
+
+a[href]::after {
+	content: " (" attr(href) ")";
+	font-size: 9pt;
+	color: #555;
+}

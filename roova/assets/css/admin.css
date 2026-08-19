@@ -1,0 +1,158 @@
+/**
+ * Roova admin styles: icon picker, media fields, bookings screen.
+ */
+
+.roova-panel-heading {
+	margin: 12px 12px 0;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: #50575e;
+}
+
+.roova-panel-note {
+	margin: 12px;
+	padding: 10px 12px;
+	background: #f6f7f7;
+	border-left: 3px solid #1678a8;
+	font-size: 12px;
+	line-height: 1.6;
+}
+
+/* -------------------------------------------------------- Icon picker */
+
+.roova-icon-picker {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+	gap: 6px;
+	max-height: 340px;
+	overflow-y: auto;
+	padding: 10px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+	max-width: 720px;
+}
+
+.roova-icon-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 12px;
+	line-height: 1.3;
+}
+
+.roova-icon-option:hover {
+	background: #f6f7f7;
+}
+
+.roova-icon-option.is-selected {
+	border-color: #1678a8;
+	background: #eef6fa;
+}
+
+.roova-icon-option input {
+	margin: 0;
+}
+
+.roova-icon-option svg {
+	flex-shrink: 0;
+	color: #0c3b57;
+}
+
+.roova-icon-option__label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* -------------------------------------------------------- Media field */
+
+.roova-media-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.roova-media-field__preview img {
+	max-width: 60px;
+	height: auto;
+	border-radius: 4px;
+	display: block;
+}
+
+/* ----------------------------------------------------- Bookings screen */
+
+.roova-bookings__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	margin: 16px 0;
+}
+
+.roova-status {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 10px;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.roova-status--hold {
+	background: #fdf3d8;
+	color: #7a5c00;
+}
+
+.roova-status--pending {
+	background: #e5f0f6;
+	color: #0c3b57;
+}
+
+.roova-status--confirmed {
+	background: #e2f4e8;
+	color: #135e30;
+}
+
+.roova-status--cancelled {
+	background: #f7e3e3;
+	color: #8a1f1f;
+}
+
+.roova-availability-scroll {
+	overflow-x: auto;
+}
+
+.roova-availability th,
+.roova-availability td {
+	text-align: center;
+	padding: 6px 4px;
+	font-size: 12px;
+}
+
+.roova-availability__room {
+	text-align: left !important;
+	min-width: 180px;
+	position: sticky;
+	left: 0;
+	background: #fff;
+	z-index: 1;
+}
+
+.roova-availability__cell.is-open {
+	background: #eef8f1;
+}
+
+.roova-availability__cell.is-low {
+	background: #fdf3d8;
+}
+
+.roova-availability__cell.is-full {
+	background: #f7e3e3;
+	color: #8a1f1f;
+	font-weight: 700;
+}

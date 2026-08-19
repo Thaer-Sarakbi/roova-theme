@@ -1,0 +1,1361 @@
+# Copyright (C) 2026 Roova
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Roova 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: roova\n"
+
+#: 404.php:14
+msgid "We could not find that page"
+msgstr ""
+
+#: 404.php:15
+msgid "It may have moved. Try searching for a room instead."
+msgstr ""
+
+#: 404.php:21
+msgid "Back to the homepage"
+msgstr ""
+
+#: footer.php:54 inc/setup.php:39
+msgid "Footer menu"
+msgstr ""
+
+#: footer.php:78
+msgid "© %1$s %2$s. All rights reserved."
+msgstr ""
+
+#: front-page.php:22 inc/customizer.php:55
+msgid "Stay close to everywhere that matters to you"
+msgstr ""
+
+#: front-page.php:57 inc/customizer.php:88
+msgid "The collection"
+msgstr ""
+
+#: front-page.php:58 single-hotel.php:31 inc/customizer.php:89
+msgid "Our hotels"
+msgstr ""
+
+#: front-page.php:63
+msgid "Previous hotels"
+msgstr ""
+
+#: front-page.php:66
+msgid "Next hotels"
+msgstr ""
+
+#: front-page.php:90 inc/customizer.php:90
+msgid "Where we are"
+msgstr ""
+
+#: front-page.php:91 inc/customizer.php:91
+msgid "Explore our destinations"
+msgstr ""
+
+#: functions.php:85
+msgid "Roova needs WooCommerce."
+msgstr ""
+
+#: functions.php:88
+msgid "Hotels, rooms, bookings and checkout all run on WooCommerce. %s to finish setting up the theme."
+msgstr ""
+
+#: functions.php:89
+msgid "Install WooCommerce"
+msgstr ""
+
+#: header.php:23
+msgid "Skip to content"
+msgstr ""
+
+#: header.php:41 inc/setup.php:38
+msgid "Primary menu"
+msgstr ""
+
+#: header.php:61
+msgid "%d room in cart"
+msgid_plural "%d rooms in cart"
+msgstr[0] ""
+msgstr[1] ""
+
+#: header.php:73
+msgid "Manage booking"
+msgstr ""
+
+#: header.php:78
+msgid "Menu"
+msgstr ""
+
+#: index.php:22
+msgid "Search results for “%s”"
+msgstr ""
+
+#: index.php:61 inc/icons.php:102
+msgid "Previous"
+msgstr ""
+
+#: index.php:62 inc/icons.php:103
+msgid "Next"
+msgstr ""
+
+#: index.php:66
+msgid "Nothing found."
+msgstr ""
+
+#: single-hotel.php:59
+msgid "View on map"
+msgstr ""
+
+#: single-hotel.php:75
+msgid "Previous photo"
+msgstr ""
+
+#: single-hotel.php:78
+msgid "Next photo"
+msgstr ""
+
+#: single-hotel.php:100
+msgid "Description"
+msgstr ""
+
+#: single-hotel.php:105 single-hotel.php:107
+msgid "Read more"
+msgstr ""
+
+#: single-hotel.php:106
+msgid "Read less"
+msgstr ""
+
+#: single-hotel.php:113
+msgid "Select your room"
+msgstr ""
+
+#: single-hotel.php:121
+msgid "%1$s — %2$s · %3$s · %4$s"
+msgstr ""
+
+#: single-hotel.php:124 template-search.php:42 inc/template-tags.php:339 inc/woocommerce.php:151 inc/admin/order-metabox.php:80
+msgid "%d night"
+msgid_plural "%d nights"
+msgstr[0] ""
+msgstr[1] ""
+
+#: single-hotel.php:135
+msgid "No rooms have been added to this hotel yet."
+msgstr ""
+
+#: single-hotel.php:141
+msgid "Amenities"
+msgstr ""
+
+#: single-hotel.php:151 inc/admin/metabox-hotel-details.php:163
+msgid "What's nearby"
+msgstr ""
+
+#: template-search.php:39
+msgid "%1$s — %2$s · %3$s"
+msgstr ""
+
+#: template-search.php:51
+msgid "Hotels in %s"
+msgstr ""
+
+#: template-search.php:57
+msgid "Results for “%s”"
+msgstr ""
+
+#: template-search.php:61
+msgid "All our hotels"
+msgstr ""
+
+#: template-search.php:71 inc/search.php:199 inc/template-tags.php:251
+msgid "%d hotel"
+msgid_plural "%d hotels"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-search.php:131
+msgid "Only %d room left"
+msgid_plural "Only %d rooms left"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-search.php:139 inc/template-tags.php:191 inc/template-tags.php:581 inc/products/class-wc-product-hotel.php:102
+msgid "From"
+msgstr ""
+
+#: template-search.php:141 inc/template-tags.php:193 inc/template-tags.php:329 inc/template-tags.php:583 inc/products/class-wc-product-hotel.php:104 inc/products/class-wc-product-room.php:111
+msgid "/ night"
+msgstr ""
+
+#: template-search.php:145 inc/products/class-wc-product-hotel.php:69
+msgid "See rooms"
+msgstr ""
+
+#: template-search.php:148 inc/template-tags.php:196
+msgid "No rooms free for these dates"
+msgstr ""
+
+#: template-search.php:150 inc/products/class-wc-product-hotel.php:60
+msgid "View hotel"
+msgstr ""
+
+#: template-search.php:159
+msgid "No hotels matched that search. Try another destination or different dates."
+msgstr ""
+
+#: inc/ajax.php:76
+msgid "Room not found."
+msgstr ""
+
+#: inc/ajax.php:113 inc/template-tags.php:299
+msgid "Max %d adult"
+msgid_plural "Max %d adults"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/assets.php:65
+msgid "room"
+msgstr ""
+
+#: inc/assets.php:66
+msgid "rooms"
+msgstr ""
+
+#: inc/assets.php:67
+msgid "guest"
+msgstr ""
+
+#: inc/assets.php:68
+msgid "guests"
+msgstr ""
+
+#: inc/assets.php:69
+msgid "night"
+msgstr ""
+
+#: inc/assets.php:70
+msgid "nights"
+msgstr ""
+
+#: inc/assets.php:71
+msgid "Select dates"
+msgstr ""
+
+#: inc/assets.php:72
+msgid "Nothing matched that search."
+msgstr ""
+
+#: inc/assets.php:73
+msgid "Loading…"
+msgstr ""
+
+#: inc/assets.php:74
+msgid "Sold out"
+msgstr ""
+
+#: inc/assets.php:75 inc/icons.php:105 inc/template-tags.php:622
+msgid "Close"
+msgstr ""
+
+#: inc/attributes.php:38
+msgid "Destination"
+msgstr ""
+
+#: inc/attributes.php:39
+msgid "Amenity"
+msgstr ""
+
+#: inc/customizer.php:17
+msgid "Roova hotel theme"
+msgstr ""
+
+#: inc/customizer.php:23
+msgid "Brand colours"
+msgstr ""
+
+#: inc/customizer.php:28
+msgid "Deep ocean (headers, buttons)"
+msgstr ""
+
+#: inc/customizer.php:29
+msgid "Ocean (accents, links)"
+msgstr ""
+
+#: inc/customizer.php:30
+msgid "Gold (stars, highlights)"
+msgstr ""
+
+#: inc/customizer.php:31
+msgid "Sand (section backgrounds)"
+msgstr ""
+
+#: inc/customizer.php:32
+msgid "Ink (body text)"
+msgstr ""
+
+#: inc/customizer.php:49
+msgid "Homepage hero"
+msgstr ""
+
+#: inc/customizer.php:54
+msgid "Eyebrow"
+msgstr ""
+
+#: inc/customizer.php:54
+msgid "Klang Valley · Selangor"
+msgstr ""
+
+#: inc/customizer.php:55
+msgid "Headline"
+msgstr ""
+
+#: inc/customizer.php:56
+msgid "Sub-heading"
+msgstr ""
+
+#: inc/customizer.php:56
+msgid "Book direct with us and always get the best rate."
+msgstr ""
+
+#: inc/customizer.php:76
+msgid "Hero background image"
+msgstr ""
+
+#: inc/customizer.php:83
+msgid "Homepage sections"
+msgstr ""
+
+#: inc/customizer.php:88
+msgid "Hotels eyebrow"
+msgstr ""
+
+#: inc/customizer.php:89
+msgid "Hotels heading"
+msgstr ""
+
+#: inc/customizer.php:90
+msgid "Destinations eyebrow"
+msgstr ""
+
+#: inc/customizer.php:91
+msgid "Destinations heading"
+msgstr ""
+
+#: inc/customizer.php:106
+msgid "Show the hotels section"
+msgstr ""
+
+#: inc/customizer.php:106
+msgid "Show the destinations section"
+msgstr ""
+
+#: inc/customizer.php:120
+msgid "Booking"
+msgstr ""
+
+#: inc/customizer.php:122
+msgid "How long rooms are held for guests who have not paid yet."
+msgstr ""
+
+#: inc/customizer.php:130
+msgid "Cart hold (minutes)"
+msgstr ""
+
+#: inc/customizer.php:131
+msgid "Dates are held for this long after a room is added to the cart."
+msgstr ""
+
+#: inc/customizer.php:142
+msgid "Unpaid order hold (minutes)"
+msgstr ""
+
+#: inc/customizer.php:143
+msgid "How long an unpaid order keeps its rooms before the dates are released. Paid and on-hold orders never expire."
+msgstr ""
+
+#: inc/customizer.php:151
+msgid "Google Maps"
+msgstr ""
+
+#: inc/customizer.php:153
+msgid "Paste a Google Maps JavaScript API key to show interactive maps on hotel pages. Without a key the theme shows a styled placeholder that links to Google Maps."
+msgstr ""
+
+#: inc/customizer.php:161
+msgid "Google Maps API key"
+msgstr ""
+
+#: inc/customizer.php:168
+msgid "Footer and contact"
+msgstr ""
+
+#: inc/customizer.php:173
+msgid "Footer tagline"
+msgstr ""
+
+#: inc/customizer.php:173
+msgid "Direct booking, always the best rate."
+msgstr ""
+
+#: inc/customizer.php:174
+msgid "Phone"
+msgstr ""
+
+#: inc/customizer.php:175
+msgid "Email"
+msgstr ""
+
+#: inc/customizer.php:176 inc/admin/metabox-hotel-details.php:85
+msgid "Address"
+msgstr ""
+
+#: inc/icons.php:27
+msgid "Wi-Fi"
+msgstr ""
+
+#: inc/icons.php:28
+msgid "Telephone"
+msgstr ""
+
+#: inc/icons.php:29
+msgid "Front desk [24-hour]"
+msgstr ""
+
+#: inc/icons.php:30
+msgid "Concierge"
+msgstr ""
+
+#: inc/icons.php:31
+msgid "Room service"
+msgstr ""
+
+#: inc/icons.php:32
+msgid "Daily housekeeping"
+msgstr ""
+
+#: inc/icons.php:33
+msgid "Laundry"
+msgstr ""
+
+#: inc/icons.php:34
+msgid "Luggage storage"
+msgstr ""
+
+#: inc/icons.php:35
+msgid "Business center"
+msgstr ""
+
+#: inc/icons.php:36
+msgid "Meeting room"
+msgstr ""
+
+#: inc/icons.php:37
+msgid "Languages spoken"
+msgstr ""
+
+#: inc/icons.php:38
+msgid "Currency exchange"
+msgstr ""
+
+#: inc/icons.php:39
+msgid "ATM"
+msgstr ""
+
+#: inc/icons.php:42
+msgid "Car park"
+msgstr ""
+
+#: inc/icons.php:43
+msgid "Airport shuttle"
+msgstr ""
+
+#: inc/icons.php:44
+msgid "EV charging"
+msgstr ""
+
+#: inc/icons.php:45
+msgid "Elevator"
+msgstr ""
+
+#: inc/icons.php:46
+msgid "Wheelchair accessible"
+msgstr ""
+
+#: inc/icons.php:47
+msgid "Security [24-hour]"
+msgstr ""
+
+#: inc/icons.php:48
+msgid "Smoking area"
+msgstr ""
+
+#: inc/icons.php:49
+msgid "Non-smoking"
+msgstr ""
+
+#: inc/icons.php:50
+msgid "Pets allowed"
+msgstr ""
+
+#: inc/icons.php:51
+msgid "Family friendly"
+msgstr ""
+
+#: inc/icons.php:54
+msgid "Breakfast"
+msgstr ""
+
+#: inc/icons.php:55
+msgid "Restaurant"
+msgstr ""
+
+#: inc/icons.php:56
+msgid "Bar"
+msgstr ""
+
+#: inc/icons.php:57
+msgid "Coffee / tea maker"
+msgstr ""
+
+#: inc/icons.php:58
+msgid "Minibar"
+msgstr ""
+
+#: inc/icons.php:59
+msgid "Refrigerator"
+msgstr ""
+
+#: inc/icons.php:60
+msgid "Kitchenette"
+msgstr ""
+
+#: inc/icons.php:61
+msgid "Drinking water"
+msgstr ""
+
+#: inc/icons.php:64
+msgid "Swimming pool"
+msgstr ""
+
+#: inc/icons.php:65
+msgid "Fitness center"
+msgstr ""
+
+#: inc/icons.php:66
+msgid "Spa"
+msgstr ""
+
+#: inc/icons.php:67
+msgid "Beach nearby"
+msgstr ""
+
+#: inc/icons.php:68
+msgid "Garden"
+msgstr ""
+
+#: inc/icons.php:69
+msgid "Terrace"
+msgstr ""
+
+#: inc/icons.php:70
+msgid "BBQ facilities"
+msgstr ""
+
+#: inc/icons.php:71
+msgid "Playground"
+msgstr ""
+
+#: inc/icons.php:74
+msgid "Air conditioning"
+msgstr ""
+
+#: inc/icons.php:75
+msgid "Heating"
+msgstr ""
+
+#: inc/icons.php:76
+msgid "Television"
+msgstr ""
+
+#: inc/icons.php:77
+msgid "Bathtub"
+msgstr ""
+
+#: inc/icons.php:78
+msgid "Shower"
+msgstr ""
+
+#: inc/icons.php:79
+msgid "Free toiletries"
+msgstr ""
+
+#: inc/icons.php:80
+msgid "Hairdryer"
+msgstr ""
+
+#: inc/icons.php:81
+msgid "Fresh towels"
+msgstr ""
+
+#: inc/icons.php:82
+msgid "In-room safe"
+msgstr ""
+
+#: inc/icons.php:83
+msgid "Work desk"
+msgstr ""
+
+#: inc/icons.php:84
+msgid "Wardrobe"
+msgstr ""
+
+#: inc/icons.php:85
+msgid "Iron"
+msgstr ""
+
+#: inc/icons.php:86
+msgid "Balcony"
+msgstr ""
+
+#: inc/icons.php:87
+msgid "Window that opens"
+msgstr ""
+
+#: inc/icons.php:88
+msgid "Soundproof"
+msgstr ""
+
+#: inc/icons.php:89
+msgid "Bed"
+msgstr ""
+
+#: inc/icons.php:90
+msgid "Seating area"
+msgstr ""
+
+#: inc/icons.php:91 inc/admin/metabox-room-details.php:120
+msgid "City view"
+msgstr ""
+
+#: inc/icons.php:92
+msgid "Sea view"
+msgstr ""
+
+#: inc/icons.php:93
+msgid "Mountain view"
+msgstr ""
+
+#: inc/icons.php:94
+msgid "Key card access"
+msgstr ""
+
+#: inc/icons.php:97
+msgid "Room size"
+msgstr ""
+
+#: inc/icons.php:98 inc/booking/class-roova-cart.php:418 inc/booking/class-roova-cart.php:623 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
+msgid "Guests"
+msgstr ""
+
+#: inc/icons.php:99
+msgid "Dates"
+msgstr ""
+
+#: inc/icons.php:100 inc/template-tags.php:483 inc/template-tags.php:542 inc/admin/metabox-hotel-details.php:80
+msgid "Location"
+msgstr ""
+
+#: inc/icons.php:101 inc/template-tags.php:130
+msgid "Search"
+msgstr ""
+
+#: inc/icons.php:104
+msgid "Expand"
+msgstr ""
+
+#: inc/icons.php:106
+msgid "Included"
+msgstr ""
+
+#: inc/icons.php:107
+msgid "Information"
+msgstr ""
+
+#: inc/icons.php:108
+msgid "Times"
+msgstr ""
+
+#: inc/icons.php:109
+msgid "Offer"
+msgstr ""
+
+#: inc/icons.php:198
+msgid "%d star hotel"
+msgid_plural "%d star hotel"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/search.php:28
+msgid "Find a room"
+msgstr ""
+
+#: inc/setup.php:72
+msgid "Footer"
+msgstr ""
+
+#: inc/setup.php:74
+msgid "Shown in the footer columns."
+msgstr ""
+
+#: inc/template-tags.php:43
+msgid "Destination or hotel name"
+msgstr ""
+
+#: inc/template-tags.php:49
+msgid "Where are you going?"
+msgstr ""
+
+#: inc/template-tags.php:54
+msgid "Search destinations or hotels"
+msgstr ""
+
+#: inc/template-tags.php:62
+msgid "Check in — out"
+msgstr ""
+
+#: inc/template-tags.php:84
+msgid "Rooms and guests"
+msgstr ""
+
+#: inc/template-tags.php:91
+msgid "%1$s · %2$s"
+msgstr ""
+
+#: inc/template-tags.php:92 inc/template-tags.php:340
+msgid "%d room"
+msgid_plural "%d rooms"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:93
+msgid "%d guest"
+msgid_plural "%d guests"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:105 inc/admin/bookings-page.php:234 inc/admin/order-metabox.php:54
+msgid "Rooms"
+msgstr ""
+
+#: inc/template-tags.php:106
+msgid "Adults"
+msgstr ""
+
+#: inc/template-tags.php:107
+msgid "Children"
+msgstr ""
+
+#: inc/template-tags.php:114
+msgid "Decrease %s"
+msgstr ""
+
+#: inc/template-tags.php:116
+msgid "Increase %s"
+msgstr ""
+
+#: inc/template-tags.php:128
+msgid "Update"
+msgstr ""
+
+#: inc/template-tags.php:321
+msgid "Room photos and details"
+msgstr ""
+
+#: inc/template-tags.php:327
+msgid "from"
+msgstr ""
+
+#: inc/template-tags.php:337
+msgid "%1$s total for %2$s, %3$s"
+msgstr ""
+
+#: inc/template-tags.php:351
+msgid "Takes up to %1$d adults and %2$d children per room."
+msgstr ""
+
+#: inc/template-tags.php:360
+msgid "Already in your booking"
+msgstr ""
+
+#: inc/template-tags.php:365
+msgid "Minimum stay of %d night."
+msgid_plural "Minimum stay of %d nights."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:370
+msgid "Sold out for these dates"
+msgstr ""
+
+#: inc/template-tags.php:379
+msgid "Only %d left"
+msgid_plural "Only %d left"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:394 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
+msgid "Book now"
+msgstr ""
+
+#: inc/template-tags.php:441 inc/admin/metabox-hotel-details.php:168
+msgid "Popular landmarks"
+msgstr ""
+
+#: inc/template-tags.php:442 inc/admin/metabox-hotel-details.php:176
+msgid "Nearby landmarks"
+msgstr ""
+
+#: inc/template-tags.php:482
+msgid "Cleanliness"
+msgstr ""
+
+#: inc/template-tags.php:484
+msgid "Service"
+msgstr ""
+
+#: inc/template-tags.php:499
+msgid "%s review"
+msgid_plural "%s reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:558
+msgid "Open in Google Maps"
+msgstr ""
+
+#: inc/template-tags.php:563
+msgid "Get directions"
+msgstr ""
+
+#: inc/template-tags.php:591
+msgid "View your booking"
+msgstr ""
+
+#: inc/template-tags.php:604
+msgid "Check in from %1$s · check out by %2$s"
+msgstr ""
+
+#: inc/products/register.php:17 inc/booking/class-roova-cart.php:400 inc/booking/class-roova-cart.php:626 inc/admin/metabox-room-details.php:46 inc/admin/order-metabox.php:51
+msgid "Hotel"
+msgstr ""
+
+#: inc/products/register.php:18
+msgid "Room (bookable)"
+msgstr ""
+
+#: inc/booking/class-roova-blocks.php:81
+msgid "Hotel the room belongs to."
+msgstr ""
+
+#: inc/booking/class-roova-blocks.php:86
+msgid "Check-in date."
+msgstr ""
+
+#: inc/booking/class-roova-blocks.php:91
+msgid "Check-out date."
+msgstr ""
+
+#: inc/booking/class-roova-blocks.php:96
+msgid "Number of nights."
+msgstr ""
+
+#: inc/booking/class-roova-blocks.php:101
+msgid "Guests staying."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:66
+msgid "Please pick a check-out date after your check-in date."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:70
+msgid "Check-in cannot be in the past."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:79
+msgid "This room has a %d night minimum stay."
+msgid_plural "This room has a %d nights minimum stay."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/booking/class-roova-cart.php:170
+msgid "Your session expired before that booking went through. Please try again."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:194
+msgid "This room takes up to %1$d adults and %2$d children per room. Please add another room or pick a bigger one."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:215 inc/booking/class-roova-holds.php:285 inc/booking/class-roova-holds.php:378
+msgid "Only %d room of this type is left for those dates."
+msgid_plural "Only %d rooms of this type are left for those dates."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/booking/class-roova-cart.php:216 inc/booking/class-roova-holds.php:286
+msgid "That room is fully booked for the dates you picked."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:406 inc/booking/class-roova-cart.php:620 inc/admin/bookings-page.php:232
+msgid "Check in"
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:410 inc/booking/class-roova-cart.php:621 inc/admin/bookings-page.php:233
+msgid "Check out"
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:414 inc/booking/class-roova-cart.php:622
+msgid "Nights"
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:437
+msgid "%d adult"
+msgid_plural "%d adults"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/booking/class-roova-cart.php:441
+msgid "%d child"
+msgid_plural "%d children"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/booking/class-roova-cart.php:543
+msgid "A room in your cart is no longer available and has been removed."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:552
+msgid "The stay for %s has passed. Please choose new dates."
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:570
+msgid "%1$s: %2$s"
+msgstr ""
+
+#: inc/booking/class-roova-cart.php:591
+msgid "%1$s no longer has enough rooms free for those dates — %2$d left."
+msgstr ""
+
+#: inc/booking/class-roova-holds.php:268
+msgid "Please choose a valid check-in and check-out date."
+msgstr ""
+
+#: inc/booking/class-roova-holds.php:309
+msgid "We could not hold that room. Please try again."
+msgstr ""
+
+#: inc/booking/class-roova-holds.php:360
+msgid "That booking is no longer being held."
+msgstr ""
+
+#: inc/booking/class-roova-holds.php:490
+msgid "Every five minutes (Roova)"
+msgstr ""
+
+#: inc/booking/class-roova-orders.php:138
+msgid "this room"
+msgstr ""
+
+#: inc/booking/class-roova-orders.php:144
+msgid "Booking conflict: %s sold out while this order was being placed."
+msgstr ""
+
+#: inc/booking/class-roova-orders.php:153
+msgid "Sorry — %s was just booked by someone else for those dates. Please choose different dates or another room."
+msgstr ""
+
+#: inc/booking/class-roova-orders.php:347
+msgid "Overbooking warning: %1$s has %2$d units booked for these dates but only %3$d exist. Please contact the guest."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:50
+msgid "None"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:71 inc/admin/amenity-icons.php:96 inc/admin/amenity-icons.php:144
+msgid "Icon"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:73 inc/admin/amenity-icons.php:99
+msgid "Pick the icon shown next to this amenity on hotel and room pages."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:77 inc/admin/amenity-icons.php:103
+msgid "Custom icon image"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:79 inc/admin/amenity-icons.php:106
+msgid "Optional. Overrides the icon above with your own SVG or PNG."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:176 inc/admin/amenity-icons.php:201
+msgid "Tile image"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:178 inc/admin/amenity-icons.php:204
+msgid "Used for this destination on the homepage grid."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:182 inc/admin/amenity-icons.php:208
+msgid "Tile colour"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:184 inc/admin/amenity-icons.php:211
+msgid "Used when no tile image is set."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:257
+msgid "Choose image"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:258
+msgid "Remove"
+msgstr ""
+
+#: inc/admin/bookings-page.php:16 inc/admin/bookings-page.php:17 inc/admin/bookings-page.php:155 inc/admin/order-metabox.php:21
+msgid "Bookings"
+msgstr ""
+
+#: inc/admin/bookings-page.php:140
+msgid "In a cart"
+msgstr ""
+
+#: inc/admin/bookings-page.php:141
+msgid "Awaiting payment"
+msgstr ""
+
+#: inc/admin/bookings-page.php:142
+msgid "Confirmed"
+msgstr ""
+
+#: inc/admin/bookings-page.php:143
+msgid "Cancelled"
+msgstr ""
+
+#: inc/admin/bookings-page.php:159
+msgid "All bookings"
+msgstr ""
+
+#: inc/admin/bookings-page.php:162
+msgid "Availability"
+msgstr ""
+
+#: inc/admin/bookings-page.php:199
+msgid "All hotels"
+msgstr ""
+
+#: inc/admin/bookings-page.php:208
+msgid "Any status"
+msgstr ""
+
+#: inc/admin/bookings-page.php:217
+msgid "Staying between"
+msgstr ""
+
+#: inc/admin/bookings-page.php:222
+msgid "Guest name or order number"
+msgstr ""
+
+#: inc/admin/bookings-page.php:224
+msgid "Filter"
+msgstr ""
+
+#: inc/admin/bookings-page.php:230
+msgid "Guest"
+msgstr ""
+
+#: inc/admin/bookings-page.php:231
+msgid "Hotel / room"
+msgstr ""
+
+#: inc/admin/bookings-page.php:236 inc/admin/order-metabox.php:56
+msgid "Status"
+msgstr ""
+
+#: inc/admin/bookings-page.php:237
+msgid "Order"
+msgstr ""
+
+#: inc/admin/bookings-page.php:238
+msgid "Actions"
+msgstr ""
+
+#: inc/admin/bookings-page.php:243
+msgid "No bookings yet."
+msgstr ""
+
+#: inc/admin/bookings-page.php:255
+msgid "—"
+msgstr ""
+
+#: inc/admin/bookings-page.php:274
+msgid "until %s"
+msgstr ""
+
+#: inc/admin/bookings-page.php:286
+msgid "Confirm"
+msgstr ""
+
+#: inc/admin/bookings-page.php:289
+msgid "Cancel"
+msgstr ""
+
+#: inc/admin/bookings-page.php:308
+msgid "«"
+msgstr ""
+
+#: inc/admin/bookings-page.php:309
+msgid "»"
+msgstr ""
+
+#: inc/admin/bookings-page.php:354
+msgid "Show"
+msgstr ""
+
+#: inc/admin/bookings-page.php:361
+msgid "Create a hotel first."
+msgstr ""
+
+#: inc/admin/bookings-page.php:369
+msgid "This hotel has no rooms yet."
+msgstr ""
+
+#: inc/admin/bookings-page.php:379 inc/admin/order-metabox.php:52
+msgid "Room"
+msgstr ""
+
+#: inc/admin/bookings-page.php:408
+msgid "%d unit"
+msgid_plural "%d units"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/admin/bookings-page.php:432
+msgid "Each cell shows how many rooms of that type are still free that night."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:18
+msgid "Hotel Details"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:39
+msgid "Photos come from the product image and gallery. The description on the hotel page is the product description."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:45
+msgid "Star rating"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:48
+msgid "Not rated"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:49
+msgid "1 star"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:50
+msgid "2 stars"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:51
+msgid "3 stars"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:52
+msgid "4 stars"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:53
+msgid "5 stars"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:59
+msgid "Check-in from"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:66
+msgid "Check-out by"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:73
+msgid "Reception phone"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:88
+msgid "Shown on the hotel page and used for the \"Get directions\" link."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:93
+msgid "Latitude"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:97
+msgid "Right-click the spot in Google Maps and copy the first number."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:102
+msgid "Longitude"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:106
+msgid "The second number from the same Google Maps coordinates."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:111
+msgid "Map zoom"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:120
+msgid "Guest rating"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:125
+msgid "Overall score (0-5)"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:133
+msgid "Score label"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:135
+msgid "Very good"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:140
+msgid "Number of reviews"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:147
+msgid "Cleanliness (0-5)"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:148
+msgid "Location (0-5)"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:149
+msgid "Service (0-5)"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:170
+msgid "One landmark per line. Add a distance after a vertical bar, for example: Petronas Twin Towers | 20.6 km"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:178
+msgid "One landmark per line, same format: USJ 21 LRT Station | 470 m"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:191
+msgid "%d room is linked to this hotel."
+msgid_plural "%d rooms are linked to this hotel."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/admin/metabox-hotel-details.php:203
+msgid "No rooms yet. Create products of type \"Room (bookable)\" and pick this hotel in their Room Details tab."
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:18
+msgid "Room Details"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:35
+msgid "— Select a hotel —"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:50
+msgid "The hotel this room belongs to. Rooms only appear on their hotel page."
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:55
+msgid "Units of this room type"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:60
+msgid "How many identical rooms of this type the hotel has. This is what stops double bookings: the room can be booked until every unit is taken on one of the requested nights."
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:65
+msgid "Minimum nights"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:72
+msgid "The price in the General tab is the rate for one room for one night. Totals are that rate multiplied by the number of nights."
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:77
+msgid "Occupancy"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:82
+msgid "Max adults per room"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:90
+msgid "Max children per room"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:99
+msgid "Room facts"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:104
+msgid "Size"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:111
+msgid "Beds"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:113
+msgid "1 single bed and 1 double bed"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:118
+msgid "View"
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:125
+msgid "Room amenities come from the Amenity attribute in the Attributes tab. Add new amenities under Products → Attributes → Amenity, where each one can be given an icon."
+msgstr ""
+
+#: inc/admin/metabox-room-details.php:188
+msgid "This room is not linked to a hotel yet, so guests cannot find it. Pick one in the Room Details tab."
+msgstr ""
+
+#: inc/admin/order-metabox.php:44
+msgid "No room bookings on this order."
+msgstr ""
+
+#: inc/admin/order-metabox.php:53
+msgid "Stay"
+msgstr ""
+
+#: inc/admin/order-metabox.php:74
+msgid "%1$s → %2$s (%3$s)"
+msgstr ""
+
+#: inc/admin/order-metabox.php:100
+msgid "Booking status follows the order: paid orders confirm the stay, cancelled or refunded orders release the dates."
+msgstr ""
+
+#: inc/admin/order-metabox.php:101
+msgid "Open the bookings screen"
+msgstr ""
