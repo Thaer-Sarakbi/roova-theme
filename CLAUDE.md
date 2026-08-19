@@ -20,7 +20,9 @@ macOS has no system PHP; this repo assumes Homebrew PHP at `/opt/homebrew/bin/ph
 bin/build.sh                              # lint, then package dist/roova.zip
 bin/lint.sh                               # php -l over every theme file
 php tests/test-availability.php           # booking-logic checks (30 assertions, no WordPress)
+php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
+bin/testenv.sh                            # build a throwaway WP+WooCommerce site with the theme installed
 ```
 
 `tests/test-availability.php` is a single flat script with a `check( $label, $actual, $expected )`
@@ -33,11 +35,20 @@ it runs anywhere PHP does.
 
 ## Verifying real behaviour
 
-Nothing here runs WordPress. Lint + `tests/test-availability.php` only cover syntax and the pure
-booking maths. Anything touching hooks, the database, or templates has to be checked by installing
-`dist/roova.zip` on a WooCommerce site (LocalWP, wp-env, staging). The end-to-end script — including
-the two-browser conflict test and the simultaneous-checkout race test — is in
-`~/.claude/plans/build-a-wordpress-theme-lazy-wozniak.md`.
+Lint and the two test scripts cover syntax, include-time fatals and the pure booking maths. Anything
+touching hooks, the database or templates needs a real site: run `bin/testenv.sh`, serve it with
+`php -S 127.0.0.1:8099 -t .testenv/site`, and drive it with curl (a cookie jar per "guest" is enough
+to simulate several visitors competing for the same room).
+
+Environment gotchas that cost real time once:
+
+- **WooCommerce "coming soon" mode** is on by default for a fresh install and replaces every store
+  page with a placeholder, which looks exactly like a broken theme. `bin/testenv.sh` disables it.
+- The **PHP built-in server runs sandboxed** here: it cannot write `debug.log` or any file outside the
+  site. To debug a live request, echo diagnostics into the page (e.g. an HTML comment on `wp_footer`)
+  rather than logging them.
+- The cart and checkout are the **Blocks** versions, rendered client-side. Server HTML will not show
+  stay details; read `?rest_route=/wc/store/v1/cart` instead.
 
 ## Architecture
 
@@ -91,6 +102,18 @@ cart/checkout view → locked commit at `woocommerce_checkout_order_processed` (
 equivalent, which rethrows as `RouteException`) → order status mapping. A conflict at commit fails the
 order and throws so checkout errors out. A *paid* order that ends up overbooked is never silently
 dropped — it stays booked and `flag_overbooking()` adds a loud order note.
+
+### Two traps this code has already fallen into
+
+**Overriding a WooCommerce product method with the wrong signature is a site-wide fatal.** Check the
+parent in `includes/abstracts/abstract-wc-product.php` before overriding — `get_price_html()` takes a
+legacy `$deprecated = ''` argument, and dropping it takes the whole site down at theme load.
+
+**A cart item key is not unique to a visitor.** WooCommerce hashes the product plus its cart item
+data, so two guests booking the same room for the same dates get the *identical* key. Every lookup or
+delete that uses `cart_item_key` must also match `session_id`, or one guest reads, resizes or deletes
+another's hold. The commit path avoids the problem entirely by carrying the booking row's own ID
+(`hold_id`) from the cart through to `_roova_hold_id` on the order line.
 
 ### Hold lifecycle
 

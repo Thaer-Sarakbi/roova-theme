@@ -24,8 +24,17 @@ class Roova_Blocks {
 
 	/**
 	 * Hooks.
+	 *
+	 * WooCommerce Blocks loads with the plugins, so by the time a theme runs
+	 * `woocommerce_blocks_loaded` has usually already fired — register straight
+	 * away when that is the case, and fall back to the hook when it is not.
 	 */
 	public static function init() {
+		if ( function_exists( 'woocommerce_store_api_register_endpoint_data' ) ) {
+			self::register_endpoint_data();
+			return;
+		}
+
 		add_action( 'woocommerce_blocks_loaded', array( __CLASS__, 'register_endpoint_data' ) );
 	}
 

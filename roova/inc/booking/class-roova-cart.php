@@ -299,7 +299,11 @@ class Roova_Cart {
 		$existing = Roova_Holds::get_by_cart_item_key( $cart_item_key );
 
 		if ( $existing ) {
-			return Roova_Holds::update_hold_units( $cart_item_key, $quantity );
+			$result = Roova_Holds::update_hold_units( $cart_item_key, $quantity );
+			if ( ! is_wp_error( $result ) ) {
+				self::remember_hold_id( $cart_item_key, (int) $existing['id'] );
+			}
+			return $result;
 		}
 
 		$result = Roova_Holds::place_hold( array(
@@ -313,7 +317,32 @@ class Roova_Cart {
 			'session_id'    => roova_session_id(),
 		) );
 
-		return is_wp_error( $result ) ? $result : true;
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		self::remember_hold_id( $cart_item_key, (int) $result );
+
+		return true;
+	}
+
+	/**
+	 * Record which booking row backs a cart line.
+	 *
+	 * The row ID travels with the cart into the order, so committing at
+	 * checkout can find the exact hold by primary key instead of guessing from
+	 * a cart item key that WooCommerce shares between guests.
+	 *
+	 * @param string $cart_item_key Cart item key.
+	 * @param int    $hold_id       Booking row ID.
+	 */
+	protected static function remember_hold_id( $cart_item_key, $hold_id ) {
+		if ( ! WC()->cart || ! isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
+			return;
+		}
+
+		WC()->cart->cart_contents[ $cart_item_key ]['roova_booking']['hold_id'] = (int) $hold_id;
+		WC()->cart->set_session();
 	}
 
 	/**
@@ -626,9 +655,13 @@ class Roova_Cart {
 			$line_item->add_meta_data( __( 'Hotel', 'roova' ), get_the_title( (int) $booking['hotel_id'] ), true );
 		}
 
-		// Hidden machine-readable copy for the bookings screen.
+		// Hidden machine-readable copies for the bookings screen and the commit.
 		$line_item->add_meta_data( '_roova_booking', $booking, true );
 		$line_item->add_meta_data( '_roova_cart_item_key', $cart_item_key, true );
+
+		if ( ! empty( $booking['hold_id'] ) ) {
+			$line_item->add_meta_data( '_roova_hold_id', (int) $booking['hold_id'], true );
+		}
 
 		unset( $order );
 	}

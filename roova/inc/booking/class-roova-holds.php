@@ -210,18 +210,31 @@ class Roova_Holds {
 	/**
 	 * The hold row for a cart line, if there is one.
 	 *
+	 * WooCommerce builds a cart item key by hashing the product and its cart
+	 * item data, so two guests booking the same room for the same dates get the
+	 * *same* key. Every lookup must therefore be scoped to one session, or one
+	 * guest would read and overwrite another's hold.
+	 *
 	 * @param string $cart_item_key Cart item key.
+	 * @param string $session_id    Session to look in. Defaults to the current one.
 	 * @return array|null
 	 */
-	public static function get_by_cart_item_key( $cart_item_key ) {
+	public static function get_by_cart_item_key( $cart_item_key, $session_id = null ) {
 		global $wpdb;
+
+		$session_id = ( null === $session_id ) ? roova_session_id() : $session_id;
+
+		if ( ! $cart_item_key || ! $session_id ) {
+			return null;
+		}
 
 		$table = Roova_Schema::table();
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE cart_item_key = %s AND status = 'hold' ORDER BY id DESC LIMIT 1",
-				(string) $cart_item_key
+				"SELECT * FROM {$table} WHERE cart_item_key = %s AND session_id = %s AND status = 'hold' ORDER BY id DESC LIMIT 1",
+				(string) $cart_item_key,
+				(string) $session_id
 			),
 			ARRAY_A
 		);
@@ -440,18 +453,30 @@ class Roova_Holds {
 	/**
 	 * Delete the hold for a cart line.
 	 *
+	 * Session scoped for the same reason as get_by_cart_item_key(): the key
+	 * alone is shared between guests booking the same room and dates.
+	 *
 	 * @param string $cart_item_key Cart item key.
+	 * @param string $session_id    Session to delete from. Defaults to the current one.
 	 */
-	public static function release_by_cart_item_key( $cart_item_key ) {
+	public static function release_by_cart_item_key( $cart_item_key, $session_id = null ) {
 		global $wpdb;
 
-		if ( ! $cart_item_key ) {
+		$session_id = ( null === $session_id ) ? roova_session_id() : $session_id;
+
+		if ( ! $cart_item_key || ! $session_id ) {
 			return;
 		}
 
 		$table = Roova_Schema::table();
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE cart_item_key = %s AND status = 'hold'", (string) $cart_item_key ) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$table} WHERE cart_item_key = %s AND session_id = %s AND status = 'hold'",
+				(string) $cart_item_key,
+				(string) $session_id
+			)
+		);
 		// phpcs:enable
 	}
 

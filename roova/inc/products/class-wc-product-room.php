@@ -95,9 +95,10 @@ class WC_Product_Room extends WC_Product {
 	/**
 	 * Price display with the per-night suffix.
 	 *
+	 * @param string $deprecated Unused, kept to match WC_Product's signature.
 	 * @return string
 	 */
-	public function get_price_html() {
+	public function get_price_html( $deprecated = '' ) {
 		if ( '' === $this->get_price() ) {
 			return '';
 		}

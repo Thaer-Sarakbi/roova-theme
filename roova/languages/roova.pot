@@ -186,11 +186,11 @@ msgid_plural "Only %d rooms left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-search.php:139 inc/template-tags.php:191 inc/template-tags.php:581 inc/products/class-wc-product-hotel.php:102
+#: template-search.php:139 inc/template-tags.php:191 inc/template-tags.php:581 inc/products/class-wc-product-hotel.php:103
 msgid "From"
 msgstr ""
 
-#: template-search.php:141 inc/template-tags.php:193 inc/template-tags.php:329 inc/template-tags.php:583 inc/products/class-wc-product-hotel.php:104 inc/products/class-wc-product-room.php:111
+#: template-search.php:141 inc/template-tags.php:193 inc/template-tags.php:329 inc/template-tags.php:583 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
 msgid "/ night"
 msgstr ""
 
@@ -660,7 +660,7 @@ msgstr ""
 msgid "Room size"
 msgstr ""
 
-#: inc/icons.php:98 inc/booking/class-roova-cart.php:418 inc/booking/class-roova-cart.php:623 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
+#: inc/icons.php:98 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
 msgid "Guests"
 msgstr ""
 
@@ -852,7 +852,7 @@ msgstr ""
 msgid "Check in from %1$s · check out by %2$s"
 msgstr ""
 
-#: inc/products/register.php:17 inc/booking/class-roova-cart.php:400 inc/booking/class-roova-cart.php:626 inc/admin/metabox-room-details.php:46 inc/admin/order-metabox.php:51
+#: inc/products/register.php:17 inc/booking/class-roova-cart.php:429 inc/booking/class-roova-cart.php:655 inc/admin/metabox-room-details.php:46 inc/admin/order-metabox.php:51
 msgid "Hotel"
 msgstr ""
 
@@ -860,23 +860,23 @@ msgstr ""
 msgid "Room (bookable)"
 msgstr ""
 
-#: inc/booking/class-roova-blocks.php:81
+#: inc/booking/class-roova-blocks.php:90
 msgid "Hotel the room belongs to."
 msgstr ""
 
-#: inc/booking/class-roova-blocks.php:86
+#: inc/booking/class-roova-blocks.php:95
 msgid "Check-in date."
 msgstr ""
 
-#: inc/booking/class-roova-blocks.php:91
+#: inc/booking/class-roova-blocks.php:100
 msgid "Check-out date."
 msgstr ""
 
-#: inc/booking/class-roova-blocks.php:96
+#: inc/booking/class-roova-blocks.php:105
 msgid "Number of nights."
 msgstr ""
 
-#: inc/booking/class-roova-blocks.php:101
+#: inc/booking/class-roova-blocks.php:110
 msgid "Guests staying."
 msgstr ""
 
@@ -902,85 +902,85 @@ msgstr ""
 msgid "This room takes up to %1$d adults and %2$d children per room. Please add another room or pick a bigger one."
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:215 inc/booking/class-roova-holds.php:285 inc/booking/class-roova-holds.php:378
+#: inc/booking/class-roova-cart.php:215 inc/booking/class-roova-holds.php:298 inc/booking/class-roova-holds.php:391
 msgid "Only %d room of this type is left for those dates."
 msgid_plural "Only %d rooms of this type are left for those dates."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/booking/class-roova-cart.php:216 inc/booking/class-roova-holds.php:286
+#: inc/booking/class-roova-cart.php:216 inc/booking/class-roova-holds.php:299
 msgid "That room is fully booked for the dates you picked."
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:406 inc/booking/class-roova-cart.php:620 inc/admin/bookings-page.php:232
+#: inc/booking/class-roova-cart.php:435 inc/booking/class-roova-cart.php:649 inc/admin/bookings-page.php:232
 msgid "Check in"
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:410 inc/booking/class-roova-cart.php:621 inc/admin/bookings-page.php:233
+#: inc/booking/class-roova-cart.php:439 inc/booking/class-roova-cart.php:650 inc/admin/bookings-page.php:233
 msgid "Check out"
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:414 inc/booking/class-roova-cart.php:622
+#: inc/booking/class-roova-cart.php:443 inc/booking/class-roova-cart.php:651
 msgid "Nights"
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:437
+#: inc/booking/class-roova-cart.php:466
 msgid "%d adult"
 msgid_plural "%d adults"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/booking/class-roova-cart.php:441
+#: inc/booking/class-roova-cart.php:470
 msgid "%d child"
 msgid_plural "%d children"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/booking/class-roova-cart.php:543
+#: inc/booking/class-roova-cart.php:572
 msgid "A room in your cart is no longer available and has been removed."
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:552
+#: inc/booking/class-roova-cart.php:581
 msgid "The stay for %s has passed. Please choose new dates."
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:570
+#: inc/booking/class-roova-cart.php:599
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:591
+#: inc/booking/class-roova-cart.php:620
 msgid "%1$s no longer has enough rooms free for those dates — %2$d left."
 msgstr ""
 
-#: inc/booking/class-roova-holds.php:268
+#: inc/booking/class-roova-holds.php:281
 msgid "Please choose a valid check-in and check-out date."
 msgstr ""
 
-#: inc/booking/class-roova-holds.php:309
+#: inc/booking/class-roova-holds.php:322
 msgid "We could not hold that room. Please try again."
 msgstr ""
 
-#: inc/booking/class-roova-holds.php:360
+#: inc/booking/class-roova-holds.php:373
 msgid "That booking is no longer being held."
 msgstr ""
 
-#: inc/booking/class-roova-holds.php:490
+#: inc/booking/class-roova-holds.php:515
 msgid "Every five minutes (Roova)"
 msgstr ""
 
-#: inc/booking/class-roova-orders.php:138
+#: inc/booking/class-roova-orders.php:148
 msgid "this room"
 msgstr ""
 
-#: inc/booking/class-roova-orders.php:144
+#: inc/booking/class-roova-orders.php:154
 msgid "Booking conflict: %s sold out while this order was being placed."
 msgstr ""
 
-#: inc/booking/class-roova-orders.php:153
+#: inc/booking/class-roova-orders.php:163
 msgid "Sorry — %s was just booked by someone else for those dates. Please choose different dates or another room."
 msgstr ""
 
-#: inc/booking/class-roova-orders.php:347
+#: inc/booking/class-roova-orders.php:399
 msgid "Overbooking warning: %1$s has %2$d units booked for these dates but only %3$d exist. Please contact the guest."
 msgstr ""
 

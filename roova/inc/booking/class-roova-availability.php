@@ -43,6 +43,7 @@ class Roova_Availability {
 
 		$args = wp_parse_args( $args, array(
 			'exclude_cart_item_key' => '',
+			'exclude_session'       => null,
 			'exclude_ids'           => array(),
 		) );
 
@@ -65,10 +66,20 @@ class Roova_Availability {
 			array( current_time( 'mysql' ) )
 		);
 
-		// A line's own hold must not block that same line from growing.
+		/*
+		 * A line's own hold must not block that same line from growing. Scope
+		 * this to the session: WooCommerce gives two guests the same cart item
+		 * key for the same room and dates, and excluding a stranger's hold here
+		 * would hand out a room twice.
+		 */
 		if ( $args['exclude_cart_item_key'] ) {
-			$where   .= ' AND cart_item_key != %s';
-			$params[] = $args['exclude_cart_item_key'];
+			$exclude_session = ( null === $args['exclude_session'] ) ? roova_session_id() : $args['exclude_session'];
+
+			if ( $exclude_session ) {
+				$where   .= ' AND NOT ( cart_item_key = %s AND session_id = %s )';
+				$params[] = $args['exclude_cart_item_key'];
+				$params[] = $exclude_session;
+			}
 		}
 
 		$exclude_ids = array_filter( array_map( 'absint', (array) $args['exclude_ids'] ) );

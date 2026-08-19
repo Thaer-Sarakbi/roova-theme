@@ -103,6 +103,12 @@ class Roova_Orders {
 	public static function commit_order( $order ) {
 		$committed = array();
 
+		// Rows already attached to this order must never count against it.
+		$own_rows = array();
+		foreach ( Roova_Holds::get_by_order( $order->get_id() ) as $row ) {
+			$own_rows[ (int) $row['order_item_id'] ] = (int) $row['id'];
+		}
+
 		foreach ( $order->get_items() as $item_id => $item ) {
 			$booking = $item->get_meta( '_roova_booking', true );
 			if ( ! is_array( $booking ) || empty( $booking['room_id'] ) ) {
@@ -115,8 +121,12 @@ class Roova_Orders {
 
 			$locked = Roova_Holds::lock( $room_id );
 
-			$hold        = $cart_item_key ? Roova_Holds::get_by_cart_item_key( $cart_item_key ) : null;
-			$exclude_ids = $hold ? array( (int) $hold['id'] ) : array();
+			$hold = self::find_hold_for_item( $item, $booking, $cart_item_key );
+
+			$exclude_ids = array_values( $own_rows );
+			if ( $hold ) {
+				$exclude_ids[] = (int) $hold['id'];
+			}
 
 			$available = Roova_Availability::available_units(
 				$room_id,
@@ -200,6 +210,43 @@ class Roova_Orders {
 	}
 
 	/**
+	 * Locate the hold behind an order line.
+	 *
+	 * The hold's row ID is carried through the cart, so it is the reliable
+	 * lookup; the cart item key is only a fallback for lines that predate it.
+	 *
+	 * @param WC_Order_Item_Product $item          Line item.
+	 * @param array                 $booking       Booking payload from the line.
+	 * @param string                $cart_item_key Cart item key.
+	 * @return array|null
+	 */
+	protected static function find_hold_for_item( $item, $booking, $cart_item_key ) {
+		$hold_id = 0;
+
+		if ( ! empty( $booking['hold_id'] ) ) {
+			$hold_id = (int) $booking['hold_id'];
+		} elseif ( $item->get_meta( '_roova_hold_id', true ) ) {
+			$hold_id = (int) $item->get_meta( '_roova_hold_id', true );
+		}
+
+		if ( $hold_id ) {
+			$row = Roova_Holds::get( $hold_id );
+
+			// Only accept it if it is still an unclaimed hold for this stay.
+			if ( $row
+				&& 'hold' === $row['status']
+				&& (int) $row['room_id'] === (int) $booking['room_id']
+				&& $row['check_in'] === $booking['check_in']
+				&& $row['check_out'] === $booking['check_out']
+			) {
+				return $row;
+			}
+		}
+
+		return $cart_item_key ? Roova_Holds::get_by_cart_item_key( $cart_item_key ) : null;
+	}
+
+	/**
 	 * When the unpaid grace period on a new order runs out.
 	 *
 	 * @return string|null MySQL datetime, or null for no expiry.
@@ -273,9 +320,14 @@ class Roova_Orders {
 		$new_status = self::map_status( $to );
 		$rows       = Roova_Holds::get_by_order( $order_id );
 
-		// A manually created order, or one whose rows were cleaned up: rebuild
-		// from the line item meta so admin-entered bookings still block dates.
-		if ( ! $rows && in_array( $new_status, array( 'pending', 'confirmed' ), true ) ) {
+		/*
+		 * A manually created order, or one whose rows were cleaned up: rebuild
+		 * from the line item meta so admin-entered bookings still block dates.
+		 * Only for confirmed statuses — a brand new order passes through
+		 * 'pending' on its way to checkout's own commit, and rebuilding there
+		 * would create a row that competes with the order it belongs to.
+		 */
+		if ( ! $rows && 'confirmed' === $new_status ) {
 			self::rebuild_rows_from_order( $order );
 			$rows = Roova_Holds::get_by_order( $order_id );
 		}

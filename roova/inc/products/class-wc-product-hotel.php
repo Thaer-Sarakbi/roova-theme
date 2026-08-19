@@ -88,9 +88,10 @@ class WC_Product_Hotel extends WC_Product {
 	/**
 	 * Show "From RM120 / night" instead of a product price.
 	 *
+	 * @param string $deprecated Unused, kept to match WC_Product's signature.
 	 * @return string
 	 */
-	public function get_price_html() {
+	public function get_price_html( $deprecated = '' ) {
 		$rate = $this->get_lowest_room_rate();
 		if ( '' === $rate ) {
 			return '';
