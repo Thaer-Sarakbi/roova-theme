@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Instructions for Claude Code
+
+After completing any task, feature, or file change in this project, 
+automatically update this CLAUDE.md file to reflect what was built. 
+Do this without being asked. Never end a session without syncing 
+this file to the current state of the project.
+
 ## What this is
 
 A **WordPress theme** (`roova/`) that turns WooCommerce into a multi-property hotel booking site.
