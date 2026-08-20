@@ -27,14 +27,23 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 ?>
 
 <div class="roova-breadcrumb">
-	<div class="wrap">
+	<div class="wrap wrap--wide">
 		<a href="<?php echo esc_url( roova_search_url() ); ?>"><?php esc_html_e( 'Our hotels', 'roova' ); ?></a>
 		<span aria-hidden="true">/</span>
+		<?php
+		$roova_crumb_destinations = roova_get_hotel_destinations( $roova_hotel_id );
+		if ( $roova_crumb_destinations ) :
+			?>
+			<a href="<?php echo esc_url( roova_destination_url( $roova_crumb_destinations[0] ) ); ?>">
+				<?php echo esc_html( $roova_crumb_destinations[0]->name ); ?>
+			</a>
+			<span aria-hidden="true">/</span>
+		<?php endif; ?>
 		<span><?php echo esc_html( get_the_title() ); ?></span>
 	</div>
 </div>
 
-<div class="wrap">
+<div class="wrap wrap--wide">
 	<?php if ( function_exists( 'woocommerce_output_all_notices' ) ) : ?>
 		<div class="roova-notices"><?php woocommerce_output_all_notices(); ?></div>
 	<?php endif; ?>
@@ -48,7 +57,23 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 
 		<div class="roova-hotel-head__loc">
 			<?php roova_the_icon( 'pin', 15 ); ?>
-			<span><?php echo esc_html( roova_hotel_location_label( $roova_hotel_id ) ); ?></span>
+
+			<?php
+			/*
+			 * The street address is what a guest wants under the name. The
+			 * destination stays a link in the breadcrumb above, and stands in
+			 * here only when no address has been entered. Addresses come from a
+			 * textarea, so flatten them onto one line.
+			 */
+			$roova_head_address = trim( preg_replace( '/\s+/', ' ', (string) $roova_details['address'] ) );
+
+			if ( $roova_head_address ) :
+				?>
+				<span class="roova-hotel-head__address"><?php echo esc_html( $roova_head_address ); ?></span>
+			<?php else : ?>
+				<?php roova_hotel_destination_links( $roova_hotel_id ); ?>
+			<?php endif; ?>
+
 			<?php if ( $roova_details['address'] || ( $roova_details['lat'] && $roova_details['lng'] ) ) : ?>
 				<?php
 				$roova_query = ( $roova_details['lat'] && $roova_details['lng'] )
@@ -66,8 +91,28 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 		<div class="roova-gallery" data-roova-gallery>
 			<div class="roova-gallery__main">
 				<?php foreach ( $roova_image_ids as $roova_i => $roova_image_id ) : ?>
+					<?php $roova_blur = wp_get_attachment_image_url( $roova_image_id, 'roova-hotel-card' ); ?>
 					<figure class="roova-gallery__slide <?php echo 0 === $roova_i ? 'is-active' : ''; ?>" data-roova-gallery-slide="<?php echo esc_attr( $roova_i ); ?>">
-						<?php echo wp_get_attachment_image( $roova_image_id, 'roova-hotel-hero', false, array( 'loading' => 0 === $roova_i ? 'eager' : 'lazy' ) ); ?>
+						<?php if ( $roova_blur ) : ?>
+							<span class="roova-gallery__blur" style="background-image:url('<?php echo esc_url( $roova_blur ); ?>')" aria-hidden="true"></span>
+						<?php endif; ?>
+						<?php
+						/*
+						 * The full size, not roova-hotel-hero: that size is a hard
+						 * crop, so a "whole" photo would really be WordPress's
+						 * centre cut of it. srcset still lets the browser pick a
+						 * sensible file for the width it needs.
+						 */
+						echo wp_get_attachment_image(
+							$roova_image_id,
+							'full',
+							false,
+							array(
+								'loading' => 0 === $roova_i ? 'eager' : 'lazy',
+								'sizes'   => '(max-width: 1400px) 100vw, 1400px',
+							)
+						);
+						?>
 					</figure>
 				<?php endforeach; ?>
 
@@ -83,9 +128,16 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 			</div>
 
 			<?php if ( count( $roova_image_ids ) > 1 ) : ?>
-				<div class="roova-gallery__side">
-					<?php foreach ( array_slice( $roova_image_ids, 1, 2 ) as $roova_side_id ) : ?>
-						<figure><?php echo wp_get_attachment_image( $roova_side_id, 'roova-hotel-card', false, array( 'loading' => 'lazy' ) ); ?></figure>
+				<div class="roova-gallery__thumbs" role="tablist" aria-label="<?php esc_attr_e( 'Hotel photos', 'roova' ); ?>">
+					<?php foreach ( $roova_image_ids as $roova_i => $roova_thumb_id ) : ?>
+						<button type="button"
+							class="roova-gallery__thumb <?php echo 0 === $roova_i ? 'is-active' : ''; ?>"
+							data-roova-gallery-go="<?php echo esc_attr( $roova_i ); ?>"
+							role="tab"
+							aria-selected="<?php echo 0 === $roova_i ? 'true' : 'false'; ?>"
+							aria-label="<?php echo esc_attr( sprintf( /* translators: 1: photo number, 2: total photos */ __( 'Photo %1$d of %2$d', 'roova' ), $roova_i + 1, count( $roova_image_ids ) ) ); ?>">
+							<?php echo wp_get_attachment_image( $roova_thumb_id, 'roova-room-thumb', false, array( 'loading' => 'lazy' ) ); ?>
+						</button>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
@@ -106,6 +158,13 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 						data-less="<?php esc_attr_e( 'Read less', 'roova' ); ?>">
 						<?php esc_html_e( 'Read more', 'roova' ); ?>
 					</button>
+				</section>
+			<?php endif; ?>
+
+			<?php if ( roova_get_facilities( $roova_hotel_id ) ) : ?>
+				<section class="roova-card" id="facilities">
+					<h2 class="roova-card__title"><?php esc_html_e( 'Facilities', 'roova' ); ?></h2>
+					<?php roova_facilities_grid( $roova_hotel_id ); ?>
 				</section>
 			<?php endif; ?>
 

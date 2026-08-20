@@ -239,6 +239,78 @@ function roova_save_destination_fields( $term_id ) {
  * ---------------------------------------------------------------------- */
 
 /**
+ * A type-to-search multi-select of every term in an attribute taxonomy.
+ *
+ * Used on the product screens so amenities and facilities can be set where the
+ * rest of the hotel is edited, instead of only in WooCommerce's Attributes tab.
+ * The wc-enhanced-select class hands the field to WooCommerce's own select2, so
+ * it looks and behaves like the rest of the product screen; without JavaScript
+ * it degrades to a plain multiple select and still saves.
+ *
+ * @param string $taxonomy    Attribute taxonomy, e.g. pa_amenity.
+ * @param int[]  $selected    Currently attached term IDs.
+ * @param string $field_name  Name of the field, also used as its id.
+ * @param string $label       Field caption.
+ * @param string $placeholder Placeholder shown when nothing is chosen.
+ */
+function roova_attribute_picker( $taxonomy, $selected, $field_name, $label, $placeholder = '' ) {
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		echo '<p class="roova-panel-note">' . esc_html__( 'This attribute does not exist yet. Open Products → Attributes to create it.', 'roova' ) . '</p>';
+		return;
+	}
+
+	$terms    = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
+	$selected = array_map( 'absint', (array) $selected );
+
+	if ( is_wp_error( $terms ) || ! $terms ) {
+		printf(
+			'<p class="roova-panel-note">%s <a href="%s">%s</a></p>',
+			esc_html__( 'No terms yet.', 'roova' ),
+			esc_url( admin_url( 'edit-tags.php?taxonomy=' . rawurlencode( $taxonomy ) . '&post_type=product' ) ),
+			esc_html__( 'Add some first.', 'roova' )
+		);
+		return;
+	}
+
+	$placeholder = $placeholder ? $placeholder : __( 'Type to search…', 'roova' );
+	?>
+	<p class="form-field roova-term-field">
+		<label for="<?php echo esc_attr( $field_name ); ?>"><?php echo esc_html( $label ); ?></label>
+
+		<?php /* Posted first, so clearing every choice still submits the field. */ ?>
+		<input type="hidden" name="<?php echo esc_attr( $field_name ); ?>[]" value="" />
+
+		<select id="<?php echo esc_attr( $field_name ); ?>"
+			name="<?php echo esc_attr( $field_name ); ?>[]"
+			class="wc-enhanced-select roova-term-select"
+			multiple="multiple"
+			style="width:70%;"
+			data-placeholder="<?php echo esc_attr( $placeholder ); ?>">
+			<?php foreach ( $terms as $term ) : ?>
+				<option value="<?php echo esc_attr( $term->term_id ); ?>" <?php selected( in_array( (int) $term->term_id, $selected, true ) ); ?>>
+					<?php echo esc_html( $term->name ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+	</p>
+	<?php
+}
+
+/**
+ * The term IDs a checklist posted back.
+ *
+ * @param string $field_name Field name used by roova_attribute_checklist().
+ * @return int[]
+ */
+function roova_posted_attribute_terms( $field_name ) {
+	// WooCommerce verifies the product nonce before the save hooks run.
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$raw = isset( $_POST[ $field_name ] ) ? wp_unslash( $_POST[ $field_name ] ) : array();
+
+	return array_values( array_filter( array_map( 'absint', (array) $raw ) ) );
+}
+
+/**
  * A media picker field.
  *
  * @param string $name        Field name.

@@ -65,7 +65,12 @@ p {
 .wrap {
 	max-width: 1200px;
 	margin: 0 auto;
-	padding: 0 32px;
+	padding: 0 18px;
+}
+
+/* The hotel page runs wider so the room rows have room to breathe. */
+.wrap--wide {
+	max-width: 1400px;
 }
 
 .screen-reader-text {
@@ -931,16 +936,31 @@ p {
 	text-decoration: underline;
 }
 
-.roova-gallery {
-	margin: 22px 0;
-	display: grid;
-	grid-template-columns: 2.2fr 1fr;
-	gap: 10px;
-	height: 420px;
+/* A destination in the header links straight to that destination's hotels. */
+.roova-dest-link {
+	color: var(--roova-deep);
+	font-weight: 700;
+	text-decoration: none;
+	border-bottom: 1px dashed var(--roova-ocean);
 }
 
+.roova-dest-link:hover {
+	color: var(--roova-ocean);
+	text-decoration: none;
+}
+
+.roova-hotel-head__loc .roova-sep {
+	color: var(--roova-line);
+}
+
+.roova-gallery {
+	margin: 22px 0;
+}
+
+/* One full-width stage, with the picture shown whole inside it. */
 .roova-gallery__main {
 	position: relative;
+	height: clamp(320px, 46vw, 560px);
 	border-radius: var(--roova-radius);
 	overflow: hidden;
 	background: var(--roova-sand);
@@ -958,28 +978,70 @@ p {
 	opacity: 1;
 }
 
+/*
+ * Photos are never cropped: whatever the shape of the upload, the whole frame
+ * stays visible and the letterbox is filled with a blurred copy of the image.
+ */
 .roova-gallery__slide img {
+	position: relative;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain;
+	object-position: center;
+	z-index: 1;
 }
 
-.roova-gallery__side {
-	display: grid;
-	grid-template-rows: 1fr 1fr;
+.roova-gallery__blur {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	filter: blur(26px) saturate(1.15);
+	transform: scale(1.15);
+	opacity: .55;
+	z-index: 0;
+}
+
+/* The strip of small photos under the stage. */
+.roova-gallery__thumbs {
+	display: flex;
 	gap: 10px;
+	margin-top: 10px;
+	overflow-x: auto;
+	padding-bottom: 4px;
+	scrollbar-width: thin;
 }
 
-.roova-gallery__side figure {
-	margin: 0;
-	border-radius: var(--roova-radius);
+.roova-gallery__thumb {
+	flex: 0 0 auto;
+	width: 132px;
+	height: 88px;
+	padding: 0;
+	border: 2px solid transparent;
+	border-radius: 10px;
 	overflow: hidden;
+	background: var(--roova-sand);
+	cursor: pointer;
+	opacity: .68;
+	transition: opacity .15s ease, border-color .15s ease;
 }
 
-.roova-gallery__side img {
+.roova-gallery__thumb:hover,
+.roova-gallery__thumb:focus-visible {
+	opacity: 1;
+}
+
+.roova-gallery__thumb.is-active {
+	opacity: 1;
+	border-color: var(--roova-ocean);
+}
+
+/* Thumbnails are navigation, not the viewing surface, so they fill their box. */
+.roova-gallery__thumb img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	display: block;
 }
 
 .roova-gallery__arrow {
@@ -1022,8 +1084,8 @@ p {
 
 .roova-layout {
 	display: grid;
-	grid-template-columns: 1fr 340px;
-	gap: 34px;
+	grid-template-columns: minmax(0, 1fr) 296px;
+	gap: 26px;
 	padding: 30px 0 70px;
 	align-items: start;
 }
@@ -1083,13 +1145,19 @@ p {
 
 .roova-room {
 	display: grid;
-	grid-template-columns: 220px 1fr 200px;
-	gap: 22px;
+	grid-template-columns: 260px minmax(0, 1fr) 250px;
+	gap: 24px;
 	border: 1px solid var(--roova-line);
 	border-radius: var(--roova-radius);
 	overflow: hidden;
 	margin-bottom: 18px;
 	align-items: stretch;
+	transition: box-shadow .18s ease, border-color .18s ease;
+}
+
+.roova-room:hover {
+	border-color: #d7d2c2;
+	box-shadow: 0 10px 26px rgba(12, 59, 87, .07);
 }
 
 .roova-room__media {
@@ -1113,33 +1181,50 @@ p {
 }
 
 .roova-room__info {
-	padding: 18px 0;
+	padding: 20px 0;
+	min-width: 0;
 }
 
 .roova-room__name {
-	font-size: 1.15rem;
-	margin-bottom: 10px;
+	font-size: 1.2rem;
+	margin-bottom: 12px;
 }
 
-.roova-room__meta,
+/*
+ * Room facts sit on a single bold line; amenities run underneath. The line only
+ * wraps when the facts genuinely cannot fit — never clipped.
+ */
+.roova-room__meta {
+	display: flex;
+	align-items: center;
+	gap: 6px 22px;
+	flex-wrap: wrap;
+	margin-bottom: 12px;
+}
+
+.roova-room__meta span {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	font-size: .9rem;
+	font-weight: 700;
+	color: var(--roova-ink);
+	white-space: nowrap;
+}
+
 .roova-room__amenities {
 	display: flex;
-	gap: 20px;
+	gap: 10px 18px;
 	margin-bottom: 12px;
 	flex-wrap: wrap;
 }
 
-.roova-room__meta span,
 .roova-room__amenities span {
 	display: flex;
 	align-items: center;
 	gap: 7px;
 	font-size: .85rem;
 	color: var(--roova-muted);
-}
-
-.roova-room__amenities span {
-	color: var(--roova-ink);
 }
 
 .roova-room__meta .roova-icon,
@@ -1150,7 +1235,7 @@ p {
 
 .roova-room__book {
 	border-left: 1px solid var(--roova-line);
-	padding: 20px 22px;
+	padding: 20px;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
@@ -1159,15 +1244,51 @@ p {
 	text-align: right;
 }
 
-.roova-room__price span {
-	font-size: .8rem;
+/*
+ * The rate is the thing a guest scans for, so it is the loudest text in the row:
+ * big, bold and in the body font, with "/ night" on the same baseline.
+ */
+.roova-room__price {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: flex-end;
+	gap: 0 8px;
+}
+
+/*
+ * Direct children only — wc_price() wraps the amount in its own spans, and a
+ * bare `span` rule here would shrink and grey out the price itself.
+ */
+.roova-room__price > span {
+	font-size: .78rem;
 	color: var(--roova-muted);
 }
 
+.roova-room__price > span:first-child {
+	flex: 0 0 100%;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+}
+
+.roova-room__price > span:last-child {
+	font-size: 1rem;
+	font-weight: 500;
+}
+
 .roova-room__price strong {
-	display: block;
-	font-size: 1.35rem;
-	font-family: var(--roova-font-display);
+	font-family: var(--roova-font-body);
+	font-size: 1.9rem;
+	font-weight: 700;
+	line-height: 1.15;
+	color: var(--roova-ink);
+}
+
+/* Let WooCommerce's amount / currency wrappers inherit the size above. */
+.roova-room__price strong span {
+	font: inherit;
+	color: inherit;
 }
 
 .roova-room__total {
@@ -1211,6 +1332,28 @@ p {
 .roova-amenity .roova-icon {
 	color: var(--roova-ocean);
 	flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------- Facilities */
+
+.roova-facilities {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 14px 26px;
+}
+
+.roova-facility {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: .92rem;
+	line-height: 1.45;
+}
+
+.roova-facility .roova-icon {
+	color: var(--roova-ocean);
+	flex-shrink: 0;
+	margin-top: 2px;
 }
 
 .roova-icon--image {
@@ -1326,15 +1469,23 @@ p {
 	margin-bottom: 6px;
 }
 
-.roova-booking-box__from span {
+/* Direct children only, for the same reason as the room row above. */
+.roova-booking-box__from > span {
 	font-size: .8rem;
 	color: var(--roova-muted);
 }
 
 .roova-booking-box__from strong {
-	font-family: var(--roova-font-display);
-	font-size: 1.6rem;
+	font-family: var(--roova-font-body);
+	font-size: 1.45rem;
+	font-weight: 700;
+	color: var(--roova-ink);
 	margin: 0 6px;
+}
+
+.roova-booking-box__from strong span {
+	font: inherit;
+	color: inherit;
 }
 
 .roova-booking-box__times {
@@ -1407,9 +1558,9 @@ p {
 	position: relative;
 	background: #fff;
 	border-radius: var(--roova-radius);
-	max-width: 720px;
+	max-width: 1080px;
 	width: 100%;
-	max-height: 88vh;
+	max-height: 92vh;
 	overflow-y: auto;
 }
 
@@ -1430,16 +1581,25 @@ p {
 	z-index: 2;
 }
 
+/* The photo is the point of this dialog, so give it most of the height. */
 .roova-modal__gallery {
 	position: relative;
-	height: 300px;
+	height: clamp(300px, 58vh, 640px);
 	background: var(--roova-sand);
+	overflow: hidden;
 }
 
+/* Same rule as the hotel gallery: show the whole photo, never crop it. */
 .roova-modal__gallery img {
+	position: relative;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain;
+	z-index: 1;
+}
+
+.roova-modal__gallery .roova-gallery__blur {
+	filter: blur(30px) saturate(1.15);
 }
 
 .roova-modal__body {
@@ -1753,6 +1913,30 @@ p {
 
 /* ---------------------------------------------------------- Responsive */
 
+@media (max-width: 1180px) {
+	.roova-room {
+		grid-template-columns: 200px minmax(0, 1fr) 215px;
+		gap: 18px;
+	}
+
+	/* Keep the rate and "/ night" on one line as the column narrows. */
+	.roova-room__price strong {
+		font-size: 1.55rem;
+	}
+
+	.roova-room__price > span:last-child {
+		font-size: .92rem;
+	}
+
+	.roova-room__meta {
+		gap: 8px 18px;
+	}
+
+	.roova-facilities {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
 @media (max-width: 1000px) {
 	.roova-layout {
 		grid-template-columns: 1fr;
@@ -1782,7 +1966,7 @@ p {
 
 @media (max-width: 820px) {
 	.wrap {
-		padding: 0 20px;
+		padding: 0 16px;
 	}
 
 	.roova-nav .roova-menu {
@@ -1835,13 +2019,13 @@ p {
 		width: auto;
 	}
 
-	.roova-gallery {
-		grid-template-columns: 1fr;
-		height: 280px;
+	.roova-gallery__main {
+		height: 260px;
 	}
 
-	.roova-gallery__side {
-		display: none;
+	.roova-gallery__thumb {
+		width: 96px;
+		height: 64px;
 	}
 
 	.roova-room {
@@ -1861,6 +2045,7 @@ p {
 	}
 
 	.roova-amenities,
+	.roova-facilities,
 	.roova-landmarks,
 	.roova-destinations,
 	.roova-posts {
@@ -1899,6 +2084,7 @@ p {
 
 @media (max-width: 560px) {
 	.roova-amenities,
+	.roova-facilities,
 	.roova-destinations,
 	.roova-posts,
 	.roova-modal__amenities {

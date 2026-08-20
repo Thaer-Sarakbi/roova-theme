@@ -52,5 +52,12 @@
 		$( 'select#product-type' ).on( 'change', function () {
 			window.setTimeout( refresh, 0 );
 		} );
+
+		/*
+		 * The amenity / facility selects live in a panel that starts hidden, so
+		 * ask WooCommerce to enhance them again once everything is in place —
+		 * a select2 built inside a hidden panel can end up zero-width.
+		 */
+		$( document.body ).trigger( 'wc-enhanced-select-init' );
 	} );
 }( window.jQuery ) );

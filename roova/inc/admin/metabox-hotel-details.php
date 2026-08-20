@@ -80,6 +80,20 @@ function roova_hotel_details_panel() {
 			<h4 class="roova-panel-heading"><?php esc_html_e( 'Location', 'roova' ); ?></h4>
 
 			<?php
+			roova_attribute_picker(
+				roova_destination_taxonomy(),
+				wp_get_object_terms( $post->ID, roova_destination_taxonomy(), array( 'fields' => 'ids' ) ),
+				'roova_destinations',
+				__( 'Destination', 'roova' ),
+				__( 'Type to search destinations…', 'roova' )
+			);
+			?>
+
+			<p class="roova-panel-note">
+				<?php esc_html_e( 'What guests filter by in the search box, and the link under the hotel name. The first one is shown as the hotel\'s location. Add or rename them under Products → Attributes → Destination.', 'roova' ); ?>
+			</p>
+
+			<?php
 			woocommerce_wp_textarea_input( array(
 				'id'          => '_roova_address',
 				'label'       => __( 'Address', 'roova' ),
@@ -157,6 +171,38 @@ function roova_hotel_details_panel() {
 				) );
 			}
 			?>
+		</div>
+
+		<div class="options_group">
+			<h4 class="roova-panel-heading"><?php esc_html_e( 'What this hotel offers', 'roova' ); ?></h4>
+
+			<?php
+			roova_attribute_picker(
+				roova_amenity_taxonomy(),
+				wp_get_object_terms( $post->ID, roova_amenity_taxonomy(), array( 'fields' => 'ids' ) ),
+				'roova_amenities',
+				__( 'Amenities', 'roova' ),
+				__( 'Type to search amenities…', 'roova' )
+			);
+			?>
+
+			<p class="roova-panel-note">
+				<?php esc_html_e( 'Shown with their icons in the Amenities panel on the hotel page. Add or rename them under Products → Attributes → Amenity.', 'roova' ); ?>
+			</p>
+
+			<?php
+			roova_attribute_picker(
+				roova_facility_taxonomy(),
+				wp_get_object_terms( $post->ID, roova_facility_taxonomy(), array( 'fields' => 'ids' ) ),
+				'roova_facilities',
+				__( 'Facilities', 'roova' ),
+				__( 'Type to search facilities…', 'roova' )
+			);
+			?>
+
+			<p class="roova-panel-note">
+				<?php esc_html_e( 'The ticked checklist shown above "Select your room". Add or rename them under Products → Attributes → Facilities.', 'roova' ); ?>
+			</p>
 		</div>
 
 		<div class="options_group">
@@ -254,5 +300,14 @@ function roova_save_hotel_details( $product ) {
 		$product->update_meta_data( $field, $value );
 	}
 	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+	/*
+	 * Destination, amenities and facilities are set as real product attributes,
+	 * so the Attributes tab and this panel always agree — and so WooCommerce
+	 * does not drop the terms again while saving.
+	 */
+	roova_set_product_attribute_terms( $product, roova_destination_taxonomy(), roova_posted_attribute_terms( 'roova_destinations' ) );
+	roova_set_product_attribute_terms( $product, roova_amenity_taxonomy(), roova_posted_attribute_terms( 'roova_amenities' ) );
+	roova_set_product_attribute_terms( $product, roova_facility_taxonomy(), roova_posted_attribute_terms( 'roova_facilities' ) );
 }
 add_action( 'woocommerce_admin_process_product_object', 'roova_save_hotel_details' );

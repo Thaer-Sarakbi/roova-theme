@@ -47,6 +47,12 @@ touching hooks, the database or templates needs a real site: run `bin/testenv.sh
 `php -S 127.0.0.1:8099 -t .testenv/site`, and drive it with curl (a cookie jar per "guest" is enough
 to simulate several visitors competing for the same room).
 
+On Windows there is usually no PHP or MariaDB at all: `bin/testenv-win.sh` downloads portable copies
+into `.testenv/`, installs the site, starts both services and seeds demo content
+(`bin/testenv-seed.php`). It also serves the site itself — a plain `php -S … site/index.php` routes
+every asset through WordPress and the page arrives unstyled, so the script generates a router that
+returns real files first. The theme is junctioned rather than copied, so edits are live.
+
 Environment gotchas that cost real time once:
 
 - **WooCommerce "coming soon" mode** is on by default for a fresh install and replaces every store
@@ -140,11 +146,30 @@ page, the hotel page and add-to-cart all read it, which is why a stay survives n
 
 ### Taxonomies
 
-`pa_destination` and `pa_amenity` are real WooCommerce global attributes, created programmatically by
-`roova_ensure_attributes()` so the client can add terms in the UI without code. Term meta carries the
-amenity icon (`roova_icon`, or `roova_icon_image` for a custom upload) and the destination tile image /
-colour. Icons come from the inline SVG library in `inc/icons.php` — `roova_icon_library()` is
-filterable; icons are rendered inline so they inherit `currentColor`.
+`pa_destination`, `pa_amenity` and `pa_facilities` are real WooCommerce global attributes, created
+programmatically by `roova_ensure_attributes()` so the client can add terms in the UI without code.
+Term meta carries the amenity icon (`roova_icon`, or `roova_icon_image` for a custom upload) and the
+destination tile image / colour. Icons come from the inline SVG library in `inc/icons.php` —
+`roova_icon_library()` is filterable; icons are rendered inline so they inherit `currentColor`.
+
+`roova_amenity_icon()` resolves in three steps: the icon chosen on the term (`roova_icon_image`, then
+`roova_icon`), then an **exact** case-insensitive match of the term name against an icon slug or label
+(`roova_icon_slug_for_name()`), then a neutral tick. The name match is exact on purpose — a fuzzy one
+would put confident, wrong pictures next to amenities.
+
+Facilities are deliberately icon-less: they are the flat "what this hotel has" checklist rendered with
+a tick above "Select your room", so a new term needs no admin work beyond adding it.
+
+Amenities and facilities are also editable from the Hotel Details tab (`roova_attribute_picker()`), as
+type-to-search multi-selects handed to WooCommerce's own select2 via the `wc-enhanced-select` class —
+which is why `roova-admin-product` depends on that handle. Their selection must be written back
+through `roova_set_product_attribute_terms()`, which puts them
+on the **product's attribute list** — a plain `wp_set_object_terms()` is undone seconds later, because
+WooCommerce's data store deletes the term relationships of any attribute taxonomy the product object
+does not carry when it saves. Adding an
+attribute to `roova_required_attributes()` only creates it on sites whose stored
+`roova_attributes_created` differs from `ROOVA_VERSION` — bump the version or the new attribute never
+appears on an existing install.
 
 ### Templates
 

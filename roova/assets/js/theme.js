@@ -405,13 +405,27 @@
 		}
 
 		var slides = qsa( '[data-roova-gallery-slide]', gallery );
+		var thumbs = qsa( '[data-roova-gallery-go]', gallery );
 		var index = 0;
 
 		function show( next ) {
 			index = ( next + slides.length ) % slides.length;
+
 			slides.forEach( function ( slide, i ) {
 				slide.classList.toggle( 'is-active', i === index );
 			} );
+
+			thumbs.forEach( function ( thumb, i ) {
+				var active = i === index;
+				thumb.classList.toggle( 'is-active', active );
+				thumb.setAttribute( 'aria-selected', active ? 'true' : 'false' );
+			} );
+
+			// Keep the current thumbnail in sight when stepping with the arrows.
+			if ( thumbs[ index ] && thumbs[ index ].scrollIntoView ) {
+				thumbs[ index ].scrollIntoView( { block: 'nearest', inline: 'nearest', behavior: 'smooth' } );
+			}
+
 			var counter = qs( '[data-roova-gallery-index]', gallery );
 			if ( counter ) {
 				counter.textContent = index + 1;
@@ -421,6 +435,12 @@
 		qsa( '[data-roova-gallery-step]', gallery ).forEach( function ( button ) {
 			button.addEventListener( 'click', function () {
 				show( index + parseInt( button.dataset.roovaGalleryStep, 10 ) );
+			} );
+		} );
+
+		thumbs.forEach( function ( thumb ) {
+			thumb.addEventListener( 'click', function () {
+				show( parseInt( thumb.dataset.roovaGalleryGo, 10 ) );
 			} );
 		} );
 	}() );
@@ -488,22 +508,35 @@
 				var gallery = qs( '[data-roova-modal-gallery]', modal );
 				gallery.innerHTML = '';
 				if ( room.images && room.images.length ) {
+					// The photo is shown whole (object-fit: contain); the blurred
+					// copy behind it fills whatever the shape leaves over.
+					var blur = document.createElement( 'span' );
+					blur.className = 'roova-gallery__blur';
+					blur.setAttribute( 'aria-hidden', 'true' );
+					gallery.appendChild( blur );
+
 					var image = document.createElement( 'img' );
-					image.src = room.images[ 0 ].src;
-					image.alt = room.images[ 0 ].alt || room.name;
 					gallery.appendChild( image );
 
+					var position = 0;
+
+					var showImage = function ( index ) {
+						position = ( index + room.images.length ) % room.images.length;
+						image.src = room.images[ position ].src;
+						image.alt = room.images[ position ].alt || room.name;
+						blur.style.backgroundImage = 'url("' + room.images[ position ].src + '")';
+					};
+
+					showImage( 0 );
+
 					if ( room.images.length > 1 ) {
-						var position = 0;
 						[ -1, 1 ].forEach( function ( step ) {
 							var arrow = document.createElement( 'button' );
 							arrow.type = 'button';
 							arrow.className = 'roova-gallery__arrow ' + ( step < 0 ? 'roova-gallery__arrow--prev' : 'roova-gallery__arrow--next' );
 							arrow.textContent = step < 0 ? '‹' : '›';
 							arrow.addEventListener( 'click', function () {
-								position = ( position + step + room.images.length ) % room.images.length;
-								image.src = room.images[ position ].src;
-								image.alt = room.images[ position ].alt || room.name;
+								showImage( position + step );
 							} );
 							gallery.appendChild( arrow );
 						} );

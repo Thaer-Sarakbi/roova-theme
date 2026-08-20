@@ -96,11 +96,11 @@ msgstr ""
 msgid "Search results for “%s”"
 msgstr ""
 
-#: index.php:61 inc/icons.php:102
+#: index.php:61 inc/icons.php:106
 msgid "Previous"
 msgstr ""
 
-#: index.php:62 inc/icons.php:103
+#: index.php:62 inc/icons.php:107
 msgid "Next"
 msgstr ""
 
@@ -108,53 +108,65 @@ msgstr ""
 msgid "Nothing found."
 msgstr ""
 
-#: single-hotel.php:59
+#: single-hotel.php:84
 msgid "View on map"
 msgstr ""
 
-#: single-hotel.php:75
+#: single-hotel.php:120
 msgid "Previous photo"
 msgstr ""
 
-#: single-hotel.php:78
+#: single-hotel.php:123
 msgid "Next photo"
 msgstr ""
 
-#: single-hotel.php:100
+#: single-hotel.php:131
+msgid "Hotel photos"
+msgstr ""
+
+#: single-hotel.php:138
+msgid "Photo %1$d of %2$d"
+msgstr ""
+
+#: single-hotel.php:152
 msgid "Description"
 msgstr ""
 
-#: single-hotel.php:105 single-hotel.php:107
+#: single-hotel.php:157 single-hotel.php:159
 msgid "Read more"
 msgstr ""
 
-#: single-hotel.php:106
+#: single-hotel.php:158
 msgid "Read less"
 msgstr ""
 
-#: single-hotel.php:113
+#: single-hotel.php:166 inc/attributes.php:49 inc/admin/metabox-hotel-details.php:198
+msgid "Facilities"
+msgstr ""
+
+#: single-hotel.php:172
 msgid "Select your room"
 msgstr ""
 
-#: single-hotel.php:121
+#: single-hotel.php:180
 msgid "%1$s — %2$s · %3$s · %4$s"
 msgstr ""
 
-#: single-hotel.php:124 template-search.php:42 inc/template-tags.php:339 inc/woocommerce.php:151 inc/admin/order-metabox.php:80
+#: single-hotel.php:183 template-search.php:42 inc/template-tags.php:351 inc/woocommerce.php:151 inc/admin/order-metabox.php:80
 msgid "%d night"
 msgid_plural "%d nights"
 msgstr[0] ""
 msgstr[1] ""
 
-#: single-hotel.php:135
+#: single-hotel.php:194
 msgid "No rooms have been added to this hotel yet."
 msgstr ""
 
-#: single-hotel.php:141
+#: single-hotel.php:200 inc/admin/metabox-hotel-details.php:184
 msgid "Amenities"
 msgstr ""
 
-#: single-hotel.php:151 inc/admin/metabox-hotel-details.php:163
+#: single-hotel.php:210 inc/admin/metabox-hotel-details.php:209
 msgid "What's nearby"
 msgstr ""
 
@@ -174,7 +186,7 @@ msgstr ""
 msgid "All our hotels"
 msgstr ""
 
-#: template-search.php:71 inc/search.php:199 inc/template-tags.php:251
+#: template-search.php:71 inc/search.php:199 inc/template-tags.php:263
 msgid "%d hotel"
 msgid_plural "%d hotels"
 msgstr[0] ""
@@ -186,11 +198,11 @@ msgid_plural "Only %d rooms left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-search.php:139 inc/template-tags.php:191 inc/template-tags.php:581 inc/products/class-wc-product-hotel.php:103
+#: template-search.php:139 inc/template-tags.php:203 inc/template-tags.php:647 inc/products/class-wc-product-hotel.php:103
 msgid "From"
 msgstr ""
 
-#: template-search.php:141 inc/template-tags.php:193 inc/template-tags.php:329 inc/template-tags.php:583 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
+#: template-search.php:141 inc/template-tags.php:205 inc/template-tags.php:341 inc/template-tags.php:649 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
 msgid "/ night"
 msgstr ""
 
@@ -198,7 +210,7 @@ msgstr ""
 msgid "See rooms"
 msgstr ""
 
-#: template-search.php:148 inc/template-tags.php:196
+#: template-search.php:148 inc/template-tags.php:208
 msgid "No rooms free for these dates"
 msgstr ""
 
@@ -214,7 +226,7 @@ msgstr ""
 msgid "Room not found."
 msgstr ""
 
-#: inc/ajax.php:113 inc/template-tags.php:299
+#: inc/ajax.php:113 inc/template-tags.php:311
 msgid "Max %d adult"
 msgid_plural "Max %d adults"
 msgstr[0] ""
@@ -260,15 +272,15 @@ msgstr ""
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:75 inc/icons.php:105 inc/template-tags.php:622
+#: inc/assets.php:75 inc/icons.php:109 inc/template-tags.php:688
 msgid "Close"
 msgstr ""
 
-#: inc/attributes.php:38
+#: inc/attributes.php:47 inc/admin/metabox-hotel-details.php:87
 msgid "Destination"
 msgstr ""
 
-#: inc/attributes.php:39
+#: inc/attributes.php:48
 msgid "Amenity"
 msgstr ""
 
@@ -412,7 +424,7 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: inc/customizer.php:176 inc/admin/metabox-hotel-details.php:85
+#: inc/customizer.php:176 inc/admin/metabox-hotel-details.php:99
 msgid "Address"
 msgstr ""
 
@@ -525,178 +537,194 @@ msgid "Coffee / tea maker"
 msgstr ""
 
 #: inc/icons.php:58
-msgid "Minibar"
+msgid "Kettle"
 msgstr ""
 
 #: inc/icons.php:59
-msgid "Refrigerator"
+msgid "Minibar"
 msgstr ""
 
 #: inc/icons.php:60
-msgid "Kitchenette"
+msgid "Refrigerator"
 msgstr ""
 
 #: inc/icons.php:61
+msgid "Kitchenette"
+msgstr ""
+
+#: inc/icons.php:62
 msgid "Drinking water"
 msgstr ""
 
-#: inc/icons.php:64
+#: inc/icons.php:65
 msgid "Swimming pool"
 msgstr ""
 
-#: inc/icons.php:65
+#: inc/icons.php:66
 msgid "Fitness center"
 msgstr ""
 
-#: inc/icons.php:66
+#: inc/icons.php:67
 msgid "Spa"
 msgstr ""
 
-#: inc/icons.php:67
+#: inc/icons.php:68
 msgid "Beach nearby"
 msgstr ""
 
-#: inc/icons.php:68
+#: inc/icons.php:69
 msgid "Garden"
 msgstr ""
 
-#: inc/icons.php:69
+#: inc/icons.php:70
 msgid "Terrace"
 msgstr ""
 
-#: inc/icons.php:70
+#: inc/icons.php:71
 msgid "BBQ facilities"
 msgstr ""
 
-#: inc/icons.php:71
+#: inc/icons.php:72
 msgid "Playground"
 msgstr ""
 
-#: inc/icons.php:74
+#: inc/icons.php:75
 msgid "Air conditioning"
 msgstr ""
 
-#: inc/icons.php:75
+#: inc/icons.php:76
 msgid "Heating"
 msgstr ""
 
-#: inc/icons.php:76
+#: inc/icons.php:77
 msgid "Television"
 msgstr ""
 
-#: inc/icons.php:77
+#: inc/icons.php:78
 msgid "Bathtub"
 msgstr ""
 
-#: inc/icons.php:78
+#: inc/icons.php:79
 msgid "Shower"
 msgstr ""
 
-#: inc/icons.php:79
-msgid "Free toiletries"
-msgstr ""
-
 #: inc/icons.php:80
-msgid "Hairdryer"
+msgid "Private bathroom"
 msgstr ""
 
 #: inc/icons.php:81
-msgid "Fresh towels"
+msgid "Free toiletries"
 msgstr ""
 
 #: inc/icons.php:82
-msgid "In-room safe"
+msgid "Hairdryer"
 msgstr ""
 
 #: inc/icons.php:83
-msgid "Work desk"
+msgid "Mirror"
 msgstr ""
 
 #: inc/icons.php:84
-msgid "Wardrobe"
+msgid "Slippers"
 msgstr ""
 
 #: inc/icons.php:85
-msgid "Iron"
+msgid "Fresh towels"
 msgstr ""
 
 #: inc/icons.php:86
-msgid "Balcony"
+msgid "In-room safe"
 msgstr ""
 
 #: inc/icons.php:87
-msgid "Window that opens"
+msgid "Work desk"
 msgstr ""
 
 #: inc/icons.php:88
-msgid "Soundproof"
+msgid "Wardrobe"
 msgstr ""
 
 #: inc/icons.php:89
-msgid "Bed"
+msgid "Iron"
 msgstr ""
 
 #: inc/icons.php:90
-msgid "Seating area"
+msgid "Balcony"
 msgstr ""
 
-#: inc/icons.php:91 inc/admin/metabox-room-details.php:120
-msgid "City view"
+#: inc/icons.php:91
+msgid "Window that opens"
 msgstr ""
 
 #: inc/icons.php:92
-msgid "Sea view"
+msgid "Soundproof"
 msgstr ""
 
 #: inc/icons.php:93
-msgid "Mountain view"
+msgid "Bed"
 msgstr ""
 
 #: inc/icons.php:94
-msgid "Key card access"
+msgid "Seating area"
+msgstr ""
+
+#: inc/icons.php:95 inc/admin/metabox-room-details.php:120
+msgid "City view"
+msgstr ""
+
+#: inc/icons.php:96
+msgid "Sea view"
 msgstr ""
 
 #: inc/icons.php:97
+msgid "Mountain view"
+msgstr ""
+
+#: inc/icons.php:98
+msgid "Key card access"
+msgstr ""
+
+#: inc/icons.php:101
 msgid "Room size"
 msgstr ""
 
-#: inc/icons.php:98 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
+#: inc/icons.php:102 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
 msgid "Guests"
 msgstr ""
 
-#: inc/icons.php:99
+#: inc/icons.php:103
 msgid "Dates"
 msgstr ""
 
-#: inc/icons.php:100 inc/template-tags.php:483 inc/template-tags.php:542 inc/admin/metabox-hotel-details.php:80
+#: inc/icons.php:104 inc/template-tags.php:549 inc/template-tags.php:608 inc/admin/metabox-hotel-details.php:80
 msgid "Location"
 msgstr ""
 
-#: inc/icons.php:101 inc/template-tags.php:130
+#: inc/icons.php:105 inc/template-tags.php:142
 msgid "Search"
 msgstr ""
 
-#: inc/icons.php:104
+#: inc/icons.php:108
 msgid "Expand"
 msgstr ""
 
-#: inc/icons.php:106
+#: inc/icons.php:110
 msgid "Included"
 msgstr ""
 
-#: inc/icons.php:107
+#: inc/icons.php:111
 msgid "Information"
 msgstr ""
 
-#: inc/icons.php:108
+#: inc/icons.php:112
 msgid "Times"
 msgstr ""
 
-#: inc/icons.php:109
+#: inc/icons.php:113
 msgid "Offer"
 msgstr ""
 
-#: inc/icons.php:198
+#: inc/icons.php:241
 msgid "%d star hotel"
 msgid_plural "%d star hotel"
 msgstr[0] ""
@@ -714,141 +742,145 @@ msgstr ""
 msgid "Shown in the footer columns."
 msgstr ""
 
-#: inc/template-tags.php:43
+#: inc/template-tags.php:55
 msgid "Destination or hotel name"
 msgstr ""
 
-#: inc/template-tags.php:49
+#: inc/template-tags.php:61
 msgid "Where are you going?"
 msgstr ""
 
-#: inc/template-tags.php:54
+#: inc/template-tags.php:66
 msgid "Search destinations or hotels"
 msgstr ""
 
-#: inc/template-tags.php:62
+#: inc/template-tags.php:74
 msgid "Check in — out"
 msgstr ""
 
-#: inc/template-tags.php:84
+#: inc/template-tags.php:96
 msgid "Rooms and guests"
 msgstr ""
 
-#: inc/template-tags.php:91
+#: inc/template-tags.php:103
 msgid "%1$s · %2$s"
 msgstr ""
 
-#: inc/template-tags.php:92 inc/template-tags.php:340
+#: inc/template-tags.php:104 inc/template-tags.php:352
 msgid "%d room"
 msgid_plural "%d rooms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:93
+#: inc/template-tags.php:105
 msgid "%d guest"
 msgid_plural "%d guests"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:105 inc/admin/bookings-page.php:234 inc/admin/order-metabox.php:54
+#: inc/template-tags.php:117 inc/admin/bookings-page.php:234 inc/admin/order-metabox.php:54
 msgid "Rooms"
 msgstr ""
 
-#: inc/template-tags.php:106
+#: inc/template-tags.php:118
 msgid "Adults"
 msgstr ""
 
-#: inc/template-tags.php:107
+#: inc/template-tags.php:119
 msgid "Children"
 msgstr ""
 
-#: inc/template-tags.php:114
+#: inc/template-tags.php:126
 msgid "Decrease %s"
 msgstr ""
 
-#: inc/template-tags.php:116
+#: inc/template-tags.php:128
 msgid "Increase %s"
 msgstr ""
 
-#: inc/template-tags.php:128
+#: inc/template-tags.php:140
 msgid "Update"
 msgstr ""
 
-#: inc/template-tags.php:321
+#: inc/template-tags.php:333
 msgid "Room photos and details"
 msgstr ""
 
-#: inc/template-tags.php:327
+#: inc/template-tags.php:339
 msgid "from"
 msgstr ""
 
-#: inc/template-tags.php:337
+#: inc/template-tags.php:349
 msgid "%1$s total for %2$s, %3$s"
 msgstr ""
 
-#: inc/template-tags.php:351
+#: inc/template-tags.php:363
 msgid "Takes up to %1$d adults and %2$d children per room."
 msgstr ""
 
-#: inc/template-tags.php:360
+#: inc/template-tags.php:372
 msgid "Already in your booking"
 msgstr ""
 
-#: inc/template-tags.php:365
+#: inc/template-tags.php:377
 msgid "Minimum stay of %d night."
 msgid_plural "Minimum stay of %d nights."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:370
+#: inc/template-tags.php:382
 msgid "Sold out for these dates"
 msgstr ""
 
-#: inc/template-tags.php:379
+#: inc/template-tags.php:391
 msgid "Only %d left"
 msgid_plural "Only %d left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:394 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
+#: inc/template-tags.php:406 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
 msgid "Book now"
 msgstr ""
 
-#: inc/template-tags.php:441 inc/admin/metabox-hotel-details.php:168
+#: inc/template-tags.php:460
+msgid "See every hotel in %s"
+msgstr ""
+
+#: inc/template-tags.php:507 inc/admin/metabox-hotel-details.php:214
 msgid "Popular landmarks"
 msgstr ""
 
-#: inc/template-tags.php:442 inc/admin/metabox-hotel-details.php:176
+#: inc/template-tags.php:508 inc/admin/metabox-hotel-details.php:222
 msgid "Nearby landmarks"
 msgstr ""
 
-#: inc/template-tags.php:482
+#: inc/template-tags.php:548
 msgid "Cleanliness"
 msgstr ""
 
-#: inc/template-tags.php:484
+#: inc/template-tags.php:550
 msgid "Service"
 msgstr ""
 
-#: inc/template-tags.php:499
+#: inc/template-tags.php:565
 msgid "%s review"
 msgid_plural "%s reviews"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:558
+#: inc/template-tags.php:624
 msgid "Open in Google Maps"
 msgstr ""
 
-#: inc/template-tags.php:563
+#: inc/template-tags.php:629
 msgid "Get directions"
 msgstr ""
 
-#: inc/template-tags.php:591
+#: inc/template-tags.php:657
 msgid "View your booking"
 msgstr ""
 
-#: inc/template-tags.php:604
+#: inc/template-tags.php:670
 msgid "Check in from %1$s · check out by %2$s"
 msgstr ""
 
@@ -1020,11 +1052,27 @@ msgstr ""
 msgid "Used when no tile image is set."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:257
+#: inc/admin/amenity-icons.php:258
+msgid "This attribute does not exist yet. Open Products → Attributes to create it."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:268
+msgid "No terms yet."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:270
+msgid "Add some first."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:275
+msgid "Type to search…"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:329
 msgid "Choose image"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:258
+#: inc/admin/amenity-icons.php:330
 msgid "Remove"
 msgstr ""
 
@@ -1199,76 +1247,104 @@ msgid "Reception phone"
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:88
-msgid "Shown on the hotel page and used for the \"Get directions\" link."
+msgid "Type to search destinations…"
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:93
-msgid "Latitude"
-msgstr ""
-
-#: inc/admin/metabox-hotel-details.php:97
-msgid "Right-click the spot in Google Maps and copy the first number."
+msgid "What guests filter by in the search box, and the link under the hotel name. The first one is shown as the hotel's location. Add or rename them under Products → Attributes → Destination."
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:102
-msgid "Longitude"
+msgid "Shown on the hotel page and used for the \"Get directions\" link."
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:106
-msgid "The second number from the same Google Maps coordinates."
+#: inc/admin/metabox-hotel-details.php:107
+msgid "Latitude"
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:111
-msgid "Map zoom"
+msgid "Right-click the spot in Google Maps and copy the first number."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:116
+msgid "Longitude"
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:120
-msgid "Guest rating"
+msgid "The second number from the same Google Maps coordinates."
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:125
+msgid "Map zoom"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:134
+msgid "Guest rating"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:139
 msgid "Overall score (0-5)"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:133
+#: inc/admin/metabox-hotel-details.php:147
 msgid "Score label"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:135
+#: inc/admin/metabox-hotel-details.php:149
 msgid "Very good"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:140
+#: inc/admin/metabox-hotel-details.php:154
 msgid "Number of reviews"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:147
+#: inc/admin/metabox-hotel-details.php:161
 msgid "Cleanliness (0-5)"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:148
+#: inc/admin/metabox-hotel-details.php:162
 msgid "Location (0-5)"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:149
+#: inc/admin/metabox-hotel-details.php:163
 msgid "Service (0-5)"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:170
+#: inc/admin/metabox-hotel-details.php:177
+msgid "What this hotel offers"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:185
+msgid "Type to search amenities…"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:190
+msgid "Shown with their icons in the Amenities panel on the hotel page. Add or rename them under Products → Attributes → Amenity."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:199
+msgid "Type to search facilities…"
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:204
+msgid "The ticked checklist shown above \"Select your room\". Add or rename them under Products → Attributes → Facilities."
+msgstr ""
+
+#: inc/admin/metabox-hotel-details.php:216
 msgid "One landmark per line. Add a distance after a vertical bar, for example: Petronas Twin Towers | 20.6 km"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:178
+#: inc/admin/metabox-hotel-details.php:224
 msgid "One landmark per line, same format: USJ 21 LRT Station | 470 m"
 msgstr ""
 
-#: inc/admin/metabox-hotel-details.php:191
+#: inc/admin/metabox-hotel-details.php:237
 msgid "%d room is linked to this hotel."
 msgid_plural "%d rooms are linked to this hotel."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/metabox-hotel-details.php:203
+#: inc/admin/metabox-hotel-details.php:249
 msgid "No rooms yet. Create products of type \"Room (bookable)\" and pick this hotel in their Room Details tab."
 msgstr ""
 

@@ -70,6 +70,46 @@
 	white-space: nowrap;
 }
 
+/* ------------------------------------------------------- Term picker */
+
+/*
+ * The amenity / facility fields are WooCommerce enhanced selects, so most of
+ * the styling comes from its own admin CSS. These rules only keep the token box
+ * legible when it holds a dozen chips, and stop it collapsing under the panel's
+ * floated-label layout.
+ */
+.roova-term-field {
+	padding-top: 10px !important;
+}
+
+.woocommerce_options_panel .roova-term-field .select2-container {
+	float: left;
+	width: 70% !important;
+	max-width: 560px;
+}
+
+.woocommerce_options_panel .roova-term-field .select2-container .select2-selection--multiple {
+	min-height: 34px;
+	padding: 2px 4px;
+	border-color: #8c8f94;
+	border-radius: 4px;
+}
+
+.woocommerce_options_panel .roova-term-field .select2-selection__choice {
+	margin: 3px 4px 3px 0;
+	font-size: 12px;
+	line-height: 1.7;
+}
+
+/* Without JavaScript this stays a plain multi-select — keep it usable. */
+.woocommerce_options_panel .roova-term-select {
+	min-height: 90px;
+}
+
+.woocommerce_options_panel .roova-term-select.enhanced {
+	min-height: 0;
+}
+
 /* -------------------------------------------------------- Media field */
 
 .roova-media-field {

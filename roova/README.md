@@ -15,7 +15,7 @@ through the normal WooCommerce cart, checkout and orders.
 2. Install and activate **WooCommerce** if it is not active yet (the theme shows a notice with a link).
 3. On activation the theme creates:
    * the bookings database table,
-   * the **Destination** and **Amenity** product attributes,
+   * the **Destination**, **Amenity** and **Facilities** product attributes,
    * a **Find a room** page using the *Hotel search results* template.
 4. **Settings → Reading →** set your homepage to a static page so the hotel homepage template is used.
 5. **Appearance → Customize → Roova hotel theme →** brand colours, hero text, Google Maps key, hold times.
@@ -28,15 +28,45 @@ Add one term per city or area (Ampang, Subang Jaya, Kajang, Serendah…). Each t
 image and a colour, used by the destinations grid on the homepage. Destinations power the search box,
 the homepage grid and search filtering — adding a new one never needs code.
 
+Put a hotel in a destination from **Product data → Hotel Details → Destination** (start typing to
+search). That one choice does three jobs: it is the hotel's location line, it decides which searches
+the hotel appears in, and it becomes a link — in the breadcrumb and under the hotel name — that shows
+every other hotel in the same destination, keeping the dates and guests the guest already chose.
+
+A hotel can sit in more than one destination if that is useful; the first one is shown as its
+location.
+
 ## 3. Add your amenities
 
 **Products → Attributes → Amenity → Configure terms.**
 
 Every amenity can be given an **icon**: pick one from the bundled set (Wi-Fi, parking, pool, breakfast,
-air conditioning, and around forty more), or upload your own SVG/PNG. Amenities are assigned to hotels
-and rooms from the product's **Attributes** tab — tick *Visible on the product page*.
+air conditioning, kettle, mirror, slippers, private bathroom, and around forty more), or upload your
+own SVG/PNG.
 
-## 4. Add a hotel
+You usually do not have to pick one. If the term's name matches a bundled icon exactly — *Mirror*,
+*Slippers*, *Smoking area*, *kettle*, *Private bathroom*, *Shower*, *Non-smoking*, *Air conditioning*
+and so on — that icon is used automatically. Choosing an icon overrides the match, and anything with
+no match shows a neutral tick.
+
+Amenities are chosen on a hotel from **Product data → Hotel Details → Amenities**: start typing and
+the list narrows, click a name to add it, click the × on a chip to remove it. (They can also be set
+from the product's **Attributes** tab — both screens edit the same thing, so use whichever you
+prefer.) For rooms, use the Attributes tab.
+
+## 4. Add your facilities
+
+**Products → Attributes → Facilities → Configure terms.**
+
+Facilities are the plain checklist shown in the **Facilities** panel just above "Select your room"
+(Free Wi-Fi, Free parking, Check-in [24-hour], Laundry, Daily housekeeping…). They need no icon —
+every one is listed with a tick — so adding the term is all it takes. Choose them on a hotel from
+**Product data → Hotel Details → Facilities**, the same search-as-you-type field as amenities.
+
+Amenities and facilities overlap on purpose: amenities are the illustrated highlights, facilities are
+the full list.
+
+## 5. Add a hotel
 
 **Products → Add New**, then set **Product data → Hotel**.
 
@@ -44,8 +74,9 @@ and rooms from the product's **Attributes** tab — tick *Visible on the product
 |---|---|
 | Photos | Product image + product gallery |
 | Description | The main product description |
-| Destination | Attributes tab → Destination |
-| Amenities | Attributes tab → Amenity |
+| Destination | **Hotel Details** tab → Destination (or the Attributes tab) |
+| Amenities | **Hotel Details** tab → Amenities (or the Attributes tab) |
+| Facilities | **Hotel Details** tab → Facilities (or the Attributes tab) |
 | Address, latitude, longitude, map zoom | **Hotel Details** tab |
 | Check-in / check-out times, phone, star rating | **Hotel Details** tab |
 | Guest score and the Cleanliness / Location / Service bars | **Hotel Details** tab |
@@ -55,7 +86,7 @@ and rooms from the product's **Attributes** tab — tick *Visible on the product
 Hotels are never added to the cart; they are the page guests browse. Their price display is "From …",
 taken from the cheapest room.
 
-## 5. Add rooms
+## 6. Add rooms
 
 **Products → Add New**, then set **Product data → Room (bookable)**.
 
@@ -68,7 +99,7 @@ taken from the cheapest room.
 * Room photos come from the product image and gallery, shown in the "Room photos and details" modal.
 * Rooms do not appear in the shop catalogue — they are booked from their hotel page.
 
-## 6. How the booking system prevents conflicts
+## 7. How the booking system prevents conflicts
 
 1. **Adding to cart places a hold.** The dates are reserved for 30 minutes (Customizer → Booking).
    Another guest cannot take the last unit while it sits in someone's cart.
@@ -87,7 +118,7 @@ busiest night decides. A room with 8 units is bookable while fewer than 8 units 
 those nights. Same-day turnarounds do not collide: a guest checking out on the 5th frees that night
 for a guest checking in on the 5th.
 
-## 7. Managing bookings
+## 8. Managing bookings
 
 **WooCommerce → Bookings**
 
@@ -97,14 +128,14 @@ for a guest checking in on the 5th.
 
 Each order also has a **Bookings** panel on its edit screen.
 
-## 8. Menus and pages
+## 9. Menus and pages
 
 * Create a menu and assign it to **Primary**; a good set is Our hotels (→ Find a room), Destinations,
   Offers, Contact.
 * The nav "Manage booking" button points at the WooCommerce **My account** page, where guests can see
   and track their orders.
 
-## 9. Developer notes
+## 10. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.

@@ -1,6 +1,6 @@
 <?php
 /**
- * The two global product attributes the theme runs on: Destination and Amenity.
+ * The global product attributes the theme runs on: Destination, Amenity and Facilities.
  *
  * They are real WooCommerce attributes so the site owner can add new terms from
  * Products > Attributes without touching code.
@@ -29,6 +29,15 @@ function roova_amenity_taxonomy() {
 }
 
 /**
+ * Taxonomy name for facilities.
+ *
+ * @return string
+ */
+function roova_facility_taxonomy() {
+	return 'pa_facilities';
+}
+
+/**
  * The attributes the theme needs: slug => label.
  *
  * @return array
@@ -37,6 +46,7 @@ function roova_required_attributes() {
 	return array(
 		'destination' => __( 'Destination', 'roova' ),
 		'amenity'     => __( 'Amenity', 'roova' ),
+		'facilities'  => __( 'Facilities', 'roova' ),
 	);
 }
 
@@ -152,11 +162,32 @@ function roova_get_destinations( $hide_empty = true ) {
 			'count'    => $count,
 			'image_id' => (int) get_term_meta( $term->term_id, 'roova_image_id', true ),
 			'color'    => (string) get_term_meta( $term->term_id, 'roova_color', true ),
-			'url'      => roova_criteria_url( roova_search_url(), array_merge( roova_get_criteria(), array( 'destination' => $term->slug ) ) ),
+			'url'      => roova_destination_url( $term ),
 		);
 	}
 
 	return $out;
+}
+
+/**
+ * Search results filtered to one destination, keeping the visitor's stay.
+ *
+ * @param WP_Term|string $term Destination term, or a term slug.
+ * @return string
+ */
+function roova_destination_url( $term ) {
+	$slug = is_object( $term ) ? $term->slug : (string) $term;
+	$url  = roova_criteria_url(
+		roova_search_url(),
+		array_merge( roova_get_criteria(), array( 'destination' => $slug ) )
+	);
+
+	/*
+	 * A hotel_id left in the session outranks the destination in
+	 * roova_search_hotels(), so clear it explicitly — this link is always
+	 * "show me every hotel in this destination".
+	 */
+	return add_query_arg( 'roova_hotel', 0, $url );
 }
 
 /**
@@ -217,6 +248,14 @@ function roova_flush_destination_counts( $post_id ) {
 add_action( 'save_post_product', 'roova_flush_destination_counts' );
 add_action( 'deleted_post', 'roova_flush_destination_counts' );
 
+/*
+ * save_post_product runs before WooCommerce writes the product's attribute
+ * terms, so on its own it only clears the destination a hotel is leaving. This
+ * one fires afterwards and clears the destination it just joined — otherwise
+ * the homepage tile keeps yesterday's hotel count for up to an hour.
+ */
+add_action( 'woocommerce_update_product', 'roova_flush_destination_counts' );
+
 /**
  * Amenity terms attached to a product.
  *
@@ -225,5 +264,73 @@ add_action( 'deleted_post', 'roova_flush_destination_counts' );
  */
 function roova_get_amenities( $product_id ) {
 	$terms = get_the_terms( absint( $product_id ), roova_amenity_taxonomy() );
+	return is_array( $terms ) ? $terms : array();
+}
+
+/**
+ * Put a set of attribute terms on a product, as a real product attribute.
+ *
+ * The terms have to go through the product's attribute list rather than
+ * wp_set_object_terms(): WooCommerce's data store rewrites attribute taxonomies
+ * on save and drops the relationships for any attribute the product does not
+ * carry, so terms set behind its back are deleted moments later. Going through
+ * set_attributes() also keeps the Attributes tab showing the same values.
+ *
+ * Call this from a save hook that runs before $product->save() — for example
+ * woocommerce_admin_process_product_object.
+ *
+ * @param WC_Product $product  Product being saved.
+ * @param string     $taxonomy Attribute taxonomy, e.g. pa_amenity.
+ * @param int[]      $term_ids Selected term IDs. An empty array removes the attribute.
+ */
+function roova_set_product_attribute_terms( $product, $taxonomy, $term_ids ) {
+	if ( ! $product instanceof WC_Product || ! taxonomy_exists( $taxonomy ) ) {
+		return;
+	}
+
+	$term_ids   = array_values( array_filter( array_map( 'absint', (array) $term_ids ) ) );
+	$attributes = $product->get_attributes();
+	$key        = sanitize_title( $taxonomy );
+
+	if ( ! $term_ids ) {
+		unset( $attributes[ $key ] );
+		$product->set_attributes( $attributes );
+		return;
+	}
+
+	/*
+	 * Clone rather than edit in place. get_attributes() hands back the very
+	 * objects the product holds, and WC_Data::set_prop() decides something
+	 * changed by comparing old value to new with !== — mutating the original
+	 * makes both sides the same instance, so the change is never recorded and
+	 * the data store skips writing the terms.
+	 */
+	$attribute = isset( $attributes[ $key ] ) && $attributes[ $key ] instanceof WC_Product_Attribute
+		? clone $attributes[ $key ]
+		: new WC_Product_Attribute();
+
+	$attribute->set_id( wc_attribute_taxonomy_id_by_name( $taxonomy ) );
+	$attribute->set_name( $taxonomy );
+	$attribute->set_options( $term_ids );
+	$attribute->set_visible( true );
+	$attribute->set_variation( false );
+
+	$attributes[ $key ] = $attribute;
+
+	$product->set_attributes( $attributes );
+}
+
+/**
+ * Facility terms attached to a product.
+ *
+ * Facilities are the plain "what the hotel has" checklist (free parking, laundry,
+ * 24-hour room service…). Unlike amenities they carry no icon — every one is
+ * shown with a tick.
+ *
+ * @param int $product_id Product ID.
+ * @return WP_Term[]
+ */
+function roova_get_facilities( $product_id ) {
+	$terms = get_the_terms( absint( $product_id ), roova_facility_taxonomy() );
 	return is_array( $terms ) ? $terms : array();
 }

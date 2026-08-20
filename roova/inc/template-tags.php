@@ -23,6 +23,18 @@ function roova_search_form( $args = array() ) {
 	$guests   = (int) $criteria['adults'] + (int) $criteria['children'];
 
 	/*
+	 * Destination links carry the term slug, so show the term's real name in the
+	 * box rather than "coastal-borneo". Either value searches the same.
+	 */
+	$destination_label = $criteria['destination'];
+	if ( $destination_label && function_exists( 'roova_resolve_destination' ) ) {
+		$resolved = roova_resolve_destination( $destination_label );
+		if ( $resolved['term'] ) {
+			$destination_label = $resolved['term']->name;
+		}
+	}
+
+	/*
 	 * On a hotel page the form is an "update my stay" control, so it reloads
 	 * that hotel with the new dates rather than sending the guest to search.
 	 */
@@ -45,7 +57,7 @@ function roova_search_form( $args = array() ) {
 				<?php roova_the_icon( 'pin', 16 ); ?>
 				<input type="text"
 					name="roova_dest"
-					value="<?php echo esc_attr( $criteria['destination'] ); ?>"
+					value="<?php echo esc_attr( $destination_label ); ?>"
 					placeholder="<?php esc_attr_e( 'Where are you going?', 'roova' ); ?>"
 					autocomplete="off"
 					data-roova-destination-input />
@@ -397,6 +409,60 @@ function roova_room_card( $room_id, $data, $criteria ) {
 		</div>
 	</div>
 	<?php
+}
+
+/**
+ * The facilities checklist.
+ *
+ * @param int $product_id Product ID.
+ */
+function roova_facilities_grid( $product_id ) {
+	$facilities = roova_get_facilities( $product_id );
+	if ( ! $facilities ) {
+		return;
+	}
+	?>
+	<div class="roova-facilities">
+		<?php foreach ( $facilities as $term ) : ?>
+			<span class="roova-facility">
+				<?php roova_the_icon( 'check', 16 ); ?>
+				<span><?php echo esc_html( $term->name ); ?></span>
+			</span>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
+/**
+ * The destinations a hotel sits in, each linking to that destination's hotels.
+ *
+ * Falls back to the plain street address when the hotel has no destination term.
+ *
+ * @param int $hotel_id Hotel product ID.
+ */
+function roova_hotel_destination_links( $hotel_id ) {
+	$terms = roova_get_hotel_destinations( $hotel_id );
+
+	if ( ! $terms ) {
+		$details = roova_get_hotel_details( $hotel_id );
+		if ( $details['address'] ) {
+			echo '<span>' . esc_html( $details['address'] ) . '</span>';
+		}
+		return;
+	}
+
+	$links = array();
+	foreach ( $terms as $term ) {
+		$links[] = sprintf(
+			'<a class="roova-dest-link" href="%1$s" title="%2$s">%3$s</a>',
+			esc_url( roova_destination_url( $term ) ),
+			/* translators: %s: destination name */
+			esc_attr( sprintf( __( 'See every hotel in %s', 'roova' ), $term->name ) ),
+			esc_html( $term->name )
+		);
+	}
+
+	echo implode( '<span class="roova-sep" aria-hidden="true">·</span>', $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each part escaped above.
 }
 
 /**
