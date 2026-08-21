@@ -313,6 +313,27 @@ function roova_room_card( $room_id, $data, $criteria ) {
 					);
 					?>
 				</span>
+
+				<?php if ( $details['max_children'] > 0 ) : ?>
+					<span>
+						<?php roova_the_icon( 'child', 14 ); ?>
+						<?php
+						/**
+						 * Filter the age a guest stops counting as a child.
+						 *
+						 * @param int $age Maximum child age, in years.
+						 */
+						$roova_child_age = (int) apply_filters( 'roova_child_max_age', 10 );
+
+						printf(
+							/* translators: 1: number of children, 2: oldest age counted as a child */
+							esc_html( _n( 'Max %1$d kid (up to %2$d years)', 'Max %1$d kids (up to %2$d years)', $details['max_children'], 'roova' ) ),
+							(int) $details['max_children'],
+							$roova_child_age
+						);
+						?>
+					</span>
+				<?php endif; ?>
 			</div>
 
 			<?php

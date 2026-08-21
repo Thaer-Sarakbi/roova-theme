@@ -96,11 +96,11 @@ msgstr ""
 msgid "Search results for “%s”"
 msgstr ""
 
-#: index.php:61 inc/icons.php:106
+#: index.php:61 inc/icons.php:107
 msgid "Previous"
 msgstr ""
 
-#: index.php:62 inc/icons.php:107
+#: index.php:62 inc/icons.php:108
 msgid "Next"
 msgstr ""
 
@@ -152,7 +152,7 @@ msgstr ""
 msgid "%1$s — %2$s · %3$s · %4$s"
 msgstr ""
 
-#: single-hotel.php:183 template-search.php:42 inc/template-tags.php:351 inc/woocommerce.php:151 inc/admin/order-metabox.php:80
+#: single-hotel.php:183 template-search.php:42 inc/template-tags.php:372 inc/woocommerce.php:151 inc/admin/order-metabox.php:80
 msgid "%d night"
 msgid_plural "%d nights"
 msgstr[0] ""
@@ -198,11 +198,11 @@ msgid_plural "Only %d rooms left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-search.php:139 inc/template-tags.php:203 inc/template-tags.php:647 inc/products/class-wc-product-hotel.php:103
+#: template-search.php:139 inc/template-tags.php:203 inc/template-tags.php:668 inc/products/class-wc-product-hotel.php:103
 msgid "From"
 msgstr ""
 
-#: template-search.php:141 inc/template-tags.php:205 inc/template-tags.php:341 inc/template-tags.php:649 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
+#: template-search.php:141 inc/template-tags.php:205 inc/template-tags.php:362 inc/template-tags.php:670 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
 msgid "/ night"
 msgstr ""
 
@@ -272,7 +272,7 @@ msgstr ""
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:75 inc/icons.php:109 inc/template-tags.php:688
+#: inc/assets.php:75 inc/icons.php:110 inc/template-tags.php:709
 msgid "Close"
 msgstr ""
 
@@ -520,211 +520,215 @@ msgstr ""
 msgid "Family friendly"
 msgstr ""
 
-#: inc/icons.php:54
-msgid "Breakfast"
+#: inc/icons.php:52 inc/template-tags.php:119
+msgid "Children"
 msgstr ""
 
 #: inc/icons.php:55
-msgid "Restaurant"
+msgid "Breakfast"
 msgstr ""
 
 #: inc/icons.php:56
-msgid "Bar"
+msgid "Restaurant"
 msgstr ""
 
 #: inc/icons.php:57
-msgid "Coffee / tea maker"
+msgid "Bar"
 msgstr ""
 
 #: inc/icons.php:58
-msgid "Kettle"
+msgid "Coffee / tea maker"
 msgstr ""
 
 #: inc/icons.php:59
-msgid "Minibar"
+msgid "Kettle"
 msgstr ""
 
 #: inc/icons.php:60
-msgid "Refrigerator"
+msgid "Minibar"
 msgstr ""
 
 #: inc/icons.php:61
-msgid "Kitchenette"
+msgid "Refrigerator"
 msgstr ""
 
 #: inc/icons.php:62
+msgid "Kitchenette"
+msgstr ""
+
+#: inc/icons.php:63
 msgid "Drinking water"
 msgstr ""
 
-#: inc/icons.php:65
+#: inc/icons.php:66
 msgid "Swimming pool"
 msgstr ""
 
-#: inc/icons.php:66
+#: inc/icons.php:67
 msgid "Fitness center"
 msgstr ""
 
-#: inc/icons.php:67
+#: inc/icons.php:68
 msgid "Spa"
 msgstr ""
 
-#: inc/icons.php:68
+#: inc/icons.php:69
 msgid "Beach nearby"
 msgstr ""
 
-#: inc/icons.php:69
+#: inc/icons.php:70
 msgid "Garden"
 msgstr ""
 
-#: inc/icons.php:70
+#: inc/icons.php:71
 msgid "Terrace"
 msgstr ""
 
-#: inc/icons.php:71
+#: inc/icons.php:72
 msgid "BBQ facilities"
 msgstr ""
 
-#: inc/icons.php:72
+#: inc/icons.php:73
 msgid "Playground"
 msgstr ""
 
-#: inc/icons.php:75
+#: inc/icons.php:76
 msgid "Air conditioning"
 msgstr ""
 
-#: inc/icons.php:76
+#: inc/icons.php:77
 msgid "Heating"
 msgstr ""
 
-#: inc/icons.php:77
+#: inc/icons.php:78
 msgid "Television"
 msgstr ""
 
-#: inc/icons.php:78
+#: inc/icons.php:79
 msgid "Bathtub"
 msgstr ""
 
-#: inc/icons.php:79
+#: inc/icons.php:80
 msgid "Shower"
 msgstr ""
 
-#: inc/icons.php:80
+#: inc/icons.php:81
 msgid "Private bathroom"
 msgstr ""
 
-#: inc/icons.php:81
+#: inc/icons.php:82
 msgid "Free toiletries"
 msgstr ""
 
-#: inc/icons.php:82
+#: inc/icons.php:83
 msgid "Hairdryer"
 msgstr ""
 
-#: inc/icons.php:83
+#: inc/icons.php:84
 msgid "Mirror"
 msgstr ""
 
-#: inc/icons.php:84
+#: inc/icons.php:85
 msgid "Slippers"
 msgstr ""
 
-#: inc/icons.php:85
+#: inc/icons.php:86
 msgid "Fresh towels"
 msgstr ""
 
-#: inc/icons.php:86
+#: inc/icons.php:87
 msgid "In-room safe"
 msgstr ""
 
-#: inc/icons.php:87
+#: inc/icons.php:88
 msgid "Work desk"
 msgstr ""
 
-#: inc/icons.php:88
+#: inc/icons.php:89
 msgid "Wardrobe"
 msgstr ""
 
-#: inc/icons.php:89
+#: inc/icons.php:90
 msgid "Iron"
 msgstr ""
 
-#: inc/icons.php:90
+#: inc/icons.php:91
 msgid "Balcony"
 msgstr ""
 
-#: inc/icons.php:91
+#: inc/icons.php:92
 msgid "Window that opens"
 msgstr ""
 
-#: inc/icons.php:92
+#: inc/icons.php:93
 msgid "Soundproof"
 msgstr ""
 
-#: inc/icons.php:93
+#: inc/icons.php:94
 msgid "Bed"
 msgstr ""
 
-#: inc/icons.php:94
+#: inc/icons.php:95
 msgid "Seating area"
 msgstr ""
 
-#: inc/icons.php:95 inc/admin/metabox-room-details.php:120
+#: inc/icons.php:96 inc/admin/metabox-room-details.php:120
 msgid "City view"
 msgstr ""
 
-#: inc/icons.php:96
+#: inc/icons.php:97
 msgid "Sea view"
 msgstr ""
 
-#: inc/icons.php:97
+#: inc/icons.php:98
 msgid "Mountain view"
 msgstr ""
 
-#: inc/icons.php:98
+#: inc/icons.php:99
 msgid "Key card access"
 msgstr ""
 
-#: inc/icons.php:101
+#: inc/icons.php:102
 msgid "Room size"
 msgstr ""
 
-#: inc/icons.php:102 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
+#: inc/icons.php:103 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55
 msgid "Guests"
 msgstr ""
 
-#: inc/icons.php:103
+#: inc/icons.php:104
 msgid "Dates"
 msgstr ""
 
-#: inc/icons.php:104 inc/template-tags.php:549 inc/template-tags.php:608 inc/admin/metabox-hotel-details.php:80
+#: inc/icons.php:105 inc/template-tags.php:570 inc/template-tags.php:629 inc/admin/metabox-hotel-details.php:80
 msgid "Location"
 msgstr ""
 
-#: inc/icons.php:105 inc/template-tags.php:142
+#: inc/icons.php:106 inc/template-tags.php:142
 msgid "Search"
 msgstr ""
 
-#: inc/icons.php:108
+#: inc/icons.php:109
 msgid "Expand"
 msgstr ""
 
-#: inc/icons.php:110
+#: inc/icons.php:111
 msgid "Included"
 msgstr ""
 
-#: inc/icons.php:111
+#: inc/icons.php:112
 msgid "Information"
 msgstr ""
 
-#: inc/icons.php:112
+#: inc/icons.php:113
 msgid "Times"
 msgstr ""
 
-#: inc/icons.php:113
+#: inc/icons.php:114
 msgid "Offer"
 msgstr ""
 
-#: inc/icons.php:241
+#: inc/icons.php:242
 msgid "%d star hotel"
 msgid_plural "%d star hotel"
 msgstr[0] ""
@@ -766,7 +770,7 @@ msgstr ""
 msgid "%1$s · %2$s"
 msgstr ""
 
-#: inc/template-tags.php:104 inc/template-tags.php:352
+#: inc/template-tags.php:104 inc/template-tags.php:373
 msgid "%d room"
 msgid_plural "%d rooms"
 msgstr[0] ""
@@ -786,10 +790,6 @@ msgstr ""
 msgid "Adults"
 msgstr ""
 
-#: inc/template-tags.php:119
-msgid "Children"
-msgstr ""
-
 #: inc/template-tags.php:126
 msgid "Decrease %s"
 msgstr ""
@@ -802,85 +802,91 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: inc/template-tags.php:333
+#: inc/template-tags.php:330
+msgid "Max %1$d kid (up to %2$d years)"
+msgid_plural "Max %1$d kids (up to %2$d years)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:354
 msgid "Room photos and details"
 msgstr ""
 
-#: inc/template-tags.php:339
+#: inc/template-tags.php:360
 msgid "from"
 msgstr ""
 
-#: inc/template-tags.php:349
+#: inc/template-tags.php:370
 msgid "%1$s total for %2$s, %3$s"
 msgstr ""
 
-#: inc/template-tags.php:363
+#: inc/template-tags.php:384
 msgid "Takes up to %1$d adults and %2$d children per room."
 msgstr ""
 
-#: inc/template-tags.php:372
+#: inc/template-tags.php:393
 msgid "Already in your booking"
 msgstr ""
 
-#: inc/template-tags.php:377
+#: inc/template-tags.php:398
 msgid "Minimum stay of %d night."
 msgid_plural "Minimum stay of %d nights."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:382
+#: inc/template-tags.php:403
 msgid "Sold out for these dates"
 msgstr ""
 
-#: inc/template-tags.php:391
+#: inc/template-tags.php:412
 msgid "Only %d left"
 msgid_plural "Only %d left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:406 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
+#: inc/template-tags.php:427 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
 msgid "Book now"
 msgstr ""
 
-#: inc/template-tags.php:460
+#: inc/template-tags.php:481
 msgid "See every hotel in %s"
 msgstr ""
 
-#: inc/template-tags.php:507 inc/admin/metabox-hotel-details.php:214
+#: inc/template-tags.php:528 inc/admin/metabox-hotel-details.php:214
 msgid "Popular landmarks"
 msgstr ""
 
-#: inc/template-tags.php:508 inc/admin/metabox-hotel-details.php:222
+#: inc/template-tags.php:529 inc/admin/metabox-hotel-details.php:222
 msgid "Nearby landmarks"
 msgstr ""
 
-#: inc/template-tags.php:548
+#: inc/template-tags.php:569
 msgid "Cleanliness"
 msgstr ""
 
-#: inc/template-tags.php:550
+#: inc/template-tags.php:571
 msgid "Service"
 msgstr ""
 
-#: inc/template-tags.php:565
+#: inc/template-tags.php:586
 msgid "%s review"
 msgid_plural "%s reviews"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:624
+#: inc/template-tags.php:645
 msgid "Open in Google Maps"
 msgstr ""
 
-#: inc/template-tags.php:629
+#: inc/template-tags.php:650
 msgid "Get directions"
 msgstr ""
 
-#: inc/template-tags.php:657
+#: inc/template-tags.php:678
 msgid "View your booking"
 msgstr ""
 
-#: inc/template-tags.php:670
+#: inc/template-tags.php:691
 msgid "Check in from %1$s · check out by %2$s"
 msgstr ""
 

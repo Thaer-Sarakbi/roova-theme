@@ -49,6 +49,7 @@ function roova_icon_library() {
 		'non-smoking'   => array( __( 'Non-smoking', 'roova' ), '<path d="M3 15h13v4H3z"/><path d="M4 4l16 16"/><path d="M18 15h3v4h-3z"/>' ),
 		'pets'          => array( __( 'Pets allowed', 'roova' ), '<circle cx="7" cy="9" r="1.8"/><circle cx="12" cy="6.5" r="1.8"/><circle cx="17" cy="9" r="1.8"/><path d="M12 11c3 0 5 2.4 5 4.6 0 2-1.6 3.4-3.4 2.9-1-.3-2.2-.3-3.2 0C8.6 19 7 17.6 7 15.6 7 13.4 9 11 12 11z"/>' ),
 		'family'        => array( __( 'Family friendly', 'roova' ), '<circle cx="8" cy="7" r="2.5"/><circle cx="17" cy="8" r="2"/><path d="M3 20v-2a5 5 0 0 1 10 0v2"/><path d="M14 20v-1.5a3.5 3.5 0 0 1 7 0V20"/>' ),
+		'child'         => array( __( 'Children', 'roova' ), '<circle cx="12" cy="5" r="2.8"/><path d="M12 7.8v5.4"/><path d="M8.4 10.2h7.2"/><path d="M12 13.2l-2.6 5.9M12 13.2l2.6 5.9"/>' ),
 
 		// Food + drink.
 		'breakfast'     => array( __( 'Breakfast', 'roova' ), '<circle cx="12" cy="13" r="6"/><path d="M12 9.5a3.5 3.5 0 0 1 0 7"/><path d="M3 21h18"/>' ),
