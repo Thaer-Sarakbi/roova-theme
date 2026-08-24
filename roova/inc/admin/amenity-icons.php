@@ -180,8 +180,19 @@ function roova_destination_add_fields() {
 
 	<div class="form-field">
 		<label for="roova_color"><?php esc_html_e( 'Tile colour', 'roova' ); ?></label>
-		<input type="text" name="roova_color" id="roova_color" value="" placeholder="#0c3b57" />
+		<input type="text" name="roova_color" id="roova_color" value="" placeholder="#0d3a52" />
 		<p class="description"><?php esc_html_e( 'Used when no tile image is set.', 'roova' ); ?></p>
+	</div>
+
+	<div class="form-field">
+		<label for="roova_lat"><?php esc_html_e( 'Latitude', 'roova' ); ?></label>
+		<input type="text" name="roova_lat" id="roova_lat" value="" placeholder="3.150" />
+	</div>
+
+	<div class="form-field">
+		<label for="roova_lng"><?php esc_html_e( 'Longitude', 'roova' ); ?></label>
+		<input type="text" name="roova_lng" id="roova_lng" value="" placeholder="101.760" />
+		<p class="description"><?php esc_html_e( 'Where this destination is pinned on the homepage map. Malaysian towns the theme already knows can be left blank.', 'roova' ); ?></p>
 	</div>
 	<?php
 }
@@ -194,6 +205,8 @@ function roova_destination_add_fields() {
 function roova_destination_edit_fields( $term ) {
 	$image = (int) get_term_meta( $term->term_id, 'roova_image_id', true );
 	$color = (string) get_term_meta( $term->term_id, 'roova_color', true );
+	$lat   = (string) get_term_meta( $term->term_id, 'roova_lat', true );
+	$lng   = (string) get_term_meta( $term->term_id, 'roova_lng', true );
 
 	wp_nonce_field( 'roova_term_fields', 'roova_term_nonce' );
 	?>
@@ -207,8 +220,21 @@ function roova_destination_edit_fields( $term ) {
 	<tr class="form-field">
 		<th scope="row"><label for="roova_color"><?php esc_html_e( 'Tile colour', 'roova' ); ?></label></th>
 		<td>
-			<input type="text" name="roova_color" id="roova_color" value="<?php echo esc_attr( $color ); ?>" placeholder="#0c3b57" />
+			<input type="text" name="roova_color" id="roova_color" value="<?php echo esc_attr( $color ); ?>" placeholder="#0d3a52" />
 			<p class="description"><?php esc_html_e( 'Used when no tile image is set.', 'roova' ); ?></p>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="roova_lat"><?php esc_html_e( 'Latitude', 'roova' ); ?></label></th>
+		<td>
+			<input type="text" name="roova_lat" id="roova_lat" value="<?php echo esc_attr( $lat ); ?>" placeholder="3.150" />
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="roova_lng"><?php esc_html_e( 'Longitude', 'roova' ); ?></label></th>
+		<td>
+			<input type="text" name="roova_lng" id="roova_lng" value="<?php echo esc_attr( $lng ); ?>" placeholder="101.760" />
+			<p class="description"><?php esc_html_e( 'Where this destination is pinned on the homepage map. Malaysian towns the theme already knows can be left blank.', 'roova' ); ?></p>
 		</td>
 	</tr>
 	<?php
@@ -231,6 +257,14 @@ function roova_save_destination_fields( $term_id ) {
 	if ( isset( $_POST['roova_color'] ) ) {
 		$color = sanitize_hex_color( wp_unslash( $_POST['roova_color'] ) );
 		update_term_meta( $term_id, 'roova_color', $color ? $color : '' );
+	}
+
+	foreach ( array( 'roova_lat', 'roova_lng' ) as $key ) {
+		if ( ! isset( $_POST[ $key ] ) ) {
+			continue;
+		}
+		$value = trim( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+		update_term_meta( $term_id, $key, is_numeric( $value ) ? $value : '' );
 	}
 }
 

@@ -112,6 +112,12 @@ function roova_icon_library() {
 		'info'          => array( __( 'Information', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>' ),
 		'clock'         => array( __( 'Times', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' ),
 		'tag'           => array( __( 'Offer', 'roova' ), '<path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="7.5" r="1.5"/>' ),
+
+		// The homepage guarantees row.
+		'best-rate'     => array( __( 'Best rate', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9.4 9.4v.01M14.6 14.6v.01"/>' ),
+		'no-fees'       => array( __( 'No booking fees', 'roova' ), '<path d="M5 3v18l2-1.2 2 1.2 2-1.2 2 1.2 2-1.2 2 1.2V3l-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2z"/><path d="M9 9h6M9 13h4"/>' ),
+		'instant'       => array( __( 'Instant confirmation', 'roova' ), '<path d="M13 2L4 13h7l-1 9 9-11h-7l1-9z"/>' ),
+		'support'       => array( __( 'Support', 'roova' ), '<path d="M3 12a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/><path d="M3 12v5a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3"/><path d="M21 17v1a4 4 0 0 1-4 4h-4"/>' ),
 	);
 
 	/**

@@ -7,6 +7,7 @@ roova/                 the theme itself (this is what gets zipped)
 bin/build.sh           lints, then builds dist/roova.zip
 bin/lint.sh            php -l over every theme file
 bin/makepot.py         regenerates roova/languages/roova.pot from the source
+bin/makepot.php        the same thing in PHP, for machines without Python
 bin/testenv.sh         throwaway WP + WooCommerce site (macOS, Homebrew php + mariadb)
 bin/testenv-win.sh     the same for Windows, using a portable PHP and MariaDB
 bin/testenv-seed.php   demo hotels, rooms, destinations, amenities and facilities
@@ -63,5 +64,14 @@ The theme is linked into the site with a directory junction, so an edit in `roov
 next page load — no build, copy or reinstall step. Ports can be overridden with `ROOVA_PORT` and
 `ROOVA_DB_PORT`. The database keeps its data between runs; use `fresh` when you want a clean install.
 
-Theme documentation — setting up hotels, rooms, destinations, amenities and how the conflict
-prevention works — is in [roova/README.md](roova/README.md).
+## Translations
+
+```bash
+python3 bin/makepot.py roova roova/languages/roova.pot
+php bin/makepot.php roova roova/languages/roova.pot     # same output, no Python needed
+```
+
+Rerun either one after adding or editing a translatable string.
+
+Theme documentation — setting up the homepage, hotels, rooms, destinations, amenities and how the
+conflict prevention works — is in [roova/README.md](roova/README.md).

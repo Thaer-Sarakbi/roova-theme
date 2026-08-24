@@ -1,5 +1,6 @@
 /**
- * Roova front-end behaviour: search card, calendar, galleries and the room modal.
+ * Roova front-end behaviour: search card, calendar, scroll reveal, the coverage
+ * map, galleries and the room modal.
  *
  * Dates are handled as plain Y-m-d strings and only turned into Date objects at
  * local midnight, so a stay never shifts by a day across time zones.
@@ -383,19 +384,6 @@
 
 	qsa( '[data-roova-search]' ).forEach( initSearchForm );
 
-	/* ------------------------------------------------------------- slider */
-
-	qsa( '[data-roova-slide]' ).forEach( function ( button ) {
-		button.addEventListener( 'click', function () {
-			var slider = qs( '[data-roova-slider]', button.closest( '.roova-section' ) );
-			if ( ! slider ) {
-				return;
-			}
-			var step = parseInt( button.dataset.roovaSlide, 10 ) * 302;
-			slider.scrollBy( { left: step, behavior: 'smooth' } );
-		} );
-	} );
-
 	/* ------------------------------------------------------------ gallery */
 
 	( function initGallery() {
@@ -568,6 +556,269 @@
 			button.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 		} );
 	} );
+
+	/* ------------------------------------------------------------- reveal */
+
+	/*
+	 * Sections fade and rise as they come into view. Anchor jumps and scroll
+	 * restoration can land past an element without the observer ever firing,
+	 * so anything already above the fold counts as revealed, a scroll/resize
+	 * sweep catches the rest, and a timeout is the last line of defence: a
+	 * section stuck at opacity 0 is worse than one that never animated.
+	 */
+	( function initReveal() {
+		var targets = qsa( '[data-roova-reveal]' );
+		if ( ! targets.length ) {
+			return;
+		}
+
+		var reduced = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+
+		function reveal( element ) {
+			if ( element.dataset.roovaRevealDone ) {
+				return;
+			}
+			element.dataset.roovaRevealDone = '1';
+
+			if ( element.hasAttribute( 'data-roova-stagger' ) ) {
+				Array.prototype.forEach.call( element.children, function ( child, index ) {
+					child.style.transition =
+						'opacity .7s cubic-bezier(.22,.8,.28,1) ' + ( index * 90 ) + 'ms, ' +
+						'transform .7s cubic-bezier(.22,.8,.28,1) ' + ( index * 90 ) + 'ms';
+				} );
+			}
+
+			element.classList.add( 'is-revealed' );
+		}
+
+		if ( reduced || ! window.IntersectionObserver ) {
+			targets.forEach( reveal );
+			return;
+		}
+
+		var observer = new IntersectionObserver( function ( entries ) {
+			entries.forEach( function ( entry ) {
+				// Already scrolled past counts as visible.
+				if ( ! entry.isIntersecting && entry.boundingClientRect.bottom > 0 ) {
+					return;
+				}
+				reveal( entry.target );
+				observer.unobserve( entry.target );
+			} );
+		}, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 } );
+
+		targets.forEach( function ( element ) {
+			observer.observe( element );
+		} );
+
+		function sweep() {
+			targets.forEach( function ( element ) {
+				if ( element.dataset.roovaRevealDone ) {
+					return;
+				}
+				var box = element.getBoundingClientRect();
+				if ( box.bottom < 0 || box.top < window.innerHeight * 0.92 ) {
+					reveal( element );
+					observer.unobserve( element );
+				}
+			} );
+		}
+
+		sweep();
+		window.addEventListener( 'scroll', sweep, { passive: true } );
+		window.addEventListener( 'resize', sweep );
+		window.setTimeout( function () {
+			targets.forEach( reveal );
+		}, 3000 );
+	}() );
+
+	/* -------------------------------------------------------- coverage map */
+
+	/*
+	 * Real Natural Earth geometry, drawn with d3-geo. The town list beside it
+	 * is server-rendered, so if d3 or the atlas never arrives the section is
+	 * still a usable list of links — only the drawing is missing.
+	 */
+	( function initAtlas() {
+		var root = qs( '[data-roova-atlas]' );
+		if ( ! root || ! window.d3 || ! window.topojson || ! data.atlasUrl ) {
+			return;
+		}
+
+		var canvas = qs( '[data-roova-atlas-canvas]', root );
+		var views = data.atlasViews || {};
+		var places = [];
+
+		try {
+			places = JSON.parse( root.getAttribute( 'data-places' ) || '[]' );
+		} catch ( error ) {
+			return;
+		}
+
+		if ( ! canvas || ! places.length || ! views.country ) {
+			return;
+		}
+
+		var reduced = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+		var rows = qsa( '[data-roova-atlas-place]', root );
+		var viewButtons = qsa( '[data-roova-atlas-view]', root );
+		var viewsBar = qs( '[data-roova-atlas-views]', root );
+
+		var svg = window.d3.select( canvas ).append( 'svg' );
+		var land = svg.append( 'g' );
+		var pinLayer = svg.append( 'g' );
+		var projection = window.d3.geoMercator();
+		var path = window.d3.geoPath( projection );
+		var current = 'country';
+		var width = 0;
+		var height = 0;
+
+		function measure() {
+			var box = canvas.getBoundingClientRect();
+			width = box.width;
+			height = box.height;
+			svg.attr( 'viewBox', [ 0, 0, width, height ] );
+		}
+
+		function highlight( name ) {
+			pinLayer.selectAll( '.roova-pin' )
+				.classed( 'is-active', function ( place ) {
+					return place.name === name;
+				} )
+				.select( 'circle.roova-pin__dot' )
+				.attr( 'r', function ( place ) {
+					return place.name === name ? 8 : 5;
+				} );
+
+			rows.forEach( function ( row ) {
+				row.classList.toggle( 'is-active', row.dataset.roovaAtlasPlace === name );
+			} );
+		}
+
+		function render( instant ) {
+			var box = views[ current ] || views.country;
+			if ( ! width || ! height ) {
+				return;
+			}
+
+			projection.fitExtent(
+				[ [ 46, 46 ], [ Math.max( 47, width - 46 ), Math.max( 47, height - 46 ) ] ],
+				{ type: 'MultiPoint', coordinates: box }
+			);
+
+			function place( pin ) {
+				var point = projection( [ pin.lon, pin.lat ] );
+				return 'translate(' + point[ 0 ] + ',' + point[ 1 ] + ')';
+			}
+
+			if ( instant || reduced ) {
+				land.selectAll( 'path' ).attr( 'd', path );
+				pinLayer.selectAll( '.roova-pin' ).attr( 'transform', place );
+			} else {
+				land.selectAll( 'path' ).transition().duration( 850 )
+					.ease( window.d3.easeCubicInOut ).attr( 'd', path );
+				pinLayer.selectAll( '.roova-pin' ).transition().duration( 850 )
+					.ease( window.d3.easeCubicInOut ).attr( 'transform', place );
+			}
+
+			// Town names would collide at country zoom.
+			pinLayer.selectAll( '.roova-pin__label' )
+				.style( 'display', 'country' === current ? 'none' : null );
+		}
+
+		function setView( name ) {
+			if ( ! views[ name ] ) {
+				return;
+			}
+			current = name;
+			viewButtons.forEach( function ( button ) {
+				button.classList.toggle( 'is-active', button.dataset.roovaAtlasView === name );
+			} );
+			render( false );
+		}
+
+		viewButtons.forEach( function ( button ) {
+			button.addEventListener( 'click', function () {
+				setView( button.dataset.roovaAtlasView );
+			} );
+		} );
+
+		rows.forEach( function ( row ) {
+			row.addEventListener( 'mouseenter', function () {
+				highlight( row.dataset.roovaAtlasPlace );
+			} );
+			row.addEventListener( 'mouseleave', function () {
+				highlight( null );
+			} );
+			row.addEventListener( 'focus', function () {
+				highlight( row.dataset.roovaAtlasPlace );
+			} );
+			row.addEventListener( 'blur', function () {
+				highlight( null );
+			} );
+		} );
+
+		window.d3.json( data.atlasUrl ).then( function ( topo ) {
+			var countries = window.topojson.feature( topo, topo.objects.countries ).features;
+			var home = data.atlasHome || 'Malaysia';
+
+			measure();
+
+			land.selectAll( 'path.roova-atlas__other' )
+				.data( countries.filter( function ( feature ) {
+					return feature.properties.name !== home;
+				} ) )
+				.join( 'path' )
+				.attr( 'class', 'roova-atlas__other' );
+
+			land.selectAll( 'path.roova-atlas__home' )
+				.data( countries.filter( function ( feature ) {
+					return feature.properties.name === home;
+				} ) )
+				.join( 'path' )
+				.attr( 'class', 'roova-atlas__home' );
+
+			var pins = pinLayer.selectAll( 'a.roova-pin' ).data( places ).join( 'a' )
+				.attr( 'class', 'roova-pin' )
+				.attr( 'href', function ( pin ) {
+					return pin.url;
+				} )
+				.on( 'mouseenter', function ( event, pin ) {
+					highlight( pin.name );
+				} )
+				.on( 'mouseleave', function () {
+					highlight( null );
+				} );
+
+			pins.append( 'circle' ).attr( 'class', 'roova-pin__halo' ).attr( 'r', 6 );
+			pins.append( 'circle' ).attr( 'class', 'roova-pin__dot' ).attr( 'r', 5 );
+			pins.append( 'title' ).text( function ( pin ) {
+				return pin.name;
+			} );
+			pins.append( 'text' )
+				.attr( 'class', 'roova-pin__label' )
+				.attr( 'dy', -11 )
+				.attr( 'text-anchor', 'middle' )
+				.text( function ( pin ) {
+					return pin.name;
+				} );
+
+			if ( viewsBar && views.region ) {
+				viewsBar.hidden = false;
+			}
+
+			render( true );
+
+			var resizing = null;
+			window.addEventListener( 'resize', function () {
+				window.clearTimeout( resizing );
+				resizing = window.setTimeout( function () {
+					measure();
+					render( true );
+				}, 150 );
+			} );
+		} ).catch( function () {} );
+	}() );
 
 	/* --------------------------------------------------------------- maps */
 

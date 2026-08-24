@@ -170,6 +170,83 @@ function roova_get_destinations( $hide_empty = true ) {
 }
 
 /**
+ * Fallback coordinates for the towns roova covers, lon/lat.
+ *
+ * A destination only needs these filled in on its term screen when it is not
+ * one of the towns below — the map skips any destination it cannot place.
+ *
+ * @return array[] Lowercased town name => array( lon, lat ).
+ */
+function roova_destination_gazetteer() {
+	/**
+	 * Filter the built-in destination coordinates.
+	 *
+	 * @param array[] $places Lowercased name => array( lon, lat ).
+	 */
+	return apply_filters( 'roova_destination_gazetteer', array(
+		'ampang'         => array( 101.760, 3.150 ),
+		'kajang'         => array( 101.788, 2.993 ),
+		'kota damansara' => array( 101.588, 3.152 ),
+		'malacca'        => array( 102.249, 2.196 ),
+		'melaka'         => array( 102.249, 2.196 ),
+		'rawang'         => array( 101.577, 3.321 ),
+		'subang'         => array( 101.581, 3.084 ),
+		'subang jaya'    => array( 101.581, 3.084 ),
+		'taman melawati' => array( 101.749, 3.212 ),
+		'kuala lumpur'   => array( 101.694, 3.139 ),
+		'petaling jaya'  => array( 101.606, 3.107 ),
+		'shah alam'      => array( 101.532, 3.073 ),
+		'cheras'         => array( 101.744, 3.098 ),
+		'puchong'        => array( 101.617, 3.021 ),
+		'klang'          => array( 101.443, 3.045 ),
+	) );
+}
+
+/**
+ * The destinations that can be pinned on the coverage map.
+ *
+ * Coordinates come from the destination's own term meta first, then from the
+ * built-in gazetteer. Destinations with neither are left off the map rather
+ * than guessed at.
+ *
+ * @return array[] Each: name, lon, lat, hotels, url.
+ */
+function roova_map_places() {
+	$gazetteer = roova_destination_gazetteer();
+	$places    = array();
+
+	foreach ( roova_get_destinations() as $destination ) {
+		$term = $destination['term'];
+		$lat  = get_term_meta( $term->term_id, 'roova_lat', true );
+		$lon  = get_term_meta( $term->term_id, 'roova_lng', true );
+
+		if ( '' === $lat || '' === $lon ) {
+			$key = strtolower( trim( $term->name ) );
+			if ( ! isset( $gazetteer[ $key ] ) ) {
+				continue;
+			}
+			$lon = $gazetteer[ $key ][0];
+			$lat = $gazetteer[ $key ][1];
+		}
+
+		$places[] = array(
+			'name'   => $term->name,
+			'lon'    => (float) $lon,
+			'lat'    => (float) $lat,
+			'hotels' => (int) $destination['count'],
+			'url'    => $destination['url'],
+		);
+	}
+
+	/**
+	 * Filter the pins on the coverage map.
+	 *
+	 * @param array[] $places Each: name, lon, lat, hotels, url.
+	 */
+	return apply_filters( 'roova_map_places', $places );
+}
+
+/**
  * Search results filtered to one destination, keeping the visitor's stay.
  *
  * @param WP_Term|string $term Destination term, or a term slug.

@@ -58,7 +58,9 @@ def add(key, block, reference):
 
 
 for root, dirs, files in os.walk(THEME):
-    dirs[:] = [d for d in dirs if not d.startswith(".")]
+    # Sorted so the output does not depend on the filesystem's listing order —
+    # bin/makepot.php walks the same way and produces the same file.
+    dirs[:] = sorted(d for d in dirs if not d.startswith("."))
     for name in sorted(files):
         if not name.endswith(".php"):
             continue

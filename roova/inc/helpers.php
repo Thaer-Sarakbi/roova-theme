@@ -19,6 +19,163 @@ function roova_option( $key, $default = '' ) {
 }
 
 /* -------------------------------------------------------------------------
+ * Homepage content
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The stock wording for the four booking promises.
+ *
+ * Slot numbers match the Customizer settings (roova_guarantee_1_title etc.).
+ *
+ * @return array[] Slot number => array( icon, title, body ).
+ */
+function roova_guarantee_defaults() {
+	return array(
+		1 => array(
+			'icon'  => 'best-rate',
+			'title' => __( 'Best Rate Guarantee', 'roova' ),
+			'body'  => __( 'Book direct and we match — or beat — any lower rate you find elsewhere.', 'roova' ),
+		),
+		2 => array(
+			'icon'  => 'no-fees',
+			'title' => __( 'Zero Booking Fees', 'roova' ),
+			'body'  => __( 'No hidden service charges or OTA mark-ups added at checkout.', 'roova' ),
+		),
+		3 => array(
+			'icon'  => 'instant',
+			'title' => __( 'Instant Confirmation', 'roova' ),
+			'body'  => __( 'Your room is held the moment you pay — no waiting on an email.', 'roova' ),
+		),
+		4 => array(
+			'icon'  => 'support',
+			'title' => __( '24/7 Local Support', 'roova' ),
+			'body'  => __( 'Reach our Malaysia-based team by phone or WhatsApp, any hour.', 'roova' ),
+		),
+	);
+}
+
+/**
+ * The four promises in the homepage guarantees row.
+ *
+ * Titles and bodies are Customizer settings so the client can reword them or
+ * drop a promise they cannot honour; the icons are fixed per slot.
+ *
+ * @return array[] Each: icon, title, body.
+ */
+function roova_guarantees() {
+	$items = array();
+
+	foreach ( roova_guarantee_defaults() as $slot => $item ) {
+		$title = roova_option( 'guarantee_' . $slot . '_title', $item['title'] );
+		$body  = roova_option( 'guarantee_' . $slot . '_body', $item['body'] );
+
+		// An emptied title switches the promise off.
+		if ( '' === trim( (string) $title ) ) {
+			continue;
+		}
+
+		$items[] = array(
+			'icon'  => $item['icon'],
+			'title' => $title,
+			'body'  => $body,
+		);
+	}
+
+	/**
+	 * Filter the homepage guarantees.
+	 *
+	 * @param array[] $items Each: icon, title, body.
+	 */
+	return apply_filters( 'roova_guarantees', $items );
+}
+
+/**
+ * The popular searches shown as pills under the hero search bar.
+ *
+ * One per line in the Customizer, either "Label" or "Label | destination-slug".
+ *
+ * @return array[] Each: label, url.
+ */
+function roova_popular_searches() {
+	$raw   = (string) roova_option( 'popular_searches', '' );
+	$items = array();
+
+	foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			continue;
+		}
+
+		$label = $line;
+		$term  = $line;
+		if ( false !== strpos( $line, '|' ) ) {
+			$parts = explode( '|', $line, 2 );
+			$label = trim( $parts[0] );
+			$term  = trim( $parts[1] );
+		}
+
+		if ( '' === $label ) {
+			continue;
+		}
+
+		$items[] = array(
+			'label' => $label,
+			'url'   => function_exists( 'roova_destination_url' ) ? roova_destination_url( $term ) : home_url( '/' ),
+		);
+	}
+
+	/**
+	 * Filter the popular searches under the hero.
+	 *
+	 * @param array[] $items Each: label, url.
+	 */
+	return apply_filters( 'roova_popular_searches', $items );
+}
+
+/**
+ * Is the coverage map being rendered on this request?
+ *
+ * Decides both whether the section is printed and whether the map libraries
+ * are loaded, so the two can never disagree.
+ *
+ * @return bool
+ */
+function roova_show_coverage_map() {
+	if ( ! is_front_page() || is_paged() || ! roova_has_woocommerce() ) {
+		return false;
+	}
+
+	if ( ! roova_option( 'show_map', true ) ) {
+		return false;
+	}
+
+	return function_exists( 'roova_map_places' ) && (bool) roova_map_places();
+}
+
+/**
+ * The mosaic class for a destination tile.
+ *
+ * The design's rhythm is a 2x2 anchor, then four single tiles, then wide
+ * tiles — repeated for as many destinations as the site has.
+ *
+ * @param int $index Zero-based position in the grid.
+ * @return string Extra CSS class, or ''.
+ */
+function roova_destination_span_class( $index ) {
+	$position = (int) $index % 7;
+
+	if ( 0 === $position ) {
+		return 'roova-destination--wide roova-destination--tall';
+	}
+
+	if ( $position >= 5 ) {
+		return 'roova-destination--wide';
+	}
+
+	return '';
+}
+
+/* -------------------------------------------------------------------------
  * Dates
  * ---------------------------------------------------------------------- */
 

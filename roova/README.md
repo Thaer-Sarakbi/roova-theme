@@ -20,13 +20,44 @@ through the normal WooCommerce cart, checkout and orders.
 4. **Settings → Reading →** set your homepage to a static page so the hotel homepage template is used.
 5. **Appearance → Customize → Roova hotel theme →** brand colours, hero text, Google Maps key, hold times.
 
-## 2. Add your destinations
+## 2. Set up the homepage
+
+The homepage runs in a fixed order: hero and search → four booking promises → a photo band →
+your hotels → the destination mosaic → a second photo band → the map of where you are.
+
+Everything on it is edited from **Appearance → Customize → Roova hotel theme**:
+
+| Section | Where |
+|---|---|
+| Hero photo, eyebrow, headline, sub-heading | **Homepage hero** |
+| The pills under the search bar | **Homepage hero → Popular searches** — one per line, `Malacca old town \| malacca` points a pill at a destination |
+| The four promises under the hero | **Booking promises** — clear a title to drop that promise |
+| Both full-width photo bands, and the words on the first one | **Homepage sections** |
+| Section headings, and switching the hotels, destinations or map sections off | **Homepage sections** |
+| The "Support" link beside *Manage booking* | **Header** |
+| Footer tagline, the three column headings, the bottom-right note | **Footer and contact** |
+
+Photography does the heavy lifting here. The theme ships with three stand-in photos — the hero and
+both full-width bands — so a fresh install already looks like the design; choosing your own image in
+the Customizer replaces the one underneath it. Hotel cards and destination tiles have no stand-in:
+they use the hotel's product image and the destination term's tile image.
+
+> The four promises ship with wording taken from the client's reference — best rate, no booking
+> fees, instant confirmation, 24/7 support. **Check each one is true for your hotels before you go
+> live**, and reword or remove any that is not.
+
+## 3. Add your destinations
 
 **Products → Attributes → Destination → Configure terms.**
 
 Add one term per city or area (Ampang, Subang Jaya, Kajang, Serendah…). Each term can have a tile
-image and a colour, used by the destinations grid on the homepage. Destinations power the search box,
-the homepage grid and search filtering — adding a new one never needs code.
+image and a colour, used by the destinations mosaic on the homepage. Destinations power the search
+box, the homepage mosaic, the coverage map and search filtering — adding a new one never needs code.
+
+Each term also takes a **latitude and longitude**, which is where it is pinned on the homepage map.
+The theme already knows the Klang Valley and Malacca towns (Ampang, Kajang, Kota Damansara, Malacca,
+Rawang, Subang, Taman Melawati and a few more), so you only need to fill these in for somewhere else.
+A destination with no coordinates is simply left off the map — never guessed at.
 
 Put a hotel in a destination from **Product data → Hotel Details → Destination** (start typing to
 search). That one choice does three jobs: it is the hotel's location line, it decides which searches
@@ -36,7 +67,7 @@ every other hotel in the same destination, keeping the dates and guests the gues
 A hotel can sit in more than one destination if that is useful; the first one is shown as its
 location.
 
-## 3. Add your amenities
+## 4. Add your amenities
 
 **Products → Attributes → Amenity → Configure terms.**
 
@@ -54,7 +85,7 @@ the list narrows, click a name to add it, click the × on a chip to remove it. (
 from the product's **Attributes** tab — both screens edit the same thing, so use whichever you
 prefer.) For rooms, use the Attributes tab.
 
-## 4. Add your facilities
+## 5. Add your facilities
 
 **Products → Attributes → Facilities → Configure terms.**
 
@@ -66,7 +97,7 @@ every one is listed with a tick — so adding the term is all it takes. Choose t
 Amenities and facilities overlap on purpose: amenities are the illustrated highlights, facilities are
 the full list.
 
-## 5. Add a hotel
+## 6. Add a hotel
 
 **Products → Add New**, then set **Product data → Hotel**.
 
@@ -86,7 +117,7 @@ the full list.
 Hotels are never added to the cart; they are the page guests browse. Their price display is "From …",
 taken from the cheapest room.
 
-## 6. Add rooms
+## 7. Add rooms
 
 **Products → Add New**, then set **Product data → Room (bookable)**.
 
@@ -99,7 +130,7 @@ taken from the cheapest room.
 * Room photos come from the product image and gallery, shown in the "Room photos and details" modal.
 * Rooms do not appear in the shop catalogue — they are booked from their hotel page.
 
-## 7. How the booking system prevents conflicts
+## 8. How the booking system prevents conflicts
 
 1. **Adding to cart places a hold.** The dates are reserved for 30 minutes (Customizer → Booking).
    Another guest cannot take the last unit while it sits in someone's cart.
@@ -118,7 +149,7 @@ busiest night decides. A room with 8 units is bookable while fewer than 8 units 
 those nights. Same-day turnarounds do not collide: a guest checking out on the 5th frees that night
 for a guest checking in on the 5th.
 
-## 8. Managing bookings
+## 9. Managing bookings
 
 **WooCommerce → Bookings**
 
@@ -128,20 +159,27 @@ for a guest checking in on the 5th.
 
 Each order also has a **Bookings** panel on its edit screen.
 
-## 9. Menus and pages
+## 10. Menus and pages
 
-* Create a menu and assign it to **Primary**; a good set is Our hotels (→ Find a room), Destinations,
-  Offers, Contact.
+* Create a menu and assign it to **Primary**; a good set is Hotels, Destinations, Why book direct.
+* The footer has three link columns, each its own menu location — **Footer column 1 / 2 / 3**. The
+  design fills them with Stay (Our hotels, Destinations, Long stays), Guests (Manage booking, Contact
+  us, FAQ) and Company (About, Careers, Privacy). A column with no menu assigned is left out, and the
+  headings are set in the Customizer.
 * The nav "Manage booking" button points at the WooCommerce **My account** page, where guests can see
   and track their orders.
 
-## 10. Developer notes
+## 11. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.
 * Useful filters: `roova_available_units`, `roova_hold_minutes`, `roova_pending_order_minutes`,
   `roova_max_nights`, `roova_hide_rooms_from_catalog`, `roova_redirect_rooms_to_hotel`,
-  `roova_icon_library`.
+  `roova_icon_library`, `roova_guarantees`, `roova_popular_searches`, `roova_map_places`,
+  `roova_destination_gazetteer`, `roova_atlas_url`, `roova_atlas_views`.
+* The homepage map draws real Natural Earth geometry with d3-geo and topojson, loaded from a CDN
+  (pinned versions, checked with subresource integrity) only on the page that shows it. If they do
+  not load, the town list beside the map still renders and still links.
 * Cart/Checkout Blocks are supported: stay details are exposed through the Store API, and checkout is
   blocked when a stay is no longer available.
 * Translations: `languages/roova.pot`.

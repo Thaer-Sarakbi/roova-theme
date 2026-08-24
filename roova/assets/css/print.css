@@ -4,13 +4,20 @@
 
 .roova-nav,
 .roova-footer,
-.roova-hero__waves,
 .roova-search,
-.roova-slider__nav,
+.roova-band,
+.roova-coverage,
 .roova-gallery__arrow,
 .roova-modal,
 .roova-booking-box,
 .roova-map {
+	display: none !important;
+}
+
+/* The hero photo layers are decorative; the copy prints. */
+.roova-hero__media,
+.roova-hero__scrim,
+.roova-hero__sheen {
 	display: none !important;
 }
 

@@ -1,13 +1,17 @@
 <?php
 /**
- * Site header.
+ * Site header — sticky, cream, translucent over whatever scrolls beneath it.
  *
  * @package Roova
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$roova_transparent = is_front_page() && ! is_paged();
+/*
+ * The homepage opens with the full-bleed hero, so the header is laid over the
+ * photograph instead of sitting in a bar of its own.
+ */
+$roova_over_hero = is_front_page() && ! is_paged();
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -17,13 +21,13 @@ $roova_transparent = is_front_page() && ! is_paged();
 	<?php wp_head(); ?>
 </head>
 
-<body <?php body_class( $roova_transparent ? 'roova-has-hero' : '' ); ?>>
+<body <?php body_class( $roova_over_hero ? 'roova-has-hero' : '' ); ?>>
 <?php wp_body_open(); ?>
 
 <a class="skip-link screen-reader-text" href="#roova-content"><?php esc_html_e( 'Skip to content', 'roova' ); ?></a>
 
-<header class="roova-nav <?php echo $roova_transparent ? 'roova-nav--transparent' : ''; ?>">
-	<div class="wrap roova-nav__inner">
+<header class="roova-nav <?php echo $roova_over_hero ? 'roova-nav--over' : ''; ?>">
+	<div class="roova-nav__inner">
 		<div class="roova-nav__brand">
 			<?php
 			if ( has_custom_logo() ) {
@@ -32,7 +36,7 @@ $roova_transparent = is_front_page() && ! is_paged();
 				printf(
 					'<a class="roova-nav__logo" href="%s">%s</a>',
 					esc_url( home_url( '/' ) ),
-					esc_html( get_bloginfo( 'name' ) )
+					roova_wordmark() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside.
 				);
 			}
 			?>
@@ -62,6 +66,15 @@ $roova_transparent = is_front_page() && ! is_paged();
 						(int) WC()->cart->get_cart_contents_count()
 					);
 					?>
+				</a>
+			<?php endif; ?>
+
+			<?php
+			$roova_support_url = roova_option( 'support_url', '' );
+			if ( $roova_support_url ) :
+				?>
+				<a class="roova-nav__support" href="<?php echo esc_url( $roova_support_url ); ?>">
+					<?php echo esc_html( roova_option( 'support_label', __( 'Support', 'roova' ) ) ); ?>
 				</a>
 			<?php endif; ?>
 

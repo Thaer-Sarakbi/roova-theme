@@ -34,9 +34,16 @@ function roova_setup() {
 	add_theme_support( 'wc-product-gallery-lightbox' );
 	add_theme_support( 'wc-product-gallery-slider' );
 
+	/*
+	 * The footer is three link columns; each is its own menu location so the
+	 * client can fill them from Appearance > Menus. Column headings are
+	 * Customizer settings (roova_footer_heading_1..3).
+	 */
 	register_nav_menus( array(
-		'primary' => __( 'Primary menu', 'roova' ),
-		'footer'  => __( 'Footer menu', 'roova' ),
+		'primary'  => __( 'Primary menu', 'roova' ),
+		'footer'   => __( 'Footer column 1', 'roova' ),
+		'footer-2' => __( 'Footer column 2', 'roova' ),
+		'footer-3' => __( 'Footer column 3', 'roova' ),
 	) );
 
 	add_image_size( 'roova-hotel-card', 640, 420, true );
@@ -55,6 +62,32 @@ function roova_declare_wc_compat() {
 	}
 }
 add_action( 'before_woocommerce_init', 'roova_declare_wc_compat' );
+
+/**
+ * Paint the homepage and the hotel pages white instead of cream.
+ *
+ * The class flips the --roova-page custom property on <body>; --roova-cream
+ * stays warm because it is also the text colour on every dark panel.
+ *
+ * @param string[] $classes Body classes.
+ * @return string[]
+ */
+function roova_body_classes( $classes ) {
+	if ( is_front_page() ) {
+		$classes[] = 'roova-page-white';
+		return $classes;
+	}
+
+	if ( is_singular( 'product' ) && function_exists( 'wc_get_product' ) ) {
+		$product = wc_get_product( get_queried_object_id() );
+		if ( $product && 'hotel' === $product->get_type() ) {
+			$classes[] = 'roova-page-white';
+		}
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'roova_body_classes' );
 
 /**
  * Content width.

@@ -6,18 +6,45 @@
  */
 
 :root {
-	--roova-deep: #0c3b57;
-	--roova-ocean: #1678a8;
-	--roova-gold: #cf9d3f;
-	--roova-sand: #f7f3ea;
-	--roova-ink: #16232b;
+	--roova-deep: #0d3a52;
+	--roova-ocean: #1d6f96;
+	--roova-gold: #b4823c;
+	--roova-sand: #f6f1e8;
+	--roova-ink: #16302f;
 	--roova-paper: #ffffff;
 	--roova-line: #e6e2d6;
-	--roova-muted: #6b7680;
-	--roova-radius: 14px;
-	--roova-shadow: 0 24px 60px rgba(12, 59, 87, .18);
-	--roova-font-display: 'Fraunces', Georgia, serif;
-	--roova-font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	--roova-muted: #6d838c;
+	--roova-radius: 16px;
+	--roova-shadow: 0 26px 60px -28px rgba(8, 38, 53, .42), 0 2px 6px rgba(8, 38, 53, .06);
+
+	/* Page cream and the deepest navy the scrims are mixed from. */
+	--roova-cream: #fbf8f3;
+	--roova-abyss: #061e2a;
+
+	/*
+	 * What the page itself is painted with. Cream by default; the homepage and
+	 * hotel pages override it to white on <body>. Kept separate from
+	 * --roova-cream, which stays warm because it is also the text colour on
+	 * every dark panel.
+	 */
+	--roova-page: var(--roova-cream);
+
+	/* Secondary UI text, then the faint labels above form fields. */
+	--roova-soft: #3d5a63;
+	--roova-faint: #8b9aa1;
+
+	--roova-hairline: rgba(13, 58, 82, .08);
+	--roova-hairline-strong: rgba(13, 58, 82, .16);
+
+	--roova-shadow-card: 0 1px 2px rgba(8, 38, 53, .04);
+	--roova-shadow-lift: 0 22px 44px -22px rgba(8, 38, 53, .32);
+
+	--roova-ease: cubic-bezier(.22, .8, .28, 1);
+	--roova-pop: cubic-bezier(.34, 1.56, .5, 1);
+
+	--roova-font-display: 'Newsreader', Georgia, serif;
+	--roova-font-body: 'DM Sans', Helvetica, Arial, sans-serif;
+	--roova-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 *,
@@ -30,9 +57,15 @@ body {
 	margin: 0;
 	font-family: var(--roova-font-body);
 	color: var(--roova-ink);
-	background: var(--roova-paper);
+	background: var(--roova-page);
 	-webkit-font-smoothing: antialiased;
 	line-height: 1.6;
+	overflow-x: hidden;
+}
+
+/* The homepage and the hotel pages sit on plain white. */
+body.roova-page-white {
+	--roova-page: #ffffff;
 }
 
 img {
@@ -42,20 +75,27 @@ img {
 }
 
 a {
-	color: var(--roova-ocean);
+	color: var(--roova-deep);
 	text-decoration: none;
+	transition: color .3s var(--roova-ease);
 }
 
 a:hover {
-	text-decoration: underline;
+	color: var(--roova-gold);
+	text-decoration: none;
+}
+
+::selection {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
 }
 
 h1, h2, h3, h4 {
 	font-family: var(--roova-font-display);
-	font-weight: 600;
+	font-weight: 400;
 	margin: 0 0 .4em;
-	letter-spacing: -.01em;
-	line-height: 1.2;
+	letter-spacing: -.02em;
+	line-height: 1.1;
 }
 
 p {
@@ -63,9 +103,9 @@ p {
 }
 
 .wrap {
-	max-width: 1200px;
+	max-width: 1180px;
 	margin: 0 auto;
-	padding: 0 18px;
+	padding: 0 24px;
 }
 
 /* The hotel page runs wider so the room rows have room to breathe. */
@@ -97,12 +137,28 @@ p {
 
 .roova-eyebrow {
 	display: block;
-	font-size: .76rem;
-	font-weight: 700;
-	letter-spacing: .16em;
+	font-size: 11.5px;
+	font-weight: 400;
+	letter-spacing: .2em;
 	text-transform: uppercase;
-	color: var(--roova-ocean);
-	margin-bottom: 10px;
+	color: var(--roova-gold);
+	margin-bottom: 12px;
+}
+
+/* The eyebrow with the 34px gold rule in front of it, used on dark bands. */
+.roova-eyebrow--ruled {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: rgba(251, 248, 243, .72);
+}
+
+.roova-eyebrow--ruled::before {
+	content: "";
+	width: 34px;
+	height: 1px;
+	background: var(--roova-gold);
+	flex: none;
 }
 
 .roova-unavailable {
@@ -124,46 +180,60 @@ p {
 	justify-content: center;
 	gap: 8px;
 	background: var(--roova-deep);
-	color: #fff;
-	border: 1.5px solid var(--roova-deep);
-	padding: 11px 24px;
-	border-radius: 9px;
+	color: var(--roova-cream);
+	border: 1px solid var(--roova-deep);
+	padding: 12px 24px;
+	border-radius: 12px;
 	font: inherit;
-	font-size: .92rem;
-	font-weight: 700;
+	font-size: .94rem;
+	font-weight: 500;
+	letter-spacing: .01em;
 	cursor: pointer;
 	text-align: center;
+	white-space: nowrap;
+	transition: background .35s ease, border-color .35s ease, color .35s ease, letter-spacing .35s ease;
 }
 
 .roova-btn:hover {
-	background: var(--roova-ocean);
-	border-color: var(--roova-ocean);
-	color: #fff;
-	text-decoration: none;
+	background: var(--roova-gold);
+	border-color: var(--roova-gold);
+	color: var(--roova-cream);
+	letter-spacing: .06em;
 }
 
 .roova-btn--outline {
 	background: #fff;
 	color: var(--roova-deep);
+	border-color: var(--roova-hairline-strong);
 	width: 100%;
 }
 
 .roova-btn--outline:hover {
 	background: var(--roova-deep);
-	color: #fff;
+	border-color: var(--roova-deep);
+	color: var(--roova-cream);
 }
 
 .roova-btn--ghost {
 	background: transparent;
 	color: var(--roova-deep);
-	border-color: var(--roova-line);
+	border-color: var(--roova-hairline-strong);
 }
 
+/* The pill in the header: navy on cream, lifting on hover. */
 .roova-btn--nav {
-	background: rgba(255, 255, 255, .14);
-	border-color: rgba(255, 255, 255, .35);
-	padding: 9px 18px;
-	font-size: .85rem;
+	padding: 11px 20px;
+	border-radius: 999px;
+	font-size: 13.5px;
+	transition: background .3s ease, transform .3s var(--roova-ease), box-shadow .3s ease;
+}
+
+.roova-btn--nav:hover {
+	background: var(--roova-ink);
+	border-color: var(--roova-ink);
+	letter-spacing: .01em;
+	transform: translateY(-2px);
+	box-shadow: 0 12px 24px -12px rgba(8, 38, 53, .6);
 }
 
 .roova-link-btn {
@@ -172,63 +242,160 @@ p {
 	padding: 0;
 	font: inherit;
 	font-size: .86rem;
-	font-weight: 700;
-	color: var(--roova-ocean);
+	font-weight: 500;
+	color: var(--roova-soft);
 	text-decoration: underline;
+	text-underline-offset: 3px;
 	cursor: pointer;
+}
+
+.roova-link-btn:hover {
+	color: var(--roova-gold);
+}
+
+/* A quiet outlined pill: popular searches, map view switches. */
+.roova-pill {
+	display: inline-flex;
+	align-items: center;
+	font: inherit;
+	font-size: 12.5px;
+	padding: 7px 14px;
+	border-radius: 999px;
+	border: 1px solid rgba(13, 58, 82, .14);
+	background: rgba(255, 255, 255, .7);
+	color: var(--roova-soft);
+	cursor: pointer;
+	transition: border-color .3s ease, color .3s ease, background .3s ease, transform .3s var(--roova-ease);
+}
+
+.roova-pill:hover {
+	border-color: var(--roova-gold);
+	color: var(--roova-gold);
+	transform: translateY(-2px);
+}
+
+.roova-pill.is-active {
+	background: var(--roova-deep);
+	border-color: var(--roova-deep);
+	color: var(--roova-cream);
+	transform: none;
 }
 
 /* -------------------------------------------------------------------- Nav */
 
 .roova-nav {
-	background: var(--roova-deep);
-	padding: 18px 0;
 	position: relative;
-	z-index: 20;
+	z-index: 50;
+	background: transparent;
+	border-bottom: 1px solid var(--roova-hairline);
 }
 
-.roova-nav--transparent {
+/*
+ * On a page that opens with the hero the header is lifted out of the flow and
+ * laid over the photograph, so the image runs to the very top of the window.
+ * Everything in it turns cream to stay readable on the scrim.
+ */
+.roova-nav--over {
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
-	background: transparent;
-	padding: 26px 0;
+	border-bottom: 0;
+}
+
+.roova-nav--over .roova-nav__logo,
+.roova-nav--over .roova-nav__logo:hover,
+.roova-nav--over .custom-logo-link {
+	color: var(--roova-cream);
+}
+
+.roova-nav--over .roova-menu a,
+.roova-nav--over .roova-nav__cart,
+.roova-nav--over .roova-nav__support {
+	color: rgba(251, 248, 243, .8);
+}
+
+.roova-nav--over .roova-menu a:hover,
+.roova-nav--over .roova-nav__cart:hover,
+.roova-nav--over .roova-nav__support:hover {
+	color: var(--roova-cream);
+}
+
+.roova-nav--over .roova-btn--nav {
+	background: rgba(251, 248, 243, .14);
+	border-color: rgba(251, 248, 243, .4);
+	color: var(--roova-cream);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+.roova-nav--over .roova-btn--nav:hover {
+	background: var(--roova-cream);
+	border-color: var(--roova-cream);
+	color: var(--roova-deep);
+}
+
+.roova-nav--over .roova-nav__toggle {
+	border-color: rgba(251, 248, 243, .4);
+}
+
+.roova-nav--over .roova-nav__toggle span[aria-hidden] {
+	background: var(--roova-cream);
+	box-shadow: 0 -6px 0 var(--roova-cream), 0 6px 0 var(--roova-cream);
 }
 
 .roova-nav__inner {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 24px;
+	gap: 32px;
+	max-width: none;
+	padding: 18px 48px;
+	position: relative;
 }
 
 .roova-nav__logo,
 .roova-nav .custom-logo-link {
 	font-family: var(--roova-font-display);
-	font-weight: 700;
-	font-size: 1.2rem;
-	color: #fff;
-	letter-spacing: .02em;
+	font-weight: 500;
+	font-size: 25px;
+	line-height: 1.2;
+	color: var(--roova-deep);
+	letter-spacing: -.02em;
 }
 
 .roova-nav__logo:hover {
-	color: #fff;
-	text-decoration: none;
+	color: var(--roova-deep);
+}
+
+/* The ".my" half of the wordmark. */
+.roova-nav__logo em {
+	font-style: normal;
+	color: var(--roova-gold);
 }
 
 .roova-nav .roova-menu {
 	display: flex;
-	gap: 28px;
+	align-items: center;
+	gap: 34px;
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	font-size: .9rem;
-	font-weight: 500;
+	font-size: 14px;
+	letter-spacing: .01em;
 }
 
 .roova-nav .roova-menu a {
-	color: rgba(255, 255, 255, .9);
+	display: inline-block;
+	color: var(--roova-soft);
+	padding-bottom: 3px;
+	border-bottom: 1px solid transparent;
+	transition: color .3s ease, border-color .3s ease;
+}
+
+.roova-nav .roova-menu a:hover {
+	color: var(--roova-deep);
+	border-color: var(--roova-gold);
 }
 
 .roova-nav__actions {
@@ -237,18 +404,23 @@ p {
 	gap: 14px;
 }
 
-.roova-nav__cart {
-	color: rgba(255, 255, 255, .9);
-	font-size: .85rem;
-	font-weight: 600;
+.roova-nav__cart,
+.roova-nav__support {
+	color: var(--roova-soft);
+	font-size: 14px;
+}
+
+.roova-nav__cart:hover,
+.roova-nav__support:hover {
+	color: var(--roova-gold);
 }
 
 .roova-nav__toggle {
 	display: none;
 	width: 38px;
 	height: 38px;
-	border-radius: 8px;
-	border: 1px solid rgba(255, 255, 255, .35);
+	border-radius: 10px;
+	border: 1px solid var(--roova-hairline-strong);
 	background: transparent;
 	cursor: pointer;
 	position: relative;
@@ -257,69 +429,149 @@ p {
 .roova-nav__toggle span[aria-hidden] {
 	position: absolute;
 	inset: 50% 10px auto 10px;
-	height: 2px;
-	background: #fff;
-	box-shadow: 0 -6px 0 #fff, 0 6px 0 #fff;
+	height: 1.5px;
+	background: var(--roova-deep);
+	box-shadow: 0 -6px 0 var(--roova-deep), 0 6px 0 var(--roova-deep);
 }
 
 /* ------------------------------------------------------------------- Hero */
 
 .roova-hero {
 	position: relative;
-	padding: 0 0 130px;
-	background: linear-gradient(180deg, #0a2e45 0%, var(--roova-deep) 32%, var(--roova-ocean) 68%, #2f9fd6 100%);
-	background-size: cover;
-	background-position: center;
 }
 
-.roova-hero--image {
-	background-size: cover;
+/*
+ * Full bleed, square-cornered and tall enough to carry the overlaid header:
+ * the panel starts at the top of the window rather than below a header bar.
+ */
+.roova-hero__panel {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(120deg, var(--roova-deep), var(--roova-ocean));
+	min-height: 700px;
+	display: flex;
+	align-items: flex-end;
+}
+
+/*
+ * The photo lives on its own layer so the slow drift never moves the copy,
+ * and so the scrim above it stays perfectly still.
+ */
+.roova-hero__media,
+.roova-band__media {
+	position: absolute;
+	inset: 0;
+	animation: roova-drift 30s ease-in-out infinite alternate;
+}
+
+.roova-hero__media img,
+.roova-band__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.roova-hero__scrim {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(to top, rgba(6, 30, 42, .88) 0%, rgba(6, 30, 42, .55) 45%, rgba(6, 30, 42, .34) 100%),
+		radial-gradient(120% 90% at 78% 6%, rgba(29, 111, 150, .42) 0%, rgba(8, 38, 53, .55) 60%, rgba(6, 26, 36, .7) 100%);
+}
+
+/* A slow diagonal highlight travelling across the panel. */
+.roova-hero__sheen {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.roova-hero__sheen::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 22%;
+	background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .06), transparent);
+	animation: roova-sheen 11s ease-in-out infinite;
 }
 
 .roova-hero__content {
 	position: relative;
-	z-index: 2;
-	text-align: center;
-	padding: 180px 24px 30px;
+	width: 100%;
+	padding: 96px clamp(24px, 4.4vw, 64px) 56px;
+	pointer-events: none;
+	text-shadow: 0 1px 24px rgba(4, 20, 28, .35);
 }
 
 .roova-hero__eyebrow {
-	display: block;
-	color: var(--roova-gold);
-	font-size: .8rem;
-	font-weight: 700;
-	letter-spacing: .18em;
+	font-size: 11.5px;
+	letter-spacing: .2em;
 	text-transform: uppercase;
-	margin-bottom: 14px;
+	color: rgba(251, 248, 243, .72);
+	margin-bottom: 26px;
+	animation: roova-rise .8s var(--roova-ease) both;
 }
 
 .roova-hero h1 {
-	color: #fff;
-	font-size: clamp(2.1rem, 4.2vw, 3.4rem);
-	line-height: 1.12;
-	max-width: 780px;
-	margin: 0 auto 18px;
+	margin: 0;
+	max-width: 15ch;
+	font-size: clamp(2.6rem, 6vw, 76px);
+	line-height: 1.02;
+	letter-spacing: -.025em;
+	color: var(--roova-cream);
+	text-wrap: balance;
+	animation: roova-rise .9s var(--roova-ease) .1s both;
 }
 
 .roova-hero__content p {
-	color: rgba(255, 255, 255, .85);
-	font-size: 1.05rem;
-	max-width: 540px;
-	margin: 0 auto;
+	margin: 26px 0 0;
+	max-width: 46ch;
+	font-size: 17px;
+	line-height: 1.65;
+	color: rgba(251, 248, 243, .76);
+	animation: roova-rise .9s var(--roova-ease) .22s both;
 }
 
+/* The search card straddles the bottom edge of the hero panel. */
 .roova-hero__search {
 	position: relative;
-	z-index: 5;
+	z-index: 10;
+	max-width: 1180px;
+	margin: -46px auto 0;
+	padding: 0 24px;
+	animation: roova-rise 1s var(--roova-ease) .34s both;
 }
 
-.roova-hero__waves {
-	position: absolute;
-	bottom: -1px;
-	left: 0;
-	width: 100%;
-	height: 90px;
-	display: block;
+.roova-popular {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin: 18px 2px 0;
+}
+
+.roova-popular__label {
+	font-size: 12.5px;
+	color: var(--roova-faint);
+	padding: 7px 0;
+}
+
+@keyframes roova-rise {
+	from { opacity: 0; transform: translateY(18px); }
+	to { opacity: 1; transform: none; }
+}
+
+@keyframes roova-drift {
+	0% { transform: scale(1.04) translate3d(0, 0, 0); }
+	100% { transform: scale(1.12) translate3d(-1.5%, -1.5%, 0); }
+}
+
+@keyframes roova-sheen {
+	0% { transform: translateX(-120%); }
+	100% { transform: translateX(320%); }
 }
 
 /* ----------------------------------------------------------- Search card */
@@ -328,59 +580,63 @@ p {
 	position: relative;
 	z-index: 6;
 	background: #fff;
-	border-radius: var(--roova-radius);
+	border-radius: 18px;
 	box-shadow: var(--roova-shadow);
-	display: flex;
+	display: grid;
+	grid-template-columns: 1.35fr 1px 1.35fr 1px 1fr auto;
 	align-items: stretch;
-	padding: 10px;
-	gap: 4px;
-	flex-wrap: wrap;
-	margin: 30px auto 0;
-	max-width: 1040px;
+	gap: 0;
+	margin: 0;
+	max-width: none;
 }
 
 .roova-search__field {
-	flex: 1;
-	min-width: 180px;
 	position: relative;
-	padding: 12px 18px;
-	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	padding: 20px 24px;
 	cursor: pointer;
+	transition: background .3s ease;
+}
+
+.roova-search__field:first-child {
+	border-radius: 18px 0 0 18px;
 }
 
 .roova-search__field:hover {
-	background: var(--roova-sand);
+	background: rgba(246, 241, 232, .5);
 }
 
 .roova-search__label {
 	display: block;
-	font-size: .72rem;
-	font-weight: 600;
-	color: var(--roova-muted);
+	font-size: 10.5px;
+	font-weight: 400;
+	color: var(--roova-faint);
 	text-transform: uppercase;
-	letter-spacing: .06em;
-	margin-bottom: 6px;
+	letter-spacing: .16em;
+	margin: 0;
 }
 
 .roova-search__value {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	font-size: .95rem;
-	font-weight: 600;
+	gap: 9px;
+	font-size: 16px;
+	font-weight: 500;
 	color: var(--roova-ink);
 }
 
 .roova-search__value .roova-icon {
 	flex-shrink: 0;
-	color: var(--roova-ocean);
+	color: var(--roova-gold);
 }
 
 .roova-search__value input {
 	border: 0;
 	outline: none;
 	font: inherit;
-	font-weight: 600;
+	font-weight: 500;
 	color: var(--roova-ink);
 	width: 100%;
 	background: transparent;
@@ -388,40 +644,47 @@ p {
 }
 
 .roova-search__value input::placeholder {
-	color: #9aa3ab;
-	font-weight: 500;
+	color: var(--roova-faint);
+	font-weight: 400;
 }
 
+/* Fields are separated by hairlines rather than gaps. */
 .roova-search__divider {
 	width: 1px;
-	background: var(--roova-line);
-	margin: 8px 0;
+	background: rgba(13, 58, 82, .09);
 }
 
 .roova-search__submit {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 8px;
+	margin: 10px;
+	min-width: 148px;
 	background: var(--roova-deep);
-	color: #fff;
+	color: var(--roova-cream);
 	border: 0;
-	padding: 0 30px;
-	border-radius: 10px;
+	border-radius: 12px;
 	font: inherit;
-	font-size: .95rem;
-	font-weight: 700;
+	font-size: 15px;
+	font-weight: 500;
+	letter-spacing: .01em;
 	cursor: pointer;
 	white-space: nowrap;
+	transition: background .35s ease, letter-spacing .35s ease;
 }
 
 .roova-search__submit:hover {
-	background: var(--roova-ocean);
+	background: var(--roova-gold);
+	letter-spacing: .06em;
 }
 
 /* Compact variant used in the hotel sidebar. */
 .roova-search--compact {
+	display: flex;
 	flex-direction: column;
 	box-shadow: none;
+	border-radius: 0;
 	padding: 0;
 	margin: 0;
 	gap: 0;
@@ -430,7 +693,7 @@ p {
 
 .roova-search--compact .roova-search__field {
 	padding: 12px 0;
-	border-bottom: 1px solid var(--roova-line);
+	border-bottom: 1px solid var(--roova-hairline);
 	border-radius: 0;
 	width: 100%;
 }
@@ -447,8 +710,7 @@ p {
 	width: 100%;
 	justify-content: center;
 	padding: 13px;
-	margin-top: 14px;
-	background: var(--roova-ocean);
+	margin: 14px 0 0;
 }
 
 /* ---------------------------------------------------------------- Panels */
@@ -686,115 +948,234 @@ p {
 	margin-top: -1px;
 }
 
+/* Homepage rhythm: 68–88px, tighter at the bottom where a band follows. */
+.roova-section--hotels {
+	padding: 68px 0 20px;
+}
+
+.roova-section--destinations {
+	padding: 76px 0 20px;
+}
+
+.roova-section--guarantees {
+	padding: 78px 0 8px;
+}
+
+.roova-section--map {
+	padding: 88px 0 96px;
+}
+
 .roova-section__head {
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-between;
-	gap: 20px;
+	gap: 32px;
 	margin-bottom: 34px;
 }
 
 .roova-section__head h1,
 .roova-section__head h2 {
-	font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+	font-size: clamp(2rem, 4vw, 46px);
+	line-height: 1.06;
+	color: var(--roova-deep);
 	margin: 0;
 }
 
-.roova-slider {
+/* "View all 11 →" */
+.roova-section__more {
+	flex: none;
+	font-size: 14px;
+	color: var(--roova-soft);
+	border-bottom: 1px solid rgba(13, 58, 82, .25);
+	padding-bottom: 3px;
+	transition: color .3s ease, border-color .3s ease;
+}
+
+.roova-section__more:hover {
+	color: var(--roova-gold);
+	border-color: var(--roova-gold);
+}
+
+/* --------------------------------------------------------- Guarantees row */
+
+.roova-guarantees {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 40px;
+}
+
+.roova-guarantee {
 	display: flex;
-	gap: 22px;
-	overflow-x: auto;
-	scroll-behavior: smooth;
-	padding-bottom: 8px;
-	scrollbar-width: none;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 14px;
 }
 
-.roova-slider::-webkit-scrollbar {
-	display: none;
-}
-
-.roova-slider .roova-hotel-card {
-	flex: 0 0 280px;
-}
-
-.roova-slider__nav {
-	display: flex;
-	gap: 10px;
-}
-
-.roova-slider__arrow {
-	width: 42px;
-	height: 42px;
+.roova-guarantee__icon {
+	width: 56px;
+	height: 56px;
 	border-radius: 50%;
-	border: 1px solid var(--roova-line);
-	background: #fff;
-	color: var(--roova-deep);
+	border: 1px solid rgba(180, 130, 60, .5);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	cursor: pointer;
+	color: var(--roova-gold);
+	transition: transform .45s var(--roova-pop), background .35s ease, border-color .35s ease;
 }
 
-.roova-slider__arrow:hover {
-	background: var(--roova-deep);
-	color: #fff;
-	border-color: var(--roova-deep);
+.roova-guarantee:hover .roova-guarantee__icon {
+	transform: scale(1.1) rotate(8deg);
+	background: rgba(180, 130, 60, .1);
+	border-color: var(--roova-gold);
+}
+
+.roova-guarantee h3 {
+	margin: 0;
+	font-family: var(--roova-font-body);
+	font-size: 15.5px;
+	font-weight: 700;
+	letter-spacing: .01em;
+	color: var(--roova-deep);
+}
+
+.roova-guarantee p {
+	margin: 0;
+	max-width: 26ch;
+	font-size: 13.5px;
+	line-height: 1.65;
+	color: var(--roova-muted);
+}
+
+/* ---------------------------------------------------------- Image bands */
+
+.roova-band {
+	position: relative;
+	width: 100%;
+	height: 420px;
+	overflow: hidden;
+	background: linear-gradient(120deg, var(--roova-deep), var(--roova-ocean));
+	margin-top: 74px;
+}
+
+.roova-band--tall {
+	height: 480px;
+	margin-top: 80px;
+}
+
+.roova-band .roova-band__media {
+	animation-duration: 34s;
+}
+
+.roova-band__scrim {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: linear-gradient(to right, rgba(6, 30, 42, .82) 0%, rgba(6, 30, 42, .5) 52%, rgba(6, 30, 42, .28) 100%);
+}
+
+.roova-band__content {
+	position: relative;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	pointer-events: none;
+}
+
+.roova-band__content .roova-eyebrow {
+	margin-bottom: 20px;
+}
+
+.roova-band__statement {
+	margin: 0;
+	max-width: 20ch;
+	font-family: var(--roova-font-display);
+	font-weight: 300;
+	font-size: clamp(2rem, 4.4vw, 52px);
+	line-height: 1.1;
+	letter-spacing: -.02em;
+	color: var(--roova-cream);
+	text-wrap: balance;
 }
 
 /* ----------------------------------------------------------- Hotel cards */
 
+.roova-hotels-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 22px;
+}
+
 .roova-hotel-card {
 	background: #fff;
-	border: 1px solid var(--roova-line);
+	border: 1px solid var(--roova-hairline);
 	border-radius: var(--roova-radius);
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	box-shadow: var(--roova-shadow-card);
+	transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.roova-hotel-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--roova-shadow-lift);
 }
 
 .roova-hotel-card__media {
 	position: relative;
 	display: block;
-	height: 180px;
+	aspect-ratio: 4 / 3.2;
 	overflow: hidden;
-	background: linear-gradient(160deg, #123a52, var(--roova-ocean));
+	background: var(--roova-sand);
 }
 
-.roova-hotel-card__media img {
+.roova-hotel-card__media img,
+.roova-hotel-card__placeholder {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	/* WooCommerce's loop styles put a margin under product images. */
+	margin: 0;
+	transition: transform .6s var(--roova-ease);
 }
 
-.roova-hotel-card__media::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(180deg, rgba(12, 59, 87, 0) 40%, rgba(12, 59, 87, .55) 100%);
+.roova-hotel-card:hover .roova-hotel-card__media img,
+.roova-hotel-card:hover .roova-hotel-card__placeholder {
+	transform: scale(1.04);
 }
 
 .roova-hotel-card__placeholder {
 	display: block;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(160deg, #123a52, var(--roova-ocean));
+	background: repeating-linear-gradient(135deg, #e6e0d6 0 3px, #f1ece3 3px 12px);
 }
 
+/* The location pill sits over the top-left corner of the photo. */
 .roova-hotel-card__loc {
 	position: absolute;
-	left: 14px;
-	bottom: 12px;
+	left: 12px;
+	top: 12px;
 	z-index: 1;
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	color: #fff;
-	font-size: .82rem;
-	font-weight: 600;
+	gap: 5px;
+	padding: 5px 11px;
+	border-radius: 999px;
+	background: rgba(8, 38, 53, .72);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	color: var(--roova-cream);
+	font-size: 11px;
+	letter-spacing: .04em;
 }
 
 .roova-hotel-card__body {
-	padding: 16px;
+	padding: 18px 18px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	flex: 1;
 }
 
 .roova-hotel-card__stars,
@@ -802,96 +1183,287 @@ p {
 	display: inline-flex;
 	gap: 2px;
 	color: var(--roova-gold);
-	margin-bottom: 8px;
 }
 
 .roova-hotel-card__name {
-	font-size: 1.02rem;
-	margin-bottom: 10px;
-	line-height: 1.25;
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 500;
+	font-size: 20px;
+	line-height: 1.22;
+	letter-spacing: -.01em;
 }
 
 .roova-hotel-card__name a {
 	color: var(--roova-ink);
 }
 
+.roova-hotel-card__name a:hover {
+	color: var(--roova-deep);
+}
+
 .roova-hotel-card__price {
-	font-size: .84rem;
-	color: var(--roova-muted);
+	margin-top: auto;
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding-top: 8px;
+	border-top: 1px solid var(--roova-hairline);
+	font-size: 11.5px;
+	color: var(--roova-faint);
 }
 
 .roova-hotel-card__price strong,
 .roova-hotel-card__price .woocommerce-Price-amount {
-	color: var(--roova-ink);
-	font-size: 1.05rem;
+	color: var(--roova-deep);
+	font-size: 22px;
 	font-family: var(--roova-font-display);
-	font-weight: 600;
+	font-weight: 400;
+	line-height: 1.1;
+}
+
+.roova-hotel-card__price .roova-hotel-card__check {
+	font-size: 13.5px;
+	color: var(--roova-muted);
 }
 
 /* ---------------------------------------------------------- Destinations */
 
 .roova-destinations {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 18px;
+	grid-template-columns: repeat(4, 1fr);
+	grid-auto-rows: 186px;
+	gap: 16px;
 }
 
 .roova-destination {
 	position: relative;
-	min-height: 220px;
 	border-radius: var(--roova-radius);
 	overflow: hidden;
 	display: flex;
 	align-items: flex-end;
-	padding: 22px;
-	color: #fff;
-	background-size: cover;
-	background-position: center;
+	color: var(--roova-cream);
+	transition: box-shadow .35s ease, transform .35s var(--roova-ease);
 }
 
 .roova-destination:hover {
-	text-decoration: none;
+	color: var(--roova-cream);
+	transform: translateY(-3px);
+	box-shadow: 0 22px 40px -22px rgba(8, 38, 53, .4);
+}
+
+/*
+ * The photo is its own layer: only it zooms, so the label underneath stays
+ * pin-sharp while the tile is hovered.
+ */
+.roova-destination__bg {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	transform: scale(1);
+	transition: transform .7s var(--roova-ease);
+}
+
+.roova-destination:hover .roova-destination__bg {
+	transform: scale(1.09);
 }
 
 .roova-destination::after {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(180deg, rgba(12, 59, 87, 0) 30%, rgba(10, 30, 42, .7) 100%);
+	background: linear-gradient(to top, rgba(8, 38, 53, .82) 0%, rgba(8, 38, 53, .18) 46%, rgba(8, 38, 53, 0) 72%);
 }
 
 .roova-destination__content {
 	position: relative;
 	z-index: 1;
+	padding: 20px 20px 18px;
+	transition: transform .4s var(--roova-ease);
+}
+
+.roova-destination:hover .roova-destination__content {
+	transform: translateY(-4px);
 }
 
 .roova-destination__name {
 	display: block;
 	font-family: var(--roova-font-display);
-	font-size: 1.5rem;
-	font-weight: 600;
-	margin-bottom: 6px;
+	font-size: 24px;
+	font-weight: 500;
+	letter-spacing: -.01em;
+	line-height: 1.2;
 }
 
 .roova-destination__rule {
 	display: block;
-	width: 26px;
-	height: 2px;
+	width: 22px;
+	height: 1px;
 	background: var(--roova-gold);
-	margin-bottom: 10px;
+	margin: 9px 0;
 }
 
 .roova-destination__count {
-	font-size: .84rem;
-	color: rgba(255, 255, 255, .85);
-	font-weight: 500;
+	font-size: 12px;
+	color: rgba(251, 248, 243, .78);
 }
 
-/* The first tile spans two rows when there are four or more destinations. */
-.roova-destinations--4 .roova-destination--1,
-.roova-destinations--5 .roova-destination--1,
-.roova-destinations--6 .roova-destination--1 {
+/*
+ * The mosaic rhythm from the design: a 2x2 anchor, four single tiles, then
+ * wide tiles. roova_destination_span() hands out these classes in order.
+ */
+.roova-destination--wide {
+	grid-column: span 2;
+}
+
+.roova-destination--tall {
 	grid-row: span 2;
+}
+
+/* ------------------------------------------------------------ Coverage map */
+
+.roova-coverage {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 32px;
+	min-height: 560px;
+}
+
+.roova-coverage__map {
+	position: relative;
+	min-height: 360px;
+}
+
+.roova-coverage__map svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.roova-coverage__panel {
+	align-self: center;
+}
+
+.roova-coverage__title {
+	font-size: 30px;
+	line-height: 1.1;
+	color: var(--roova-deep);
+	margin: 0 0 18px;
+}
+
+.roova-coverage__views {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+
+.roova-coverage__row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 11px 12px;
+	border-radius: 10px;
+	transition: background .2s ease, transform .2s ease;
+}
+
+.roova-coverage__row:hover,
+.roova-coverage__row.is-active {
+	background: rgba(180, 130, 60, .12);
+	transform: translateX(2px);
+}
+
+.roova-coverage__row b {
+	font-family: var(--roova-font-display);
+	font-weight: 500;
+	font-size: 17px;
+	color: var(--roova-deep);
+}
+
+.roova-coverage__row span {
+	font-size: 12px;
+	color: var(--roova-faint);
+}
+
+/* Pins and land are drawn by theme.js; these are their resting styles. */
+.roova-atlas__other {
+	fill: #eae4da;
+	stroke: var(--roova-page);
+	stroke-width: 1;
+}
+
+.roova-atlas__home {
+	fill: var(--roova-deep);
+	stroke: var(--roova-deep);
+	stroke-width: .6;
+}
+
+.roova-pin {
+	cursor: pointer;
+}
+
+.roova-pin circle.roova-pin__dot {
+	fill: var(--roova-gold);
+	stroke: var(--roova-page);
+	stroke-width: 1.4;
+	transition: r .25s ease;
+}
+
+.roova-pin circle.roova-pin__halo {
+	fill: var(--roova-gold);
+	opacity: .22;
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: roova-pulse 3.2s ease-out infinite;
+}
+
+.roova-pin__label {
+	font-size: 11px;
+	font-weight: 500;
+	fill: var(--roova-deep);
+	paint-order: stroke;
+	stroke: var(--roova-page);
+	stroke-width: 3px;
+	stroke-linejoin: round;
+	pointer-events: none;
+}
+
+@keyframes roova-pulse {
+	0% { transform: scale(.7); opacity: .32; }
+	70% { transform: scale(2.1); opacity: 0; }
+	100% { opacity: 0; }
+}
+
+/* ------------------------------------------------------------- Scroll reveal */
+
+[data-roova-reveal] {
+	opacity: 0;
+	transform: translateY(22px);
+	transition: opacity .75s var(--roova-ease), transform .75s var(--roova-ease);
+	will-change: opacity, transform;
+}
+
+[data-roova-reveal].is-revealed {
+	opacity: 1;
+	transform: none;
+}
+
+/* A staggered container reveals its children one by one instead. */
+[data-roova-reveal][data-roova-stagger] {
+	opacity: 1;
+	transform: none;
+}
+
+[data-roova-reveal][data-roova-stagger] > * {
+	opacity: 0;
+	transform: translateY(26px);
+}
+
+[data-roova-reveal][data-roova-stagger].is-revealed > * {
+	opacity: 1;
+	transform: none;
 }
 
 /* ------------------------------------------------------- Hotel details */
@@ -1128,6 +1700,12 @@ p {
 .roova-prose {
 	font-size: .95rem;
 	line-height: 1.75;
+}
+
+/* Editor content still wants underlined links; the rest of the theme does not. */
+.roova-prose a {
+	text-decoration: underline;
+	text-underline-offset: 3px;
 }
 
 .roova-stay-summary {
@@ -1783,12 +2361,21 @@ p {
 
 /* ---------------------------------------------------------- WooCommerce */
 
+/*
+ * Cart, checkout, account and the catalogue all render through
+ * woocommerce.php. WooCommerce's own wrapper hooks do not fire for every one
+ * of them, so the column lives here rather than on .roova-wc-page.
+ */
 .roova-woocommerce {
-	padding: 40px 0 70px;
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 40px 24px 70px;
 }
 
+/* Nested inside the column above when WooCommerce fires its wrapper hooks. */
 .roova-wc-page .wrap {
-	max-width: 1200px;
+	max-width: none;
+	padding: 0;
 }
 
 .roova-notices {
@@ -1851,42 +2438,56 @@ p {
 /* -------------------------------------------------------------- Footer */
 
 .roova-footer {
-	background: var(--roova-deep);
-	color: rgba(255, 255, 255, .75);
-	padding: 44px 0 28px;
-	margin-top: 20px;
-	font-size: .88rem;
+	background: var(--roova-sand);
+	border-top: 1px solid rgba(13, 58, 82, .1);
+	color: var(--roova-muted);
+	font-size: 13.5px;
 }
 
 .roova-footer a {
-	color: rgba(255, 255, 255, .9);
+	color: var(--roova-soft);
 }
 
 .roova-footer__top {
-	display: flex;
-	justify-content: space-between;
-	gap: 30px;
-	flex-wrap: wrap;
-	padding-bottom: 24px;
-	border-bottom: 1px solid rgba(255, 255, 255, .12);
+	display: grid;
+	grid-template-columns: 1.4fr 1fr 1fr 1fr;
+	gap: 40px;
+	padding: 56px 0 28px;
 }
 
 .roova-footer__brand strong {
-	color: #fff;
+	display: block;
+	color: var(--roova-deep);
 	font-family: var(--roova-font-display);
-	font-size: 1.1rem;
+	font-weight: 400;
+	font-size: 24px;
+	line-height: 1.2;
 }
 
-.roova-footer__contact {
+.roova-footer__brand em {
+	font-style: normal;
+	color: var(--roova-gold);
+}
+
+.roova-footer__brand p {
+	margin: 12px 0 0;
+	max-width: 30ch;
+	line-height: 1.65;
+	color: var(--roova-muted);
+}
+
+.roova-footer__col {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 10px;
 }
 
-.roova-footer__contact span {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+.roova-footer__heading {
+	font-size: 11px;
+	letter-spacing: .16em;
+	text-transform: uppercase;
+	color: #9aa8ad;
+	margin-bottom: 4px;
 }
 
 .roova-footer .roova-menu {
@@ -1895,6 +2496,30 @@ p {
 	padding: 0;
 	display: flex;
 	flex-direction: column;
+	gap: 10px;
+}
+
+.roova-footer .roova-menu a,
+.roova-footer__col a {
+	display: inline-block;
+	transition: color .25s ease, transform .25s ease;
+}
+
+.roova-footer .roova-menu a:hover,
+.roova-footer__col a:hover {
+	color: var(--roova-gold);
+	transform: translateX(3px);
+}
+
+.roova-footer__contact {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.roova-footer__contact span {
+	display: flex;
+	align-items: center;
 	gap: 8px;
 }
 
@@ -1902,13 +2527,17 @@ p {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 	gap: 24px;
-	padding: 24px 0;
+	padding: 0 0 24px;
 }
 
 .roova-footer__bottom {
-	padding-top: 18px;
-	font-size: .82rem;
-	color: rgba(255, 255, 255, .6);
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 20px 0 40px;
+	border-top: 1px solid var(--roova-hairline);
+	font-size: 12.5px;
+	color: var(--roova-faint);
 }
 
 /* ---------------------------------------------------------- Responsive */
@@ -1937,6 +2566,20 @@ p {
 	}
 }
 
+@media (max-width: 1080px) {
+	.roova-nav__inner {
+		padding: 16px 24px;
+	}
+
+	.roova-hero__panel {
+		min-height: 600px;
+	}
+
+	.roova-hotels-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
 @media (max-width: 1000px) {
 	.roova-layout {
 		grid-template-columns: 1fr;
@@ -1961,6 +2604,63 @@ p {
 
 	.roova-posts {
 		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 900px) {
+	/* The search bar stacks; its hairlines turn into horizontal rules. */
+	.roova-search {
+		grid-template-columns: 1fr;
+	}
+
+	.roova-search__field {
+		border-radius: 0;
+		padding: 16px 20px;
+	}
+
+	.roova-search__field:first-child {
+		border-radius: 18px 18px 0 0;
+	}
+
+	.roova-search__divider {
+		width: auto;
+		height: 1px;
+	}
+
+	.roova-search__submit {
+		min-height: 52px;
+	}
+
+	.roova-guarantees {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 32px;
+	}
+
+	.roova-footer__top {
+		grid-template-columns: 1fr 1fr;
+		gap: 32px;
+	}
+}
+
+@media (max-width: 860px) {
+	.roova-coverage {
+		grid-template-columns: 1fr;
+		min-height: 0;
+		gap: 16px;
+	}
+
+	.roova-coverage__map {
+		height: 340px;
+	}
+
+	.roova-coverage__list {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 2px 10px;
+	}
+
+	.roova-coverage__row {
+		padding: 8px;
 	}
 }
 
@@ -1995,22 +2695,28 @@ p {
 		display: block;
 	}
 
+	.roova-hero__panel {
+		min-height: 520px;
+	}
+
 	.roova-hero__content {
-		padding-top: 130px;
-	}
-
-	.roova-search__divider {
-		display: none;
-	}
-
-	.roova-search__field {
-		min-width: 100%;
+		padding: 90px 24px 44px;
 	}
 
 	.roova-search__submit {
-		width: 100%;
+		width: auto;
 		justify-content: center;
 		padding: 14px;
+	}
+
+	.roova-band {
+		height: 340px;
+		margin-top: 56px;
+	}
+
+	.roova-band--tall {
+		height: 320px;
+		margin-top: 56px;
 	}
 
 	.roova-panel {
@@ -2048,15 +2754,16 @@ p {
 	.roova-facilities,
 	.roova-landmarks,
 	.roova-destinations,
+	.roova-hotels-grid,
 	.roova-posts {
 		grid-template-columns: 1fr 1fr;
 	}
 
-	.roova-destinations--4 .roova-destination--1,
-	.roova-destinations--5 .roova-destination--1,
-	.roova-destinations--6 .roova-destination--1 {
-		grid-row: auto;
+	/* Two columns leaves no room for the mosaic's 2x2 anchor. */
+	.roova-destination--wide,
+	.roova-destination--tall {
 		grid-column: span 2;
+		grid-row: auto;
 	}
 
 	.roova-landmarks {
@@ -2080,20 +2787,72 @@ p {
 	.roova-section {
 		padding: 54px 0;
 	}
+
+	.roova-section--hotels,
+	.roova-section--destinations,
+	.roova-section--guarantees {
+		padding: 54px 0 12px;
+	}
+
+	.roova-section--map {
+		padding: 54px 0 60px;
+	}
+
+	.roova-footer__top {
+		padding-top: 40px;
+	}
 }
 
 @media (max-width: 560px) {
+	.roova-nav__inner {
+		padding: 14px 16px;
+		gap: 12px;
+	}
+
+	.roova-btn--nav {
+		padding: 9px 14px;
+		font-size: 12.5px;
+	}
+
 	.roova-amenities,
 	.roova-facilities,
 	.roova-destinations,
+	.roova-guarantees,
+	.roova-hotels-grid,
 	.roova-posts,
+	.roova-footer__top,
 	.roova-modal__amenities {
 		grid-template-columns: 1fr;
 	}
 
-	.roova-destinations--4 .roova-destination--1,
-	.roova-destinations--5 .roova-destination--1,
-	.roova-destinations--6 .roova-destination--1 {
+	.roova-destination--wide,
+	.roova-destination--tall {
 		grid-column: auto;
+	}
+
+	.roova-coverage__list {
+		grid-template-columns: 1fr;
+	}
+
+	.roova-footer__bottom {
+		flex-direction: column;
+		gap: 6px;
+	}
+}
+
+/* ------------------------------------------------------- Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation: none !important;
+		transition: none !important;
+	}
+
+	[data-roova-reveal],
+	[data-roova-reveal][data-roova-stagger] > * {
+		opacity: 1 !important;
+		transform: none !important;
 	}
 }

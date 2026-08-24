@@ -8,6 +8,238 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * The wordmark: the site name with its domain suffix picked out in gold.
+ *
+ * "roova.my" renders as roova<em>.my</em>; a name without a suffix is printed
+ * as it stands.
+ *
+ * @return string Escaped markup.
+ */
+function roova_wordmark() {
+	$name = get_bloginfo( 'name' );
+
+	if ( preg_match( '/^(.+)(\.[a-z]{2,})$/i', $name, $matches ) ) {
+		return esc_html( $matches[1] ) . '<em>' . esc_html( $matches[2] ) . '</em>';
+	}
+
+	return esc_html( $name );
+}
+
+/**
+ * The photograph behind the hero or a band.
+ *
+ * Uses the image chosen in the Customizer, and falls back to the one the theme
+ * ships with so a fresh install looks like the design rather than a flat navy
+ * panel. Passing '' as the fallback means "no photo unless one is chosen".
+ *
+ * @param int    $image_id Attachment ID from the Customizer, or 0.
+ * @param string $fallback File name in assets/images/, or ''.
+ * @param bool   $eager    Load immediately (true for the hero, above the fold).
+ */
+function roova_background_image( $image_id, $fallback = '', $eager = false ) {
+	if ( $image_id ) {
+		echo wp_get_attachment_image(
+			(int) $image_id,
+			'full',
+			false,
+			array(
+				'alt'      => '',
+				'loading'  => $eager ? 'eager' : 'lazy',
+				'decoding' => 'async',
+			)
+		);
+		return;
+	}
+
+	if ( ! $fallback ) {
+		return;
+	}
+
+	printf(
+		'<img src="%1$s" alt="" loading="%2$s" decoding="async" />',
+		esc_url( ROOVA_URI . 'assets/images/' . $fallback ),
+		esc_attr( $eager ? 'eager' : 'lazy' )
+	);
+}
+
+/**
+ * The homepage hero: photo panel, scrim, copy and the search card that
+ * overlaps its bottom edge.
+ */
+function roova_hero() {
+	/*
+	 * These defaults have to match the ones registered in the Customizer —
+	 * get_theme_mod() falls back to what the caller passes, not to the
+	 * setting's own default.
+	 */
+	$image_id = (int) roova_option( 'hero_image', 0 );
+	$eyebrow  = roova_option( 'hero_eyebrow', __( 'Klang Valley & Malacca', 'roova' ) );
+	$title    = roova_option( 'hero_title', __( 'Stay close to everywhere that matters', 'roova' ) );
+	$subtitle = roova_option( 'hero_subtitle', __( 'Honest rooms in the middle of things — airports, old towns, city edges. Booked direct, priced plainly.', 'roova' ) );
+	$popular  = roova_popular_searches();
+	?>
+	<section class="roova-hero">
+		<div class="roova-hero__panel">
+			<div class="roova-hero__media" aria-hidden="true">
+				<?php roova_background_image( $image_id, 'hero.jpg', true ); ?>
+			</div>
+
+			<div class="roova-hero__scrim" aria-hidden="true"></div>
+			<div class="roova-hero__sheen" aria-hidden="true"></div>
+
+			<div class="roova-hero__content">
+				<?php if ( $eyebrow ) : ?>
+					<span class="roova-hero__eyebrow roova-eyebrow--ruled"><?php echo esc_html( $eyebrow ); ?></span>
+				<?php endif; ?>
+
+				<h1><?php echo esc_html( $title ); ?></h1>
+
+				<?php if ( $subtitle ) : ?>
+					<p><?php echo esc_html( $subtitle ); ?></p>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<?php if ( roova_has_woocommerce() ) : ?>
+			<div class="roova-hero__search">
+				<?php roova_search_form(); ?>
+
+				<?php if ( $popular ) : ?>
+					<div class="roova-popular">
+						<span class="roova-popular__label"><?php esc_html_e( 'Popular:', 'roova' ); ?></span>
+						<?php foreach ( $popular as $item ) : ?>
+							<a class="roova-pill" href="<?php echo esc_url( $item['url'] ); ?>"><?php echo esc_html( $item['label'] ); ?></a>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+	</section>
+	<?php
+}
+
+/**
+ * The four booking promises under the hero.
+ */
+function roova_guarantees_row() {
+	$items = roova_guarantees();
+	if ( ! $items ) {
+		return;
+	}
+	?>
+	<section class="roova-section roova-section--guarantees">
+		<div class="wrap">
+			<div class="roova-guarantees" data-roova-reveal data-roova-stagger>
+				<?php foreach ( $items as $item ) : ?>
+					<div class="roova-guarantee">
+						<span class="roova-guarantee__icon"><?php roova_the_icon( $item['icon'], 24 ); ?></span>
+						<h3><?php echo esc_html( $item['title'] ); ?></h3>
+						<?php if ( $item['body'] ) : ?>
+							<p><?php echo esc_html( $item['body'] ); ?></p>
+						<?php endif; ?>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * A full-bleed photo band, optionally carrying a statement.
+ *
+ * @param array $args image_id => int, fallback => string, eyebrow => string,
+ *                    statement => string, class => string.
+ */
+function roova_image_band( $args = array() ) {
+	$args = wp_parse_args( $args, array(
+		'image_id'  => 0,
+		'fallback'  => '',
+		'eyebrow'   => '',
+		'statement' => '',
+		'class'     => '',
+	) );
+
+	// A band with neither a photo nor words is just a navy stripe — skip it.
+	if ( ! $args['image_id'] && ! $args['fallback'] && ! $args['statement'] ) {
+		return;
+	}
+	?>
+	<section class="roova-band <?php echo esc_attr( $args['class'] ); ?>">
+		<div class="roova-band__media" aria-hidden="true">
+			<?php roova_background_image( $args['image_id'], $args['fallback'] ); ?>
+		</div>
+
+		<?php /* The scrim exists to keep the copy readable; a wordless band is left as the photograph. */ ?>
+		<?php if ( $args['eyebrow'] || $args['statement'] ) : ?>
+			<div class="roova-band__scrim" aria-hidden="true"></div>
+
+			<div class="roova-band__content wrap">
+				<?php if ( $args['eyebrow'] ) : ?>
+					<span class="roova-eyebrow roova-eyebrow--ruled"><?php echo esc_html( $args['eyebrow'] ); ?></span>
+				<?php endif; ?>
+
+				<?php if ( $args['statement'] ) : ?>
+					<p class="roova-band__statement"><?php echo esc_html( $args['statement'] ); ?></p>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+	</section>
+	<?php
+}
+
+/**
+ * The coverage map: real Malaysian geometry with a pin per destination.
+ *
+ * The town list is rendered server-side so it still reads (and links) when the
+ * map libraries do not load; theme.js only draws the geography and the pins.
+ */
+function roova_coverage_map() {
+	$places = roova_map_places();
+	if ( ! $places ) {
+		return;
+	}
+	?>
+	<section class="roova-section roova-section--map" id="coverage">
+		<div class="wrap">
+			<div class="roova-coverage" data-roova-atlas data-places="<?php echo esc_attr( wp_json_encode( $places ) ); ?>">
+				<div class="roova-coverage__map" data-roova-atlas-canvas></div>
+
+				<aside class="roova-coverage__panel" data-roova-reveal>
+					<span class="roova-eyebrow"><?php echo esc_html( roova_option( 'map_eyebrow', __( 'Our map', 'roova' ) ) ); ?></span>
+					<h2 class="roova-coverage__title"><?php echo esc_html( roova_option( 'map_title', __( 'Areas we cover', 'roova' ) ) ); ?></h2>
+
+					<div class="roova-coverage__views" data-roova-atlas-views hidden>
+						<button type="button" class="roova-pill is-active" data-roova-atlas-view="country"><?php esc_html_e( 'Malaysia', 'roova' ); ?></button>
+						<button type="button" class="roova-pill" data-roova-atlas-view="region"><?php esc_html_e( 'Klang Valley', 'roova' ); ?></button>
+					</div>
+
+					<div class="roova-coverage__list">
+						<?php foreach ( $places as $place ) : ?>
+							<a class="roova-coverage__row"
+								href="<?php echo esc_url( $place['url'] ); ?>"
+								data-roova-atlas-place="<?php echo esc_attr( $place['name'] ); ?>">
+								<b><?php echo esc_html( $place['name'] ); ?></b>
+								<span>
+									<?php
+									printf(
+										/* translators: %d: number of hotels */
+										esc_html( _n( '%d hotel', '%d hotels', $place['hotels'], 'roova' ) ),
+										(int) $place['hotels']
+									);
+									?>
+								</span>
+							</a>
+						<?php endforeach; ?>
+					</div>
+				</aside>
+			</div>
+		</div>
+	</section>
+	<?php
+}
+
+/**
  * The search card: destination, dates, guests, submit.
  *
  * @param array $args compact => bool, hotel_id => int.
@@ -181,34 +413,37 @@ function roova_hotel_card( $hotel_id, $args = array() ) {
 			}
 			?>
 			<?php if ( $location ) : ?>
-				<span class="roova-hotel-card__loc"><?php roova_the_icon( 'pin', 13 ); ?><?php echo esc_html( $location ); ?></span>
+				<span class="roova-hotel-card__loc"><?php echo esc_html( $location ); ?></span>
 			<?php endif; ?>
 		</a>
 		<div class="roova-hotel-card__body">
-			<?php if ( $stars ) : ?>
-				<div class="roova-hotel-card__stars"><?php echo roova_stars( $stars, 13 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-			<?php endif; ?>
-
 			<h3 class="roova-hotel-card__name">
 				<a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( get_the_title( $hotel_id ) ); ?></a>
 			</h3>
+
+			<?php if ( $stars ) : ?>
+				<div class="roova-hotel-card__stars"><?php echo roova_stars( $stars, 13 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+			<?php endif; ?>
 
 			<?php if ( $args['show_price'] ) : ?>
 				<div class="roova-hotel-card__price">
 					<?php
 					if ( is_array( $args['availability'] ) ) {
 						if ( $args['availability']['has_availability'] && null !== $args['availability']['rate'] ) {
-							printf(
-								'%s <strong>%s</strong> %s',
-								esc_html__( 'From', 'roova' ),
-								wp_kses_post( wc_price( $args['availability']['rate'] ) ),
-								esc_html__( '/ night', 'roova' )
-							);
+							roova_from_rate( $args['availability']['rate'] );
 						} else {
 							echo '<span class="roova-unavailable">' . esc_html__( 'No rooms free for these dates', 'roova' ) . '</span>';
 						}
 					} else {
-						echo wp_kses_post( $product->get_price_html() );
+						$rate = method_exists( $product, 'get_lowest_room_rate' ) ? $product->get_lowest_room_rate() : $product->get_price();
+
+						if ( '' !== $rate && $rate > 0 ) {
+							roova_from_rate( $rate );
+						} else {
+							// No rate to show yet — invite the guest to look rather than
+							// leaving the row blank.
+							echo '<span class="roova-hotel-card__check">' . esc_html__( 'Check availability', 'roova' ) . '</span>';
+						}
 					}
 					?>
 				</div>
@@ -216,6 +451,20 @@ function roova_hotel_card( $hotel_id, $args = array() ) {
 		</div>
 	</article>
 	<?php
+}
+
+/**
+ * The "from RM120 / night" price row.
+ *
+ * @param float $rate Nightly rate.
+ */
+function roova_from_rate( $rate ) {
+	printf(
+		'<span>%s</span> <strong>%s</strong> <span>%s</span>',
+		esc_html__( 'from', 'roova' ),
+		wp_kses_post( wc_price( $rate ) ),
+		esc_html__( '/ night', 'roova' )
+	);
 }
 
 /**
@@ -247,12 +496,13 @@ function roova_simple_product_card( $product ) {
  */
 function roova_destination_tile( $destination, $class = '' ) {
 	$term  = $destination['term'];
-	$image = $destination['image_id'] ? wp_get_attachment_image_url( $destination['image_id'], 'roova-hotel-card' ) : '';
-	$color = $destination['color'] ? $destination['color'] : '#0c3b57';
+	$image = $destination['image_id'] ? wp_get_attachment_image_url( $destination['image_id'], 'roova-hotel-hero' ) : '';
+	$color = $destination['color'] ? $destination['color'] : '#0d3a52';
 	?>
-	<a class="roova-destination <?php echo esc_attr( $class ); ?>"
-		href="<?php echo esc_url( $destination['url'] ); ?>"
-		style="<?php echo $image ? 'background-image:url(' . esc_url( $image ) . ');' : 'background:' . esc_attr( $color ) . ';'; ?>">
+	<a class="roova-destination <?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( $destination['url'] ); ?>">
+		<?php /* The photo is its own layer so hovering zooms it without moving the label. */ ?>
+		<span class="roova-destination__bg" aria-hidden="true"
+			style="<?php echo $image ? 'background-image:url(' . esc_url( $image ) . ');' : 'background:' . esc_attr( $color ) . ';'; ?>"></span>
 		<span class="roova-destination__content">
 			<span class="roova-destination__name"><?php echo esc_html( $term->name ); ?></span>
 			<span class="roova-destination__rule" aria-hidden="true"></span>
