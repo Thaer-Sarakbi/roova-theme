@@ -112,6 +112,15 @@ function roova_icon_library() {
 		'info'          => array( __( 'Information', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>' ),
 		'clock'         => array( __( 'Times', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' ),
 		'tag'           => array( __( 'Offer', 'roova' ), '<path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="7.5" r="1.5"/>' ),
+		'arrow-right'   => array( __( 'Continue', 'roova' ), '<path d="M4 12h15"/><path d="M13 6l6 6-6 6"/>' ),
+		'check-circle'  => array( __( 'Confirmed', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M8.4 12.4l2.4 2.4 4.8-5.2"/>' ),
+
+		// Checkout chrome.
+		'lock'          => array( __( 'Secure', 'roova' ), '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/>' ),
+		'bank'          => array( __( 'Online banking', 'roova' ), '<path d="M3 10l9-6 9 6"/><path d="M5 10v8M10 10v8M14 10v8M19 10v8"/><path d="M3 21h18"/>' ),
+		'credit-card'   => array( __( 'Card', 'roova' ), '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 9.5h20"/><path d="M6 14.5h3M12 14.5h6"/>' ),
+		'wallet'        => array( __( 'E-wallet', 'roova' ), '<path d="M20 8V7a2 2 0 0 0-2-2H5.5A2.5 2.5 0 0 0 3 7.5v10A2.5 2.5 0 0 0 5.5 20H18a2 2 0 0 0 2-2v-1"/><path d="M15 12.5h6v-3h-6a1.5 1.5 0 0 0 0 3z"/>' ),
+		'building'      => array( __( 'Pay at the hotel', 'roova' ), '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/><path d="M10 21v-5h4v5"/>' ),
 
 		// The homepage guarantees row.
 		'best-rate'     => array( __( 'Best rate', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6"/><path d="M9.4 9.4v.01M14.6 14.6v.01"/>' ),

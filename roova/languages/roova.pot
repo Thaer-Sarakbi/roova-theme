@@ -22,27 +22,51 @@ msgstr ""
 msgid "Back to the homepage"
 msgstr ""
 
-#: footer.php:15 inc/customizer.php:273 inc/admin/order-metabox.php:53
-msgid "Stay"
+#: checkout.php:23 woocommerce/checkout/thankyou.php:40 woocommerce/checkout/thankyou.php:85
+msgid "Booking confirmed"
 msgstr ""
 
-#: footer.php:16 inc/customizer.php:274 inc/icons.php:103 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652
-msgid "Guests"
+#: checkout.php:24
+msgid "Your rooms are held in your name — the details are below and on their way to your inbox."
 msgstr ""
 
-#: footer.php:17 inc/customizer.php:275
-msgid "Company"
+#: checkout.php:26
+msgid "Complete payment"
 msgstr ""
 
-#: footer.php:28 inc/customizer.php:272
-msgid "Malaysian hotels, booked direct. Klang Valley and Malacca."
+#: checkout.php:27
+msgid "Finish paying to confirm the rooms we are holding for you."
 msgstr ""
 
-#: footer.php:106
+#: checkout.php:29 inc/checkout.php:91 inc/checkout.php:96 inc/customizer.php:267
+msgid "Checkout"
+msgstr ""
+
+#: checkout.php:44 header.php:27
+msgid "Skip to content"
+msgstr ""
+
+#: checkout.php:68 footer.php:106
 msgid "© %1$s %2$s"
 msgstr ""
 
-#: footer.php:113 inc/customizer.php:276
+#: footer.php:15 inc/customizer.php:320 inc/admin/order-metabox.php:53
+msgid "Stay"
+msgstr ""
+
+#: footer.php:16 inc/customizer.php:321 inc/icons.php:103 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55 inc/booking/class-roova-cart.php:447 inc/booking/class-roova-cart.php:652
+msgid "Guests"
+msgstr ""
+
+#: footer.php:17 inc/customizer.php:322
+msgid "Company"
+msgstr ""
+
+#: footer.php:28 inc/customizer.php:319
+msgid "Malaysian hotels, booked direct. Klang Valley and Malacca."
+msgstr ""
+
+#: footer.php:113 inc/customizer.php:323
 msgid "Made in Malaysia"
 msgstr ""
 
@@ -74,20 +98,16 @@ msgstr ""
 msgid "Explore our destinations"
 msgstr ""
 
-#: functions.php:85
+#: functions.php:86
 msgid "Roova needs WooCommerce."
 msgstr ""
 
-#: functions.php:88
+#: functions.php:89
 msgid "Hotels, rooms, bookings and checkout all run on WooCommerce. %s to finish setting up the theme."
 msgstr ""
 
-#: functions.php:89
+#: functions.php:90
 msgid "Install WooCommerce"
-msgstr ""
-
-#: header.php:27
-msgid "Skip to content"
 msgstr ""
 
 #: header.php:45 inc/setup.php:43
@@ -100,7 +120,7 @@ msgid_plural "%d rooms in cart"
 msgstr[0] ""
 msgstr[1] ""
 
-#: header.php:77 inc/customizer.php:256 inc/icons.php:120
+#: header.php:77 inc/customizer.php:256 inc/icons.php:129
 msgid "Support"
 msgstr ""
 
@@ -172,7 +192,7 @@ msgstr ""
 msgid "%1$s — %2$s · %3$s · %4$s"
 msgstr ""
 
-#: single-hotel.php:183 template-search.php:42 inc/template-tags.php:622 inc/woocommerce.php:151 inc/admin/order-metabox.php:80
+#: single-hotel.php:183 template-search.php:42 inc/checkout.php:946 inc/checkout.php:976 inc/template-tags.php:622 inc/admin/order-metabox.php:80
 msgid "%d night"
 msgid_plural "%d nights"
 msgstr[0] ""
@@ -252,47 +272,79 @@ msgid_plural "Max %d adults"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/assets.php:149
+#: inc/assets.php:85
+msgid "Please enter the guest's full name."
+msgstr ""
+
+#: inc/assets.php:86
+msgid "Enter a valid phone number."
+msgstr ""
+
+#: inc/assets.php:87
+msgid "Enter a valid email address."
+msgstr ""
+
+#: inc/assets.php:88 inc/checkout.php:445
+msgid "Please accept the booking terms to continue."
+msgstr ""
+
+#: inc/assets.php:89
+msgid "Your hold has run out — refresh to check the rooms are still free."
+msgstr ""
+
+#: inc/assets.php:91
+msgid "%s removed."
+msgstr ""
+
+#: inc/assets.php:92
+msgid "Undo"
+msgstr ""
+
+#: inc/assets.php:93
+msgid "That did not work. Please reload the page and try again."
+msgstr ""
+
+#: inc/assets.php:200
 msgid "room"
 msgstr ""
 
-#: inc/assets.php:150
+#: inc/assets.php:201
 msgid "rooms"
 msgstr ""
 
-#: inc/assets.php:151
+#: inc/assets.php:202
 msgid "guest"
 msgstr ""
 
-#: inc/assets.php:152
+#: inc/assets.php:203
 msgid "guests"
 msgstr ""
 
-#: inc/assets.php:153
+#: inc/assets.php:204
 msgid "night"
 msgstr ""
 
-#: inc/assets.php:154
+#: inc/assets.php:205
 msgid "nights"
 msgstr ""
 
-#: inc/assets.php:155
+#: inc/assets.php:206
 msgid "Select dates"
 msgstr ""
 
-#: inc/assets.php:156
+#: inc/assets.php:207
 msgid "Nothing matched that search."
 msgstr ""
 
-#: inc/assets.php:157
+#: inc/assets.php:208
 msgid "Loading…"
 msgstr ""
 
-#: inc/assets.php:158
+#: inc/assets.php:209
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:159 inc/icons.php:110 inc/template-tags.php:959
+#: inc/assets.php:210 inc/icons.php:110 inc/template-tags.php:959
 msgid "Close"
 msgstr ""
 
@@ -302,6 +354,140 @@ msgstr ""
 
 #: inc/attributes.php:48
 msgid "Amenity"
+msgstr ""
+
+#: inc/checkout.php:132
+msgid "Tourism Tax"
+msgstr ""
+
+#: inc/checkout.php:137
+msgid "SST"
+msgstr ""
+
+#: inc/checkout.php:348
+msgid "Full name"
+msgstr ""
+
+#: inc/checkout.php:349
+msgid "e.g. Thaer Ahmad"
+msgstr ""
+
+#: inc/checkout.php:356
+msgid "Phone number"
+msgstr ""
+
+#: inc/checkout.php:357
+msgid "+60 12 345 6789"
+msgstr ""
+
+#: inc/checkout.php:366
+msgid "Email address"
+msgstr ""
+
+#: inc/checkout.php:367
+msgid "you@example.com"
+msgstr ""
+
+#: inc/checkout.php:380
+msgid "Notes about your stay"
+msgstr ""
+
+#: inc/checkout.php:381
+msgid "Late check-in around 11pm, high floor if possible, extra pillows…"
+msgstr ""
+
+#: inc/checkout.php:493 inc/checkout.php:498
+msgid "That room is no longer in your booking."
+msgstr ""
+
+#: inc/checkout.php:501
+msgid "That room"
+msgstr ""
+
+#: inc/checkout.php:537 inc/checkout.php:546
+msgid "That room could not be put back."
+msgstr ""
+
+#: inc/checkout.php:669
+msgid "%1$s — %2$s"
+msgstr ""
+
+#: inc/checkout.php:716 inc/customizer.php:274
+msgid "Secure booking"
+msgstr ""
+
+#: inc/checkout.php:740 inc/customizer.php:273
+msgid "Secure checkout"
+msgstr ""
+
+#: inc/checkout.php:768
+msgid "%s held for you — complete your details to confirm."
+msgstr ""
+
+#: inc/checkout.php:771 inc/template-tags.php:336 inc/template-tags.php:623
+msgid "%d room"
+msgid_plural "%d rooms"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/checkout.php:850
+msgid "Required"
+msgstr ""
+
+#: inc/checkout.php:883
+msgid "Remove %s from your booking"
+msgstr ""
+
+#: inc/checkout.php:929
+msgid "%1$s × %2$d"
+msgstr ""
+
+#: inc/checkout.php:941
+msgid "%1$s × %2$s"
+msgstr ""
+
+#: inc/checkout.php:968
+msgid "Check in %1$s — out %2$s"
+msgstr ""
+
+#: inc/checkout.php:1001
+msgid "Subtotal"
+msgstr ""
+
+#: inc/checkout.php:1040
+msgid "Taxes & fees"
+msgstr ""
+
+#: inc/checkout.php:1047 woocommerce/checkout/thankyou.php:64
+msgid "Total"
+msgstr ""
+
+#: inc/checkout.php:1093
+msgid "Tax"
+msgstr ""
+
+#: inc/checkout.php:1112
+msgid "%1$s (%2$s%%)"
+msgstr ""
+
+#: inc/checkout.php:1136 inc/icons.php:111
+msgid "Included"
+msgstr ""
+
+#: inc/checkout.php:1157
+msgid "Rate held for %s"
+msgstr ""
+
+#: inc/checkout.php:1184
+msgid "Your booking is empty"
+msgstr ""
+
+#: inc/checkout.php:1185
+msgid "Nothing is being held right now. Pick your dates and we will find the rooms that are free."
+msgstr ""
+
+#: inc/checkout.php:1187 inc/search.php:28
+msgid "Find a room"
 msgstr ""
 
 #: inc/customizer.php:17
@@ -512,39 +698,75 @@ msgstr ""
 msgid "Support link text"
 msgstr ""
 
-#: inc/customizer.php:267
-msgid "Footer and contact"
-msgstr ""
-
-#: inc/customizer.php:272
-msgid "Footer tagline"
+#: inc/customizer.php:269
+msgid "The banner and the small print on the checkout page. Only promise what the hotels actually honour — the line under the Place order button is the last thing a guest reads before paying."
 msgstr ""
 
 #: inc/customizer.php:273
-msgid "Column 1 heading"
+msgid "Banner eyebrow"
 msgstr ""
 
 #: inc/customizer.php:274
-msgid "Column 2 heading"
+msgid "Header reassurance"
 msgstr ""
 
 #: inc/customizer.php:275
+msgid "Under the Place order button"
+msgstr ""
+
+#: inc/customizer.php:275 woocommerce/checkout/payment.php:59
+msgid "Free cancellation until 24 hours before check-in."
+msgstr ""
+
+#: inc/customizer.php:295
+msgid "Banner photo"
+msgstr ""
+
+#: inc/customizer.php:296
+msgid "A wide reception or check-in photo. The theme ships one, so this can stay empty."
+msgstr ""
+
+#: inc/customizer.php:306
+msgid "Booking terms link"
+msgstr ""
+
+#: inc/customizer.php:307
+msgid "Only used when no terms page is set in WooCommerce > Settings > Advanced."
+msgstr ""
+
+#: inc/customizer.php:314
+msgid "Footer and contact"
+msgstr ""
+
+#: inc/customizer.php:319
+msgid "Footer tagline"
+msgstr ""
+
+#: inc/customizer.php:320
+msgid "Column 1 heading"
+msgstr ""
+
+#: inc/customizer.php:321
+msgid "Column 2 heading"
+msgstr ""
+
+#: inc/customizer.php:322
 msgid "Column 3 heading"
 msgstr ""
 
-#: inc/customizer.php:276
+#: inc/customizer.php:323
 msgid "Bottom-right note"
 msgstr ""
 
-#: inc/customizer.php:277
+#: inc/customizer.php:324
 msgid "Phone"
 msgstr ""
 
-#: inc/customizer.php:278
+#: inc/customizer.php:325
 msgid "Email"
 msgstr ""
 
-#: inc/customizer.php:279 inc/admin/metabox-hotel-details.php:99
+#: inc/customizer.php:326 inc/admin/metabox-hotel-details.php:99
 msgid "Address"
 msgstr ""
 
@@ -860,10 +1082,6 @@ msgstr ""
 msgid "Expand"
 msgstr ""
 
-#: inc/icons.php:111
-msgid "Included"
-msgstr ""
-
 #: inc/icons.php:112
 msgid "Information"
 msgstr ""
@@ -876,27 +1094,51 @@ msgstr ""
 msgid "Offer"
 msgstr ""
 
-#: inc/icons.php:117
-msgid "Best rate"
+#: inc/icons.php:115
+msgid "Continue"
 msgstr ""
 
-#: inc/icons.php:118
-msgid "No booking fees"
+#: inc/icons.php:116 inc/admin/bookings-page.php:142
+msgid "Confirmed"
 msgstr ""
 
 #: inc/icons.php:119
+msgid "Secure"
+msgstr ""
+
+#: inc/icons.php:120
+msgid "Online banking"
+msgstr ""
+
+#: inc/icons.php:121
+msgid "Card"
+msgstr ""
+
+#: inc/icons.php:122
+msgid "E-wallet"
+msgstr ""
+
+#: inc/icons.php:123
+msgid "Pay at the hotel"
+msgstr ""
+
+#: inc/icons.php:126
+msgid "Best rate"
+msgstr ""
+
+#: inc/icons.php:127
+msgid "No booking fees"
+msgstr ""
+
+#: inc/icons.php:128
 msgid "Instant confirmation"
 msgstr ""
 
-#: inc/icons.php:248
+#: inc/icons.php:257
 msgid "%d star hotel"
 msgid_plural "%d star hotel"
 msgstr[0] ""
 msgstr[1] ""
-
-#: inc/search.php:28
-msgid "Find a room"
-msgstr ""
 
 #: inc/setup.php:44
 msgid "Footer column 1"
@@ -953,12 +1195,6 @@ msgstr ""
 #: inc/template-tags.php:335
 msgid "%1$s · %2$s"
 msgstr ""
-
-#: inc/template-tags.php:336 inc/template-tags.php:623
-msgid "%d room"
-msgid_plural "%d rooms"
-msgstr[0] ""
-msgstr[1] ""
 
 #: inc/template-tags.php:337
 msgid "%d guest"
@@ -1160,10 +1396,6 @@ msgstr ""
 
 #: inc/admin/bookings-page.php:141
 msgid "Awaiting payment"
-msgstr ""
-
-#: inc/admin/bookings-page.php:142
-msgid "Confirmed"
 msgstr ""
 
 #: inc/admin/bookings-page.php:143
@@ -1552,7 +1784,7 @@ msgstr ""
 msgid "This room takes up to %1$d adults and %2$d children per room. Please add another room or pick a bigger one."
 msgstr ""
 
-#: inc/booking/class-roova-cart.php:215 inc/booking/class-roova-holds.php:298 inc/booking/class-roova-holds.php:391
+#: inc/booking/class-roova-cart.php:215 inc/booking/class-roova-holds.php:298 inc/booking/class-roova-holds.php:421
 msgid "Only %d room of this type is left for those dates."
 msgid_plural "Only %d rooms of this type are left for those dates."
 msgstr[0] ""
@@ -1602,11 +1834,11 @@ msgstr ""
 msgid "We could not hold that room. Please try again."
 msgstr ""
 
-#: inc/booking/class-roova-holds.php:373
+#: inc/booking/class-roova-holds.php:403
 msgid "That booking is no longer being held."
 msgstr ""
 
-#: inc/booking/class-roova-holds.php:515
+#: inc/booking/class-roova-holds.php:545
 msgid "Every five minutes (Roova)"
 msgstr ""
 
@@ -1628,4 +1860,88 @@ msgstr ""
 
 #: inc/products/register.php:18
 msgid "Room (bookable)"
+msgstr ""
+
+#: woocommerce/checkout/form-billing.php:17
+msgid "Guest information"
+msgstr ""
+
+#: woocommerce/checkout/form-billing.php:30
+msgid "Your voucher and hotel contact details are sent here."
+msgstr ""
+
+#: woocommerce/checkout/form-billing.php:42
+msgid "Create an account so you can manage this booking later"
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:45
+msgid "Payment options"
+msgstr ""
+
+#: woocommerce/checkout/form-checkout.php:50 woocommerce/checkout/form-checkout.php:53
+msgid "Order summary"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:25
+msgid "Add coupons"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:30 woocommerce/checkout/form-coupon.php:31
+msgid "Coupon code"
+msgstr ""
+
+#: woocommerce/checkout/form-coupon.php:33 woocommerce/checkout/form-coupon.php:34
+msgid "Apply"
+msgstr ""
+
+#: woocommerce/checkout/form-shipping.php:29
+msgid "Delivery address"
+msgstr ""
+
+#: woocommerce/checkout/form-shipping.php:52
+msgid "Order notes"
+msgstr ""
+
+#: woocommerce/checkout/form-shipping.php:53
+msgid "(optional)"
+msgstr ""
+
+#: woocommerce/checkout/terms.php:25 woocommerce/checkout/terms.php:26
+msgid "booking terms"
+msgstr ""
+
+#: woocommerce/checkout/terms.php:40
+msgid "I have read and agree to the %s, cancellation policy and privacy notice."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:23
+msgid "Payment did not go through"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:24
+msgid "Your rooms are still being held. Try paying again, or use another method."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:27
+msgid "Try again"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:29
+msgid "My bookings"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:45
+msgid "Order %1$s — a confirmation has been sent to %2$s."
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:56
+msgid "Order number"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:60
+msgid "Date"
+msgstr ""
+
+#: woocommerce/checkout/thankyou.php:69
+msgid "Payment"
 msgstr ""

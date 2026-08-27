@@ -16,7 +16,10 @@ through the normal WooCommerce cart, checkout and orders.
 3. On activation the theme creates:
    * the bookings database table,
    * the **Destination**, **Amenity** and **Facilities** product attributes,
-   * a **Find a room** page using the *Hotel search results* template.
+   * a **Find a room** page using the *Hotel search results* template,
+   * a **Checkout** page, if WooCommerce has not already made one,
+   * two tax rates — **Tourism Tax** 5% and **SST** 10% — but only on a store that has no tax rates
+     of its own. See section 10.
 4. **Settings → Reading →** set your homepage to a static page so the hotel homepage template is used.
 5. **Appearance → Customize → Roova hotel theme →** brand colours, hero text, Google Maps key, hold times.
 
@@ -149,7 +152,82 @@ busiest night decides. A room with 8 units is bookable while fewer than 8 units 
 those nights. Same-day turnarounds do not collide: a guest checking out on the 5th frees that night
 for a guest checking in on the 5th.
 
-## 9. Managing bookings
+## 9. The checkout page
+
+The theme replaces WooCommerce's checkout with one built for room bookings. You do not have to set it
+up — it takes over the checkout page whatever that page contains, including the block checkout that
+WooCommerce installs by default.
+
+You will find **Checkout** under **Pages**, alongside Cart, Shop and My account. The theme checks it is
+there and puts it back if it goes missing, so there is nothing to create by hand. Editing that page
+does not change what guests see: the checkout below is drawn by the theme, not by the page's content.
+The page it points at is set under **WooCommerce → Settings → Advanced → Checkout page**.
+
+What a guest sees:
+
+* A stripped-back header — just your wordmark and "Secure booking". No menu, nothing to click away
+  with.
+* A photo banner reading "Checkout" and, under it, how many rooms are being held.
+* **Guest information** — full name, phone and email. Nothing else: a stay has no delivery address, so
+  every address, company and country field is gone. The name is split into first and last on the
+  order, so orders and emails look normal.
+* **Order notes** (optional).
+* **Payment options** — one card per payment method you have switched on in **WooCommerce → Settings →
+  Payments**. Their titles and descriptions are your own; choosing a card opens its description. Add,
+  rename or reorder a gateway there and the cards follow.
+* **Booking terms** — a checkbox the guest has to tick. It links to the terms page set in
+  **WooCommerce → Settings → Advanced → Terms and conditions**, or to the link in **Customizer →
+  Roova → Checkout** if you have not set one.
+* **Place order**, showing the live total, and the reassurance line underneath (Customizer).
+* On the right, the **order summary**: every room in the cart with its photo, hotel, dates, nights and
+  guests, a coupon box, the totals, and a countdown showing how long the rooms stay held.
+* Each room has a **×** button to take it out of the booking. The dates it was holding go straight
+  back on sale, the totals and the Place order button follow, and an **Undo** link appears in case it
+  was a mistake — undo only works while nobody else has taken those dates in the meantime. Removing
+  the last room sends the guest to the cart.
+
+The banner photo, the eyebrow, the header reassurance and the line under the Place order button are
+all in **Customizer → Roova hotel theme → Checkout**.
+
+Guests are told about a problem next to the field it belongs to, and the order cannot be placed until
+the name, phone, email and terms are all filled in.
+
+WooCommerce's "*… has been added to your cart*" message is not shown on this page — the order summary
+beside the form already lists every room. It still appears on hotel pages, where it is the
+confirmation that the room went in, and anything that actually needs the guest's attention (a room
+that has sold out, a payment problem) is still shown here.
+
+## 10. Taxes
+
+A fresh install starts with two rates, added on top of the room rate and shown as their own lines in
+the order summary:
+
+| Tax | Rate |
+|---|---|
+| Tourism Tax | 5% |
+| SST | 10% |
+
+**Change them at WooCommerce → Settings → Tax → Standard rates.** Edit a percentage, rename a tax, add
+a third or delete one — the checkout summary, the confirmation page, the order and the emails all
+follow. The percentage in the label ("SST (10%)") is read from the rate, so it is never out of step
+with what is actually charged.
+
+Two things worth knowing:
+
+* Each tax needs its own **Priority**. WooCommerce charges one rate per priority, so two rates sharing
+  a priority means only the first is applied. Tourism Tax is priority 1, SST is priority 2; a third
+  tax needs priority 3.
+* Both are charged on the room rate, not on each other. Tick **Compound** on a rate if it should be
+  charged on top of the ones above it.
+
+The theme only ever adds these rates to a store that has **no tax rates at all**. Once they exist they
+are yours — theme updates never change them.
+
+Under **Settings → Tax** you can also switch *Display tax totals* to "As a single total" for one
+combined line, or turn tax off entirely under **Settings → General**, in which case the summary shows
+"Taxes & fees — Included".
+
+## 11. Managing bookings
 
 **WooCommerce → Bookings**
 
@@ -159,7 +237,7 @@ for a guest checking in on the 5th.
 
 Each order also has a **Bookings** panel on its edit screen.
 
-## 10. Menus and pages
+## 12. Menus and pages
 
 * Create a menu and assign it to **Primary**; a good set is Hotels, Destinations, Why book direct.
 * The footer has three link columns, each its own menu location — **Footer column 1 / 2 / 3**. The
@@ -169,7 +247,7 @@ Each order also has a **Bookings** panel on its edit screen.
 * The nav "Manage booking" button points at the WooCommerce **My account** page, where guests can see
   and track their orders.
 
-## 11. Developer notes
+## 13. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.
@@ -180,6 +258,12 @@ Each order also has a **Bookings** panel on its edit screen.
 * The homepage map draws real Natural Earth geometry with d3-geo and topojson, loaded from a CDN
   (pinned versions, checked with subresource integrity) only on the page that shows it. If they do
   not load, the town list beside the map still renders and still links.
-* Cart/Checkout Blocks are supported: stay details are exposed through the Store API, and checkout is
-  blocked when a stay is no longer available.
+* The checkout page is the theme's own (`woocommerce/checkout/*.php` over the classic checkout,
+  routed by `roova_checkout_template()`), so it does not matter whether the checkout page holds the
+  block or the shortcode. Filter `roova_use_checkout_template` to false to hand the page back to
+  WooCommerce.
+* Checkout filters: `roova_payment_icon`, `roova_payment_note` and `roova_payment_badge` decide the
+  icon, the small grey line and the gold pill on each payment card.
+* The cart still uses the Blocks version: stay details are exposed through the Store API, and checkout
+  is blocked when a stay is no longer available.
 * Translations: `languages/roova.pot`.

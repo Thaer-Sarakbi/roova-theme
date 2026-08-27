@@ -262,6 +262,53 @@ function roova_customize_register( $wp_customize ) {
 		'type'    => 'text',
 	) );
 
+	/* ----------------------------------------------------------- Checkout */
+	$wp_customize->add_section( 'roova_checkout', array(
+		'title'       => __( 'Checkout', 'roova' ),
+		'panel'       => 'roova_panel',
+		'description' => __( 'The banner and the small print on the checkout page. Only promise what the hotels actually honour — the line under the Place order button is the last thing a guest reads before paying.', 'roova' ),
+	) );
+
+	$checkout_fields = array(
+		'checkout_eyebrow'      => array( __( 'Banner eyebrow', 'roova' ), __( 'Secure checkout', 'roova' ) ),
+		'checkout_secure_label' => array( __( 'Header reassurance', 'roova' ), __( 'Secure booking', 'roova' ) ),
+		'checkout_reassurance'  => array( __( 'Under the Place order button', 'roova' ), __( 'Free cancellation until 24 hours before check-in.', 'roova' ) ),
+	);
+
+	foreach ( $checkout_fields as $key => $data ) {
+		$wp_customize->add_setting( 'roova_' . $key, array(
+			'default'           => $data[1],
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'roova_' . $key, array(
+			'label'   => $data[0],
+			'section' => 'roova_checkout',
+			'type'    => 'text',
+		) );
+	}
+
+	$wp_customize->add_setting( 'roova_checkout_banner_image', array(
+		'default'           => '',
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'roova_checkout_banner_image', array(
+		'label'       => __( 'Banner photo', 'roova' ),
+		'description' => __( 'A wide reception or check-in photo. The theme ships one, so this can stay empty.', 'roova' ),
+		'section'     => 'roova_checkout',
+		'mime_type'   => 'image',
+	) ) );
+
+	$wp_customize->add_setting( 'roova_terms_url', array(
+		'default'           => '',
+		'sanitize_callback' => 'esc_url_raw',
+	) );
+	$wp_customize->add_control( 'roova_terms_url', array(
+		'label'       => __( 'Booking terms link', 'roova' ),
+		'description' => __( 'Only used when no terms page is set in WooCommerce > Settings > Advanced.', 'roova' ),
+		'section'     => 'roova_checkout',
+		'type'        => 'url',
+	) );
+
 	/* ------------------------------------------------------------- Footer */
 	$wp_customize->add_section( 'roova_footer', array(
 		'title' => __( 'Footer and contact', 'roova' ),

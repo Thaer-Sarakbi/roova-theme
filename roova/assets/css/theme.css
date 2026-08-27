@@ -2421,12 +2421,6 @@ p {
 	font-weight: 500;
 }
 
-.roova-nights-note {
-	display: block;
-	font-size: .78rem;
-	color: var(--roova-muted);
-}
-
 .roova-per-night,
 .roova-from {
 	font-size: .82rem;

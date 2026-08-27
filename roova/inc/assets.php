@@ -47,6 +47,57 @@ function roova_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_assets' );
 
 /**
+ * Checkout's own stylesheet and script.
+ *
+ * Both are loaded only on the checkout, order-pay and order-received views —
+ * the styles are a page's worth of rules that nothing else uses, and the script
+ * hangs off WooCommerce's checkout events, which exist nowhere else.
+ */
+function roova_enqueue_checkout_assets() {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-checkout', ROOVA_URI . 'assets/css/checkout.css', array( 'roova-style' ), ROOVA_VERSION );
+
+	// The order-received page has no form to validate and no countdown to run.
+	if ( is_order_received_page() ) {
+		return;
+	}
+
+	/*
+	 * wc-checkout is what fires the events the script listens for. WooCommerce
+	 * registers it on checkout pages; take it as a dependency when it is there
+	 * so load order is guaranteed, and fall back to jQuery alone when it is not
+	 * — an unregistered dependency would stop the script printing at all.
+	 */
+	$deps = wp_script_is( 'wc-checkout', 'registered' ) ? array( 'jquery', 'wc-checkout' ) : array( 'jquery' );
+
+	wp_enqueue_script( 'roova-checkout', ROOVA_URI . 'assets/js/checkout.js', $deps, ROOVA_VERSION, true );
+
+	wp_localize_script(
+		'roova-checkout',
+		'roovaCheckout',
+		array(
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'roova_ajax' ),
+			'i18n'    => array(
+				'name'         => __( 'Please enter the guest\'s full name.', 'roova' ),
+				'phone'        => __( 'Enter a valid phone number.', 'roova' ),
+				'email'        => __( 'Enter a valid email address.', 'roova' ),
+				'terms'        => __( 'Please accept the booking terms to continue.', 'roova' ),
+				'holdExpired'  => __( 'Your hold has run out — refresh to check the rooms are still free.', 'roova' ),
+				/* translators: %s: room name */
+				'removed'      => __( '%s removed.', 'roova' ),
+				'undo'         => __( 'Undo', 'roova' ),
+				'removeFailed' => __( 'That did not work. Please reload the page and try again.', 'roova' ),
+			),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_checkout_assets', 20 );
+
+/**
  * The pinned map libraries, with the hashes their tags are checked against.
  *
  * @return array[] Handle => array( src, integrity ).

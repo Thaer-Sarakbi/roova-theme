@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROOVA_VERSION', '1.2.1' );
+define( 'ROOVA_VERSION', '1.3.0' );
 define( 'ROOVA_DIR', trailingslashit( get_template_directory() ) );
 define( 'ROOVA_URI', trailingslashit( get_template_directory_uri() ) );
 
@@ -56,6 +56,7 @@ if ( roova_has_woocommerce() ) {
 	roova_require( 'inc/search.php' );
 	roova_require( 'inc/ajax.php' );
 	roova_require( 'inc/woocommerce.php' );
+	roova_require( 'inc/checkout.php' );
 
 	if ( is_admin() ) {
 		roova_require( 'inc/admin/metabox-hotel-details.php' );

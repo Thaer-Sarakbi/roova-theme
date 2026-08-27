@@ -61,8 +61,13 @@ Environment gotchas that cost real time once:
 - The **PHP built-in server runs sandboxed** here: it cannot write `debug.log` or any file outside the
   site. To debug a live request, echo diagnostics into the page (e.g. an HTML comment on `wp_footer`)
   rather than logging them.
-- The cart and checkout are the **Blocks** versions, rendered client-side. Server HTML will not show
-  stay details; read `?rest_route=/wc/store/v1/cart` instead.
+- The **cart** is the Blocks version, rendered client-side. Server HTML will not show stay details;
+  read `?rest_route=/wc/store/v1/cart` instead. Checkout is the theme's own classic template (see
+  *Checkout* below) and can be read straight out of the HTML.
+- **Nested `<form>` elements are dropped by the browser**, not by the parser you are grepping. Markup
+  that looks right in `curl` output can be absent from the DOM. Anything layout- or behaviour-related
+  has to be checked with `node .testenv/drive.js <url> <script.js> [out.png]`, which evaluates a
+  script in headless Edge and prints what it returns.
 
 ## Architecture
 
@@ -117,7 +122,11 @@ equivalent, which rethrows as `RouteException`) → order status mapping. A conf
 order and throws so checkout errors out. A *paid* order that ends up overbooked is never silently
 dropped — it stays booked and `flag_overbooking()` adds a loud order note.
 
-### Two traps this code has already fallen into
+### Three traps this code has already fallen into
+
+**A CSS rule matching a descendant, not a child, will find WooCommerce's price markup.** A formatted
+price is a nest of `<span>`s; `.some-list span { display: block }` puts the currency symbol on a line
+of its own. Scope label rules with `>`.
 
 **Overriding a WooCommerce product method with the wrong signature is a site-wide fatal.** Check the
 parent in `includes/abstracts/abstract-wc-product.php` before overriding — `get_price_html()` takes a
@@ -182,8 +191,11 @@ its 1180px column is the `.roova-woocommerce` rule, because WooCommerce's own wr
 `.roova-wc-page`) do not fire on every one of those pages.
 Reusable markup lives in `inc/template-tags.php` as `roova_*` functions, not in template partials.
 
-`header.php` and `footer.php` are shared by every page: one header and a cream footer of three menu
-columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
+`checkout.php` is the one page that is not: it prints its own `<html>` document, because the design
+strips the header down to a wordmark and a padlock. See *Checkout*.
+
+`header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
+menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
 site name through `roova_wordmark()`, which picks out a domain suffix in gold ("roova**.my**").
 
 The header has two states, decided by `$roova_over_hero` (front page, not paged):
@@ -197,6 +209,118 @@ corners**. That is a deliberate departure from the handoff (which draws a sticky
 above a 28px-rounded hero panel inset by 20px) — asked for directly, so don't "restore" it. The panel
 carries the header's height in its `min-height` (700px, against the spec's 620px) so the composition
 keeps its proportions.
+
+### Checkout
+
+**Taxes are real WooCommerce tax rates, not theme maths.** `roova_ensure_tax_rates()` seeds Tourism
+Tax 5% and SST 10% into the tax table and switches tax calculation on — but *only* on a store whose
+tax table is empty, because a store with rates has had someone think about them. After that they are
+the client's: WooCommerce → Settings → Tax → Standard rates, and the summary, order, emails and
+confirmation all follow. Each rate needs its own **priority** — WooCommerce charges one rate per
+priority, so two sharing one means only the first is applied. Rates are seeded with a blank country
+and `woocommerce_tax_based_on = base`: a stay is taxed where the hotel is, and this checkout collects
+no address to tax against.
+
+The summary renders one row per tax from `WC_Cart::get_tax_totals()`, honouring
+`woocommerce_tax_total_display`, and falls back to the handoff's "Taxes & fees — Included" when tax is
+off or prices already include it. `roova_checkout_tax_label()` reads the percentage back off the rate
+so "SST (10%)" cannot drift from what is actually charged.
+
+`roova_ensure_checkout_page()` makes sure there is a Checkout page under Pages at all: without one
+`is_checkout()` is never true, the template never runs, and the cart has nowhere to go. It adopts
+whatever is already there — an existing published page keeps its content, so a store on the block
+checkout keeps the block — untrashes and republishes a page that was removed, and only creates one
+(with the `[woocommerce_checkout]` shortcode) when there is nothing to adopt. It runs on
+`after_switch_theme` and again on `admin_init`, gated on `roova_setup_version` matching
+`ROOVA_VERSION` (the gate `roova_ensure_tax_rates()` shares), so an update uploaded over a live site
+gets the check exactly once per release and never fights an admin who deleted the page on purpose.
+
+The site's checkout page holds the **Cart & Checkout blocks**, which render client-side and cannot be
+templated in PHP. Rather than rewrite the client's page content, `roova_checkout_template()` routes
+every `is_checkout()` view — checkout, order-pay and order-received alike — to `checkout.php`, which
+prints its own document and runs `[woocommerce_checkout]`. That means the classic checkout, and so the
+overrides in `roova/woocommerce/checkout/`. `roova_use_checkout_template` turns the whole thing off.
+
+Everything on the page is read from WooCommerce at render time: the summary from the cart, the payment
+cards from `$available_gateways`, the totals from the cart's own totals. Nothing is transcribed from
+the handoff.
+
+Two hooks are moved in `inc/checkout.php`, at include time (WooCommerce registers them on
+`plugins_loaded`, before the theme is read): `woocommerce_checkout_payment` off the sidebar so payment
+can sit under "Payment options", and `woocommerce_checkout_coupon_form` out of
+`woocommerce_before_checkout_form` so the coupon row can sit in the summary.
+
+Fields are cut to `billing_full_name`, `billing_phone`, `billing_email` and `order_comments`. The name
+is split back into first/last and the store's base country stood in for the missing one, both in
+`roova_checkout_posted_data()` — an order with no country breaks taxes, gateways and the admin screen.
+`roova_cart_needs_shipping()` tells WooCommerce a cart of rooms never ships, but only when *every*
+line is a booking.
+
+Four things here are load-bearing and easy to undo by accident:
+
+- **The summary is a sibling of `form.checkout`, not a child.** It contains the coupon form, and a
+  browser silently drops a `<form>` nested inside another one — the element is in the HTML and never
+  in the DOM. Nothing in the summary is posted, so nothing is lost.
+- **The totals are their own refresh fragment.** WooCommerce replaces
+  `.woocommerce-checkout-review-order-table` and `.woocommerce-checkout-payment` after every update;
+  the totals sit below the coupon row, which must stay out of every fragment or it loses the submit
+  handler WooCommerce bound to it once. So `review-order.php` renders **only** the line items — one
+  root element — and `roova_checkout_totals()` is registered through
+  `woocommerce_update_order_review_fragments`.
+- **The total in the Place order button is part of its label string, not markup inside it.**
+  WooCommerce rewrites the button with `.text()` on every payment-method change, reading the gateway's
+  `data-order_button_text` or the button's own `data-value` — so `roova_place_order_label()` puts the
+  total in both, and the arrow is a CSS pseudo-element, where `.text()` cannot reach it.
+- **WooCommerce's own stylesheet paints `#payment`** as a grey panel with a lilac description box and
+  a speech-bubble arrow. The resets in `checkout.css` carry the ID because Woo's selectors do.
+
+**"… has been added to your cart." is suppressed on checkout, and only there.** The summary beside the
+form already lists every room, so the notice adds nothing and pushes the form down. Notices are stored
+as rendered HTML with the product name interpolated, so matching on the wording would break in every
+language but English — instead `roova_tag_add_to_cart_notice()` marks it at the source through
+`wc_add_to_cart_message_html` (a filter that fires for that notice and nothing else) with an empty
+`.roova-cart-added` span, and `roova_hide_add_to_cart_notice_on_checkout()` drops the marked ones on
+`template_redirect`. Only `success` notices are touched, so an "Only 2 rooms of this type are left"
+error still reaches the guest, and anything checkout queues while rendering is added after this runs.
+
+Each room in the summary carries a delete button. `roova_ajax_remove_cart_item()` / 
+`roova_ajax_restore_cart_item()` follow the `inc/ajax.php` conventions (the `roova_ajax` nonce through
+`roova_check_ajax_nonce()`) and work on `WC()->cart`, which belongs to the requester's session — so a
+cart item key, which is *not* unique to a visitor, can only ever reach their own line. Freeing the
+dates is not done there: `woocommerce_cart_item_removed` already runs
+`Roova_Holds::on_cart_item_removed()`. Undo goes through `restore_cart_item()`, whose
+`woocommerce_cart_item_restored` listener re-places the hold — and can fail, because the dates may
+have gone to someone else, so the handler reads the failure back out of the notice store, drops the
+line again and returns the message. The undo slot lives outside `#order_review` for the same reason
+the coupon row does. Removing the last room reloads, and WooCommerce sends an empty checkout to the
+cart. Nothing adds a `wc_add_notice` on that path: the cart is the Blocks cart, which never prints
+stored notices, so the notice would sit in the session and surface on the next classic page.
+
+Radio cards keep WooCommerce's `payment_method_{id}` class names on both the input and the
+`div.payment_box`, so its script still slides the chosen gateway's description open. The card icon
+comes from `roova_payment_icon()` — matched on gateway ID only, neutral card otherwise, the same rule
+the amenity icons follow — and the note and badge are empty until a site fills them in through
+`roova_payment_note()` / `roova_payment_badge()`. The design's four Malaysian methods are what the
+handoff drew, not what the theme ships.
+
+`assets/js/checkout.js` is **jQuery**, unlike the rest of the front end, because WooCommerce's checkout
+events are jQuery custom events that never reach a native listener. It validates on
+`checkout_place_order` and returns false to refuse the submit; it never submits the order itself.
+
+`Roova_Holds::session_expiry()` backs the "Rate held for 9:42" countdown — it is the real expiry of
+this visitor's earliest hold, not decoration.
+
+The empty-cart panel in `checkout.php` is a fallback: WooCommerce redirects an empty checkout to the
+cart page unless `woocommerce_checkout_redirect_empty_cart` is filtered off.
+
+**The banner scrim and crop are measured, not styled by eye.** The photo behind the heading is a
+Customizer setting, so no install can be assumed to have a dark corner to write on — and the reception
+photo the theme ships is at its brightest exactly there. `object-position` sits at 60% (the handoff
+says 38%) and the scrim carries a second wash from the left, together clearing WCAG AA against the
+worst pixel behind each line — counting the translucent cream the eyebrow and sub-line are painted in,
+which caps their contrast well below the heading's. Changing the photo, the crop or either wash means
+re-checking: hide `.roova-checkout__banner-inner`, screenshot the band, and sample the pixels under
+each text box.
 
 ### The homepage
 
@@ -213,7 +337,8 @@ Two things bite here:
   (2×2 anchor, four 1×1, two 2×1) so any number of destinations tiles cleanly.
 
 The hero and both bands ship with stand-in photography in `assets/images/` (`hero.jpg`, `band-1.jpg`,
-`band-2.jpg` — 2400px JPEGs, ~1.1MB the three of them). `roova_background_image()` prints the
+`band-2.jpg` — 2400px JPEGs, ~1.1MB the three of them), and the checkout banner with `checkout.jpg`
+(1200px, 98KB — a reception desk, the photo the checkout handoff asks for). `roova_background_image()` prints the
 Customizer attachment when there is one and the bundled file otherwise, so an install looks like the
 design before anyone touches the media library. Behind both is a navy gradient, for the case where a
 caller passes no fallback; a band with no image, no fallback and no statement renders nothing at all
@@ -234,7 +359,9 @@ destination's hotels; the two pills switch the framing.
 
 ### Front-end JS
 
-One file, `assets/js/theme.js`, vanilla, no jQuery, wired entirely through `data-roova-*` attributes.
+`assets/js/theme.js`, vanilla, no jQuery, wired entirely through `data-roova-*` attributes.
+(`assets/js/checkout.js` is the one exception, and only because WooCommerce's checkout events are
+jQuery's — see *Checkout*. It loads only on checkout pages, alongside `assets/css/checkout.css`.)
 Dates are handled as `Y-m-d` strings and only converted to `Date` at local midnight so a stay never
 shifts a day across time zones. Server data arrives via the localized `roovaData` object built in
 `roova_script_data()`. Admin JS does use jQuery (WordPress admin convention).
@@ -246,8 +373,8 @@ than a section that never animated.
 
 ## Design system
 
-The look comes from the handoff in `design_handoff_roova_home/` (spec plus HTML prototypes — reference
-only, never shipped). Its tokens are the `:root` block at the top of `assets/css/theme.css`: cream
+The look comes from the handoffs in `design_handoff_roova_home/` and `design_handoff_roova_checkout/`
+(spec plus HTML prototypes — reference only, never shipped). Its tokens are the `:root` block at the top of `assets/css/theme.css`: cream
 `#fbf8f3`, navy `#0d3a52`, gold `#b4823c`, sand `#f6f1e8`, ink `#16302f`, **Newsreader** for display
 and **DM Sans** for UI, `cubic-bezier(.22,.8,.28,1)` as the standard easing. Six of those colours are
 Customizer settings re-emitted as custom properties by `roova_inline_brand_css()`, so change the

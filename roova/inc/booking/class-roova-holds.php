@@ -361,6 +361,36 @@ class Roova_Holds {
 	}
 
 	/**
+	 * When the first of a visitor's holds runs out.
+	 *
+	 * Checkout counts down to it, so the guest can see how long the rooms in
+	 * their cart stay theirs.
+	 *
+	 * @param string $session_id Session ID. Defaults to the current one.
+	 * @return string MySQL datetime in site time, or '' when nothing is held.
+	 */
+	public static function session_expiry( $session_id = '' ) {
+		global $wpdb;
+
+		$session_id = $session_id ? $session_id : roova_session_id();
+		if ( ! $session_id ) {
+			return '';
+		}
+
+		$table = Roova_Schema::table();
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$expiry = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MIN(expires_at) FROM {$table} WHERE session_id = %s AND status = 'hold' AND expires_at IS NOT NULL",
+				$session_id
+			)
+		);
+		// phpcs:enable
+
+		return $expiry ? (string) $expiry : '';
+	}
+
+	/**
 	 * Change the units/dates on an existing hold, re-checking availability.
 	 *
 	 * @param string $cart_item_key Cart item key.

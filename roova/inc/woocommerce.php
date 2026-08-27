@@ -131,26 +131,7 @@ add_filter( 'loop_shop_columns', 'roova_loop_columns' );
  */
 remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
 
-/**
- * Add the stay to the "review order" line items on the checkout page.
- *
- * @param string $quantity Quantity markup.
- * @param array  $item     Cart item.
- * @return string
+/*
+ * The checkout's own line items are drawn by woocommerce/checkout/review-order.php,
+ * which puts the nights in the meta line under each room — see inc/checkout.php.
  */
-function roova_checkout_item_quantity( $quantity, $item ) {
-	if ( empty( $item['roova_booking'] ) ) {
-		return $quantity;
-	}
-
-	$nights = (int) $item['roova_booking']['nights'];
-
-	return $quantity . '<span class="roova-nights-note">' . esc_html(
-		sprintf(
-			/* translators: %d: number of nights */
-			_n( '%d night', '%d nights', $nights, 'roova' ),
-			$nights
-		)
-	) . '</span>';
-}
-add_filter( 'woocommerce_checkout_cart_item_quantity', 'roova_checkout_item_quantity', 10, 2 );
