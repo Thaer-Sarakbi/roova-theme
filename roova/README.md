@@ -135,6 +135,15 @@ taken from the cheapest room.
 
 ## 8. How the booking system prevents conflicts
 
+**One booking at a time.** The cart holds a single room type: booking a room empties the cart first, so
+what a guest pays for is always the stay they just chose, and the dates their old cart was holding go
+straight back on sale. Guests are told the previous room was replaced. They can still book several
+rooms of the *same* type in one stay — that is the "Rooms" number in the search bar.
+
+**"Book now" goes straight to checkout.** There is nothing to add to the booking, so the cart page is
+skipped. If the room cannot be held after all — someone else took the last one in the same second —
+the guest stays on the hotel page with the reason, and whatever they had in the cart is still there.
+
 1. **Adding to cart places a hold.** The dates are reserved for 30 minutes (Customizer → Booking).
    Another guest cannot take the last unit while it sits in someone's cart.
 2. **The cart is re-checked** every time it or the checkout is viewed, and expired holds are ignored

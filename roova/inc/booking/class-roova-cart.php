@@ -19,6 +19,7 @@ class Roova_Cart {
 		add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'validate_add_to_cart' ), 10, 3 );
 		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 10, 3 );
 		add_action( 'woocommerce_add_to_cart', array( __CLASS__, 'after_add_to_cart' ), 20, 6 );
+		add_filter( 'woocommerce_add_to_cart_redirect', array( __CLASS__, 'redirect_after_add' ), 10, 2 );
 
 		add_action( 'woocommerce_before_calculate_totals', array( __CLASS__, 'set_prices' ), 20 );
 		add_filter( 'woocommerce_get_item_data', array( __CLASS__, 'item_data' ), 10, 2 );
@@ -30,6 +31,9 @@ class Roova_Cart {
 
 		add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'revalidate_cart' ) );
 		add_action( 'woocommerce_after_cart_item_quantity_update', array( __CLASS__, 'on_quantity_update' ), 10, 3 );
+
+		// Before WooCommerce totals the cart it has just loaded (priority 20).
+		add_action( 'woocommerce_cart_loaded_from_session', array( __CLASS__, 'enforce_single_item' ), 10 );
 
 		add_action( 'woocommerce_before_cart', array( __CLASS__, 'touch_holds' ) );
 		add_action( 'woocommerce_before_checkout_form', array( __CLASS__, 'touch_holds' ) );
@@ -147,6 +151,130 @@ class Roova_Cart {
 	}
 
 	/* ---------------------------------------------------------------------
+	 * One booking at a time
+	 * ------------------------------------------------------------------ */
+
+	/**
+	 * Does the cart hold a single line?
+	 *
+	 * The site sells one stay at a time: adding a room empties the cart first,
+	 * so what a guest is about to pay for is always the booking they just made.
+	 *
+	 * @return bool
+	 */
+	public static function single_item_cart() {
+		/**
+		 * Filter whether the cart is limited to one line.
+		 *
+		 * @param bool $single_item True to clear the cart on every add.
+		 */
+		return (bool) apply_filters( 'roova_single_item_cart', true );
+	}
+
+	/**
+	 * Empty the cart so a new booking starts from nothing.
+	 *
+	 * Lines are removed one by one rather than through `empty_cart()`: each
+	 * removal fires `woocommerce_cart_item_removed`, which is what releases the
+	 * hold behind it, and leaves the cart session intact for the line that is
+	 * about to be added. The undo store is cleared with them — the previous
+	 * booking was replaced on purpose, and restoring it would put two stays back
+	 * in a cart that only ever shows one.
+	 *
+	 * @return int Number of lines removed.
+	 */
+	public static function clear_for_new_booking() {
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+			return 0;
+		}
+
+		$keys = array_keys( WC()->cart->get_cart() );
+		if ( ! $keys ) {
+			return 0;
+		}
+
+		foreach ( $keys as $key ) {
+			WC()->cart->remove_cart_item( $key );
+		}
+
+		WC()->cart->set_removed_cart_contents( array() );
+
+		return count( $keys );
+	}
+
+	/**
+	 * Send the guest to checkout as soon as a room is in the cart.
+	 *
+	 * There is one booking in the cart and nothing to add to it, so the cart
+	 * page has nothing left to decide — "Book now" goes straight to payment.
+	 *
+	 * WooCommerce only applies this filter when the line really went in and no
+	 * error notice was raised, so a room whose hold failed at the last moment
+	 * leaves the guest on the hotel page with the reason, where they can pick
+	 * again. The empty-cart test covers the same case from the other side.
+	 *
+	 * @param string          $url            Redirect URL, '' to stay put.
+	 * @param WC_Product|null $adding_to_cart Product that was added.
+	 * @return string
+	 */
+	public static function redirect_after_add( $url, $adding_to_cart = null ) {
+		/**
+		 * Filter whether adding a room jumps straight to checkout.
+		 *
+		 * @param bool $to_checkout True to redirect to the checkout page.
+		 */
+		if ( ! apply_filters( 'roova_checkout_after_add', true ) ) {
+			return $url;
+		}
+
+		if ( ! $adding_to_cart instanceof WC_Product || 'room' !== $adding_to_cart->get_type() ) {
+			return $url;
+		}
+
+		if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
+			return $url;
+		}
+
+		$checkout = wc_get_checkout_url();
+
+		return $checkout ? $checkout : $url;
+	}
+
+	/**
+	 * Keep only the newest line in a cart that arrived with several.
+	 *
+	 * Adding a room already clears the cart, so this is the backstop for the
+	 * carts that never went through that path: a session saved before the rule
+	 * existed, an "order again", or anything added programmatically.
+	 *
+	 * @param WC_Cart $cart Cart.
+	 */
+	public static function enforce_single_item( $cart = null ) {
+		if ( ! self::single_item_cart() ) {
+			return;
+		}
+
+		$cart = $cart ? $cart : ( function_exists( 'WC' ) ? WC()->cart : null );
+		if ( ! $cart ) {
+			return;
+		}
+
+		$keys = array_keys( $cart->get_cart() );
+		if ( count( $keys ) < 2 ) {
+			return;
+		}
+
+		// The last line is the most recent add; drop everything before it.
+		array_pop( $keys );
+
+		foreach ( $keys as $key ) {
+			$cart->remove_cart_item( $key );
+		}
+
+		$cart->set_removed_cart_contents( array() );
+	}
+
+	/* ---------------------------------------------------------------------
 	 * Add to cart
 	 * ------------------------------------------------------------------ */
 
@@ -177,13 +305,17 @@ class Roova_Cart {
 			return false;
 		}
 
-		$quantity      = max( 1, (int) $quantity );
-		$existing_key  = self::find_matching_cart_item( $product_id, $booking );
-		$existing_qty  = 0;
+		$quantity     = max( 1, (int) $quantity );
+		$single       = self::single_item_cart();
+		$existing_key = $single ? '' : self::find_matching_cart_item( $product_id, $booking );
+		$existing_qty = 0;
 		if ( $existing_key ) {
 			$item         = WC()->cart->get_cart_item( $existing_key );
 			$existing_qty = $item ? (int) $item['quantity'] : 0;
 		}
+
+		// With a single-item cart there is nothing to add to: the line that is
+		// coming in is the whole cart, so it is asking for its own quantity.
 		$wanted = $existing_qty + $quantity;
 
 		if ( ! roova_room_fits( $product_id, $booking['adults'], $booking['children'], $wanted ) ) {
@@ -200,12 +332,18 @@ class Roova_Cart {
 			return false;
 		}
 
-		// The visitor's own hold on this exact line is theirs to grow.
+		/*
+		 * The visitor's own hold on this exact line is theirs to grow — and when
+		 * the cart is about to be replaced, every hold they own is theirs to take
+		 * back, because all of them are seconds from being released.
+		 */
 		$available = Roova_Availability::available_units(
 			$product_id,
 			$booking['check_in'],
 			$booking['check_out'],
-			array( 'exclude_cart_item_key' => $existing_key )
+			$single
+				? array( 'exclude_session_holds' => true )
+				: array( 'exclude_cart_item_key' => $existing_key )
 		);
 
 		if ( $available < $wanted ) {
@@ -223,8 +361,12 @@ class Roova_Cart {
 	}
 
 	/**
-	 * Attach the stay to the cart line so identical rooms on different dates
-	 * stay separate lines.
+	 * Clear the cart for the incoming booking and attach the stay to its line.
+	 *
+	 * This is the hook that empties the cart, rather than the validation filter
+	 * above: it fires only when an item is genuinely on its way in — classic add
+	 * to cart and the Store API alike — where validation also runs for things
+	 * like "order again", which must not wipe the cart a guest is filling.
 	 *
 	 * @param array $cart_item_data Cart item data.
 	 * @param int   $product_id     Product ID.
@@ -235,16 +377,24 @@ class Roova_Cart {
 		unset( $variation_id );
 
 		$product = wc_get_product( $product_id );
-		if ( ! $product || 'room' !== $product->get_type() ) {
+		$is_room = $product && 'room' === $product->get_type();
+		$booking = $is_room ? self::booking_from_request( $product_id ) : null;
+
+		// A stay we cannot read is not going into the cart — validation has
+		// already refused it — so leave whatever is in there alone.
+		if ( $is_room && is_wp_error( $booking ) ) {
 			return $cart_item_data;
 		}
 
-		$booking = self::booking_from_request( $product_id );
-		if ( is_wp_error( $booking ) ) {
-			return $cart_item_data;
+		// Every add starts a fresh cart, whatever is being added: one line in,
+		// nothing else beside it.
+		if ( self::single_item_cart() && self::clear_for_new_booking() ) {
+			wc_add_notice( __( 'Your cart holds one booking at a time, so what was in it has been replaced.', 'roova' ), 'notice' );
 		}
 
-		$cart_item_data['roova_booking'] = $booking;
+		if ( $is_room ) {
+			$cart_item_data['roova_booking'] = $booking;
+		}
 
 		return $cart_item_data;
 	}

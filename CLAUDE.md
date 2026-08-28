@@ -141,11 +141,51 @@ another's hold. The commit path avoids the problem entirely by carrying the book
 ### Hold lifecycle
 
 Holds are keyed by `cart_item_key` + `session_id`. `Roova_Cart::sync_hold()` creates or resizes the
-hold after WooCommerce settles the line's quantity (a repeat add merges into an existing line, so the
-hold is resized rather than duplicated). Cart removal, restore and empty all have listeners in
+hold after WooCommerce settles the line's quantity (the resize path is what a repeat add used to take,
+and still does with `roova_single_item_cart` filtered off — see *One booking per cart*). Cart removal,
+restore and empty all have listeners in
 `Roova_Holds`. Order status then drives the row: paid → `confirmed` with no expiry; cancelled /
 refunded / failed → `cancelled`, freeing the dates; unpaid orders carry an expiry so abandoned
 checkouts release their rooms.
+
+### One booking per cart
+
+The cart carries a single line. `Roova_Cart::add_cart_item_data()` calls `clear_for_new_booking()`
+before it attaches the stay, so every add empties the cart first — whatever is being added, room or
+not. Quantity is untouched: several units of *one* room type is a normal stay (the "Rooms" number in
+the search bar), several room types is not.
+
+Three things make that work:
+
+- **The clearing hangs off `woocommerce_add_cart_item_data`, not the validation filter.**
+  `woocommerce_add_to_cart_validation` also fires for "order again" and for the Store API's own
+  pre-flight, neither of which is an item going into the cart; `add_cart_item_data` fires only on a
+  real add, on both the classic and Store API paths.
+- **Lines are removed one at a time rather than through `empty_cart()`.** Only
+  `woocommerce_cart_item_removed` releases the hold behind a line, and `empty_cart()` destroys the
+  cart session that the incoming line is about to be written into. The undo store is dropped with
+  them, so a replaced booking cannot be restored alongside the new one.
+- **Availability on the way in must ignore the visitor's own holds**, because all of them are seconds
+  from release — that is `exclude_session_holds` on `Roova_Availability::get_overlapping_rows()`.
+  Without it, re-booking the last unit of a room you are already holding fails as "fully booked".
+
+`enforce_single_item()` on `woocommerce_cart_loaded_from_session` (priority 10, before WooCommerce
+totals at 20) is the backstop for carts that never went through that path — a session saved before the
+rule existed, an "order again", a programmatic add — and keeps the newest line. `roova_single_item_cart`
+turns the whole thing off.
+
+**"Book now" then goes straight to checkout**, through `redirect_after_add()` on
+`woocommerce_add_to_cart_redirect` — with one booking in the cart and nothing to add to it, the cart
+page has nothing left to decide. WooCommerce applies that filter only when the line really went in and
+`wc_notice_count( 'error' )` is zero, so a stay refused at validation or a hold that failed at the last
+moment leaves the guest on the hotel page reading why, with their previous booking still in the cart.
+`roova_checkout_after_add` turns the jump off. This is why the add-to-cart notice suppression on
+checkout matters — it now fires on essentially every booking.
+
+**The header has no cart link at all**, and `.roova-nav__cart` is gone from `theme.css` with it. There
+is nothing to come back to the cart page for: the cart holds one booking and booking it lands the guest
+on checkout. The one count that still means something — how many rooms are held — is the checkout
+banner's sub-line, from `roova_checkout_banner_sub()`.
 
 ### Search criteria
 

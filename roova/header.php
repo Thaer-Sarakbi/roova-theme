@@ -57,19 +57,12 @@ $roova_over_hero = is_front_page() && ! is_paged();
 		</nav>
 
 		<div class="roova-nav__actions">
-			<?php if ( function_exists( 'wc_get_cart_url' ) && WC()->cart && ! WC()->cart->is_empty() ) : ?>
-				<a class="roova-nav__cart" href="<?php echo esc_url( wc_get_cart_url() ); ?>">
-					<?php
-					printf(
-						/* translators: %d: number of items */
-						esc_html( _n( '%d room in cart', '%d rooms in cart', WC()->cart->get_cart_contents_count(), 'roova' ) ),
-						(int) WC()->cart->get_cart_contents_count()
-					);
-					?>
-				</a>
-			<?php endif; ?>
-
 			<?php
+			/*
+			 * No cart link here on purpose: the cart holds one booking and
+			 * "Book now" goes straight to checkout, so there is nothing for a
+			 * guest to come back to the cart page for.
+			 */
 			$roova_support_url = roova_option( 'support_url', '' );
 			if ( $roova_support_url ) :
 				?>

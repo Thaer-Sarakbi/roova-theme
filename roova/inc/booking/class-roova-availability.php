@@ -35,7 +35,7 @@ class Roova_Availability {
 	 * @param int    $room_id   Room product ID.
 	 * @param string $check_in  Y-m-d.
 	 * @param string $check_out Y-m-d.
-	 * @param array  $args      exclude_cart_item_key, exclude_ids.
+	 * @param array  $args      exclude_cart_item_key, exclude_session_holds, exclude_ids.
 	 * @return array[] Row objects as associative arrays.
 	 */
 	public static function get_overlapping_rows( $room_id, $check_in, $check_out, $args = array() ) {
@@ -44,6 +44,7 @@ class Roova_Availability {
 		$args = wp_parse_args( $args, array(
 			'exclude_cart_item_key' => '',
 			'exclude_session'       => null,
+			'exclude_session_holds' => false,
 			'exclude_ids'           => array(),
 		) );
 
@@ -78,6 +79,22 @@ class Roova_Availability {
 			if ( $exclude_session ) {
 				$where   .= ' AND NOT ( cart_item_key = %s AND session_id = %s )';
 				$params[] = $args['exclude_cart_item_key'];
+				$params[] = $exclude_session;
+			}
+		}
+
+		/*
+		 * Every hold this visitor owns is a line in their cart, and adding a
+		 * booking replaces that cart — so on the way in, their own holds are
+		 * about to be released and must not count against them. Same session
+		 * scoping as above, and holds only: a row that became an order is not
+		 * theirs to take back.
+		 */
+		if ( $args['exclude_session_holds'] ) {
+			$exclude_session = ( null === $args['exclude_session'] ) ? roova_session_id() : $args['exclude_session'];
+
+			if ( $exclude_session ) {
+				$where   .= " AND NOT ( status = 'hold' AND session_id = %s )";
 				$params[] = $exclude_session;
 			}
 		}

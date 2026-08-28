@@ -310,13 +310,11 @@ p {
 }
 
 .roova-nav--over .roova-menu a,
-.roova-nav--over .roova-nav__cart,
 .roova-nav--over .roova-nav__support {
 	color: rgba(251, 248, 243, .8);
 }
 
 .roova-nav--over .roova-menu a:hover,
-.roova-nav--over .roova-nav__cart:hover,
 .roova-nav--over .roova-nav__support:hover {
 	color: var(--roova-cream);
 }
@@ -404,13 +402,11 @@ p {
 	gap: 14px;
 }
 
-.roova-nav__cart,
 .roova-nav__support {
 	color: var(--roova-soft);
 	font-size: 14px;
 }
 
-.roova-nav__cart:hover,
 .roova-nav__support:hover {
 	color: var(--roova-gold);
 }
