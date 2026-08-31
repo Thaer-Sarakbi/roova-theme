@@ -21,11 +21,17 @@
 	/* ------------------------------------------------------------ Validation */
 
 	var rules = {
-		billing_full_name: {
+		billing_first_name: {
 			test: function ( value ) {
 				return value.trim().length > 1;
 			},
-			message: i18n.name || 'Please enter the guest’s full name.'
+			message: i18n.firstName || 'Enter the guest’s first name.'
+		},
+		billing_last_name: {
+			test: function ( value ) {
+				return value.trim().length > 1;
+			},
+			message: i18n.lastName || 'Enter the guest’s last name.'
 		},
 		billing_phone: {
 			test: function ( value ) {
@@ -272,7 +278,7 @@
 		} );
 
 		// Once they have tried, keep the messages honest as they type.
-		$form.on( 'input change', '#billing_full_name, #billing_phone, #billing_email', function () {
+		$form.on( 'input change', '#billing_first_name, #billing_last_name, #billing_phone, #billing_email', function () {
 			if ( attempted ) {
 				checkField( this.id );
 			}

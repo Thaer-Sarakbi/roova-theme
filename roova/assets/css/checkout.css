@@ -200,6 +200,71 @@
 	color: var(--roova-faint);
 }
 
+/* ------------------------------------------------ Membership invitation */
+
+/*
+ * Under "Payment options", for a guest with no account. Drawn as an outlined
+ * card rather than a filled button on purpose: the only filled button on this
+ * page is Place order, and a second solid one beside it would compete with the
+ * thing the guest actually came to do.
+ */
+.roova-checkout__signup {
+	margin-top: 28px;
+}
+
+.roova-checkout__signup-link {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 16px 20px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 10px;
+	background: var(--roova-sand);
+	color: var(--roova-deep);
+	font-size: .91rem;
+	font-weight: 500;
+	line-height: 1.4;
+	transition: border-color .25s ease, background .25s ease, transform .25s var(--roova-ease);
+}
+
+.roova-checkout__signup-link:hover {
+	border-color: var(--roova-deep);
+	background: #fff;
+	color: var(--roova-deep);
+	transform: translateY(-1px);
+}
+
+.roova-checkout__signup-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-checkout__signup-link .roova-icon:first-child {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+/* The arrow nudges along on hover, the way the other forward links do. */
+.roova-checkout__signup-link .roova-icon:last-child {
+	flex: none;
+	transition: transform .25s var(--roova-ease);
+}
+
+.roova-checkout__signup-link:hover .roova-icon:last-child {
+	transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.roova-checkout__signup-link,
+	.roova-checkout__signup-link .roova-icon:last-child {
+		transition: none;
+	}
+
+	.roova-checkout__signup-link:hover {
+		transform: none;
+	}
+}
+
 /* ------------------------------------------------------------------ Fields */
 
 .roova-fields {

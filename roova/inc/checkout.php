@@ -333,26 +333,40 @@ add_filter( 'woocommerce_cart_needs_shipping', 'roova_cart_needs_shipping' );
  * ---------------------------------------------------------------------- */
 
 /**
- * Reduce checkout to the four things a room booking actually needs.
+ * Reduce checkout to the five things a room booking actually needs.
  *
  * A stay has no delivery address, so every address, company, country and state
- * field goes. `billing_full_name` replaces the first/last pair and is split
- * back apart in roova_checkout_posted_data().
+ * field goes.
+ *
+ * The name is WooCommerce's own `billing_first_name` / `billing_last_name` pair
+ * rather than a single custom field. That is what makes the form fill itself in
+ * for a signed-in member: `WC_Checkout::get_value()` looks for a matching getter
+ * on the customer object, and there is one for every key here — a custom
+ * `billing_full_name` had none, so it always rendered empty however much the
+ * store knew about the guest.
  *
  * @param array $fields Checkout fields.
  * @return array
  */
 function roova_checkout_fields( $fields ) {
 	$fields['billing'] = array(
-		'billing_full_name' => array(
-			'label'        => __( 'Full name', 'roova' ),
-			'placeholder'  => __( 'e.g. Thaer Ahmad', 'roova' ),
+		'billing_first_name' => array(
+			'label'        => __( 'First name', 'roova' ),
+			'placeholder'  => __( 'Thaer', 'roova' ),
 			'required'     => true,
-			'class'        => array( 'roova-field--wide' ),
-			'autocomplete' => 'name',
+			'class'        => array( 'roova-field--half' ),
+			'autocomplete' => 'given-name',
 			'priority'     => 10,
 		),
-		'billing_phone'     => array(
+		'billing_last_name'  => array(
+			'label'        => __( 'Last name', 'roova' ),
+			'placeholder'  => __( 'Ahmad', 'roova' ),
+			'required'     => true,
+			'class'        => array( 'roova-field--half' ),
+			'autocomplete' => 'family-name',
+			'priority'     => 20,
+		),
+		'billing_phone'      => array(
 			'label'        => __( 'Phone number', 'roova' ),
 			'placeholder'  => __( '+60 12 345 6789', 'roova' ),
 			'required'     => true,
@@ -360,9 +374,9 @@ function roova_checkout_fields( $fields ) {
 			'validate'     => array( 'phone' ),
 			'class'        => array( 'roova-field--half' ),
 			'autocomplete' => 'tel',
-			'priority'     => 20,
+			'priority'     => 30,
 		),
-		'billing_email'     => array(
+		'billing_email'      => array(
 			'label'        => __( 'Email address', 'roova' ),
 			'placeholder'  => __( 'you@example.com', 'roova' ),
 			'required'     => true,
@@ -370,7 +384,7 @@ function roova_checkout_fields( $fields ) {
 			'validate'     => array( 'email' ),
 			'class'        => array( 'roova-field--half' ),
 			'autocomplete' => 'email',
-			'priority'     => 30,
+			'priority'     => 40,
 		),
 	);
 
@@ -387,24 +401,18 @@ function roova_checkout_fields( $fields ) {
 add_filter( 'woocommerce_checkout_fields', 'roova_checkout_fields', 20 );
 
 /**
- * Split the guest's name back into the pair WooCommerce stores, and stand a
- * country in for the one the form no longer asks for.
+ * Stand a country in for the one the form no longer asks for.
  *
  * Taxes, gateways and the order screen all expect a billing country; with no
  * field to fill it, the store's own country is the honest answer.
+ *
+ * The name used to be split back into a pair here, from a single "Full name"
+ * box. It is two fields now, so there is nothing left to split.
  *
  * @param array $data Posted data.
  * @return array
  */
 function roova_checkout_posted_data( $data ) {
-	if ( ! empty( $data['billing_full_name'] ) ) {
-		$name  = trim( preg_replace( '/\s+/', ' ', $data['billing_full_name'] ) );
-		$parts = explode( ' ', $name );
-
-		$data['billing_first_name'] = array_shift( $parts );
-		$data['billing_last_name']  = implode( ' ', $parts );
-	}
-
 	if ( empty( $data['billing_country'] ) && function_exists( 'WC' ) && WC()->countries ) {
 		$data['billing_country'] = WC()->countries->get_base_country();
 	}
@@ -414,14 +422,18 @@ function roova_checkout_posted_data( $data ) {
 add_filter( 'woocommerce_checkout_posted_data', 'roova_checkout_posted_data' );
 
 /**
- * Keep the guest's name on the order as they typed it.
+ * Keep the guest's name on the order as one line.
  *
  * @param WC_Order $order Order.
  * @param array    $data  Posted data.
  */
 function roova_checkout_create_order( $order, $data ) {
-	if ( ! empty( $data['billing_full_name'] ) ) {
-		$order->update_meta_data( '_roova_guest_name', sanitize_text_field( $data['billing_full_name'] ) );
+	$first = isset( $data['billing_first_name'] ) ? $data['billing_first_name'] : '';
+	$last  = isset( $data['billing_last_name'] ) ? $data['billing_last_name'] : '';
+	$name  = trim( $first . ' ' . $last );
+
+	if ( $name ) {
+		$order->update_meta_data( '_roova_guest_name', sanitize_text_field( $name ) );
 	}
 }
 add_action( 'woocommerce_checkout_create_order', 'roova_checkout_create_order', 10, 2 );
@@ -1137,7 +1149,44 @@ function roova_checkout_tax_html() {
 }
 
 /**
- * The pulsing dot and countdown under the totals.
+ * The membership invitation under "Payment options", for a guest booking
+ * without an account.
+ *
+ * Nothing here interrupts the booking: it is a link away, not a step, and the
+ * "Create an account" tickbox in Guest information is still the one-click way to
+ * do the same thing without leaving the page. A member sees none of it — they
+ * already have what it is offering.
+ */
+function roova_checkout_signup_cta() {
+	if ( is_user_logged_in() || ! function_exists( 'roova_registration_open' ) || ! roova_registration_open() ) {
+		return;
+	}
+
+	/*
+	 * Back to checkout afterwards, so signing up costs the guest nothing but a
+	 * detour — the cart, and the holds behind it, are the same session's.
+	 */
+	$url = roova_signup_url( wc_get_checkout_url() );
+
+	// The default is repeated in inc/customizer.php — see roova_option().
+	$text = roova_option( 'checkout_signup_text', __( 'Sign up, become a member and get rewards', 'roova' ) );
+
+	if ( ! $text ) {
+		return;
+	}
+	?>
+	<section class="roova-checkout__section roova-checkout__signup">
+		<a class="roova-checkout__signup-link" href="<?php echo esc_url( $url ); ?>">
+			<?php roova_the_icon( 'tag', 20 ); ?>
+			<span class="roova-checkout__signup-text"><?php echo esc_html( $text ); ?></span>
+			<?php roova_the_icon( 'arrow-right', 17 ); ?>
+		</a>
+	</section>
+	<?php
+}
+
+/**
+ * The countdown under the summary.
  *
  * The clock is real: it counts down the earliest expiry among this visitor's
  * holds, which is when the rooms go back on sale.

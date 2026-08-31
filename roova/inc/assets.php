@@ -82,7 +82,8 @@ function roova_enqueue_checkout_assets() {
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 			'nonce'   => wp_create_nonce( 'roova_ajax' ),
 			'i18n'    => array(
-				'name'         => __( 'Please enter the guest\'s full name.', 'roova' ),
+				'firstName'    => __( 'Enter the guest\'s first name.', 'roova' ),
+				'lastName'     => __( 'Enter the guest\'s last name.', 'roova' ),
 				'phone'        => __( 'Enter a valid phone number.', 'roova' ),
 				'email'        => __( 'Enter a valid email address.', 'roova' ),
 				'terms'        => __( 'Please accept the booking terms to continue.', 'roova' ),
@@ -96,6 +97,49 @@ function roova_enqueue_checkout_assets() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_checkout_assets', 20 );
+
+/**
+ * The sign-in and sign-up pages' own stylesheet and script.
+ *
+ * Loaded only there. The script is vanilla like theme.js — nothing on these
+ * pages is WooCommerce's, so there are no jQuery events to listen for — and it
+ * only ever adds to a form that already works without it: every rule it checks
+ * in the browser is checked again in `inc/auth.php`.
+ */
+function roova_enqueue_auth_assets() {
+	if ( ! roova_is_auth_page() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-auth', ROOVA_URI . 'assets/css/auth.css', array( 'roova-style' ), ROOVA_VERSION );
+	wp_enqueue_script( 'roova-auth', ROOVA_URI . 'assets/js/auth.js', array(), ROOVA_VERSION, true );
+
+	wp_localize_script(
+		'roova-auth',
+		'roovaAuth',
+		array(
+			'i18n' => array(
+				'firstName'       => __( 'Enter your first name.', 'roova' ),
+				'lastName'        => __( 'Enter your last name.', 'roova' ),
+				'email'           => __( 'Enter a valid email address.', 'roova' ),
+				'emailConfirm'    => __( 'Email addresses do not match.', 'roova' ),
+				'phone'           => __( 'Enter a valid phone number.', 'roova' ),
+				'password'        => __( 'Use at least 8 characters, with a letter and a number.', 'roova' ),
+				'passwordEmpty'   => __( 'Enter your password.', 'roova' ),
+				'passwordConfirm' => __( 'Passwords do not match.', 'roova' ),
+				'terms'           => __( 'Please accept the terms to create your account.', 'roova' ),
+				'showPassword'    => __( 'Show password', 'roova' ),
+				'hidePassword'    => __( 'Hide password', 'roova' ),
+				'strength'        => __( 'Password strength', 'roova' ),
+				'weak'            => __( 'Weak', 'roova' ),
+				'fair'            => __( 'Fair', 'roova' ),
+				'good'            => __( 'Good', 'roova' ),
+				'strong'          => __( 'Strong', 'roova' ),
+			),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_auth_assets', 20 );
 
 /**
  * The pinned map libraries, with the hashes their tags are checked against.

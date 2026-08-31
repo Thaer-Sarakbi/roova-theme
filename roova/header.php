@@ -72,13 +72,14 @@ $roova_over_hero = is_front_page() && ! is_paged();
 			<?php endif; ?>
 
 			<?php
-			$roova_account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '';
-			if ( $roova_account_url ) :
-				?>
-				<a class="roova-btn roova-btn--nav" href="<?php echo esc_url( $roova_account_url ); ?>">
-					<?php esc_html_e( 'Manage booking', 'roova' ); ?>
-				</a>
-			<?php endif; ?>
+			/*
+			 * "Sign in" for a visitor, "Manage account" for a member — one
+			 * button either way. The old "Manage booking" sent both to the same
+			 * place, and for a signed-out guest that was a login form with no
+			 * context.
+			 */
+			roova_account_control();
+			?>
 
 			<button class="roova-nav__toggle" type="button" data-roova-nav-toggle aria-expanded="false">
 				<span class="screen-reader-text"><?php esc_html_e( 'Menu', 'roova' ); ?></span>

@@ -115,6 +115,11 @@ function roova_icon_library() {
 		'arrow-right'   => array( __( 'Continue', 'roova' ), '<path d="M4 12h15"/><path d="M13 6l6 6-6 6"/>' ),
 		'check-circle'  => array( __( 'Confirmed', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M8.4 12.4l2.4 2.4 4.8-5.2"/>' ),
 
+		// Account chrome.
+		'user'          => array( __( 'Account', 'roova' ), '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5v-.9A5.6 5.6 0 0 1 10.1 14h3.8a5.6 5.6 0 0 1 5.6 5.6v.9"/>' ),
+		'eye'           => array( __( 'Show password', 'roova' ), '<path d="M2 12s3.7-6.5 10-6.5S22 12 22 12s-3.7 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>' ),
+		'eye-off'       => array( __( 'Hide password', 'roova' ), '<path d="M10.7 5.7A10.7 10.7 0 0 1 12 5.5c6.3 0 10 6.5 10 6.5a18.4 18.4 0 0 1-3.3 4"/><path d="M6.4 7.5A17.8 17.8 0 0 0 2 12s3.7 6.5 10 6.5a10.3 10.3 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/>' ),
+
 		// Checkout chrome.
 		'lock'          => array( __( 'Secure', 'roova' ), '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/>' ),
 		'bank'          => array( __( 'Online banking', 'roova' ), '<path d="M3 10l9-6 9 6"/><path d="M5 10v8M10 10v8M14 10v8M19 10v8"/><path d="M3 21h18"/>' ),

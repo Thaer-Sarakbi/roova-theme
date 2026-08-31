@@ -39,6 +39,7 @@ roova_require( 'inc/helpers.php' );
 roova_require( 'inc/icons.php' );
 roova_require( 'inc/customizer.php' );
 roova_require( 'inc/template-tags.php' );
+roova_require( 'inc/auth.php' );
 
 if ( roova_has_woocommerce() ) {
 	roova_require( 'inc/attributes.php' );

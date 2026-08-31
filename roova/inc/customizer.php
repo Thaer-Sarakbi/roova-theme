@@ -238,7 +238,7 @@ function roova_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'roova_header', array(
 		'title'       => __( 'Header', 'roova' ),
 		'panel'       => 'roova_panel',
-		'description' => __( 'The links beside the "Manage booking" button. Menus themselves live under Appearance > Menus.', 'roova' ),
+		'description' => __( 'The links beside the account control — a "Sign in" button for a visitor, a profile icon for a member. Menus themselves live under Appearance > Menus.', 'roova' ),
 	) );
 
 	$wp_customize->add_setting( 'roova_support_url', array(
@@ -273,6 +273,7 @@ function roova_customize_register( $wp_customize ) {
 		'checkout_eyebrow'      => array( __( 'Banner eyebrow', 'roova' ), __( 'Secure checkout', 'roova' ) ),
 		'checkout_secure_label' => array( __( 'Header reassurance', 'roova' ), __( 'Secure booking', 'roova' ) ),
 		'checkout_reassurance'  => array( __( 'Under the Place order button', 'roova' ), __( 'Free cancellation until 24 hours before check-in.', 'roova' ) ),
+		'checkout_signup_text'  => array( __( 'Sign-up invitation', 'roova' ), __( 'Sign up, become a member and get rewards', 'roova' ) ),
 	);
 
 	foreach ( $checkout_fields as $key => $data ) {
@@ -308,6 +309,97 @@ function roova_customize_register( $wp_customize ) {
 		'section'     => 'roova_checkout',
 		'type'        => 'url',
 	) );
+
+	/* --------------------------------------------- Sign in and sign up */
+	$wp_customize->add_section( 'roova_auth', array(
+		'title'       => __( 'Sign in and sign up', 'roova' ),
+		'panel'       => 'roova_panel',
+		'description' => __( 'The photo panel beside the two account forms. The figures are yours to stand behind — clear either one and its column disappears rather than showing a number nobody can back up.', 'roova' ),
+	) );
+
+	// These defaults are repeated at the call sites in inc/auth.php and the two
+	// page templates: get_theme_mod() falls back to what the caller passes, not
+	// to the default registered here, so the pair has to match.
+	$auth_fields = array(
+		'auth_signin_headline' => array( __( 'Sign in headline', 'roova' ), __( 'Your next stay is two taps away. Member rates apply the moment you sign in.', 'roova' ) ),
+		'auth_signup_headline' => array( __( 'Sign up headline', 'roova' ), __( 'Book a room in Malaysia in under a minute, and keep every stay in one place.', 'roova' ) ),
+		'auth_stat_1_figure'   => array( __( 'First figure', 'roova' ), __( '1,240+', 'roova' ) ),
+		'auth_stat_1_label'    => array( __( 'First figure label', 'roova' ), __( 'Stays across Malaysia', 'roova' ) ),
+		'auth_stat_2_figure'   => array( __( 'Second figure', 'roova' ), __( 'Zero', 'roova' ) ),
+		'auth_stat_2_label'    => array( __( 'Second figure label', 'roova' ), __( 'Booking fees, always', 'roova' ) ),
+	);
+
+	foreach ( $auth_fields as $key => $data ) {
+		$wp_customize->add_setting( 'roova_' . $key, array(
+			'default'           => $data[1],
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'roova_' . $key, array(
+			'label'   => $data[0],
+			'section' => 'roova_auth',
+			'type'    => 'text',
+		) );
+	}
+
+	/*
+	 * The theme's own switch, not WooCommerce's "Allow customers to create an
+	 * account" — that one governs the form on WooCommerce's account page, and
+	 * has no bearing on the sign-up page, which calls wc_create_new_customer()
+	 * directly. Default on: the theme ships the page, so shipping it closed
+	 * would make no sense.
+	 */
+	$wp_customize->add_setting( 'roova_registration_open', array(
+		'default'           => true,
+		'sanitize_callback' => 'roova_sanitize_checkbox',
+	) );
+	$wp_customize->add_control( 'roova_registration_open', array(
+		'label'       => __( 'Let guests create accounts', 'roova' ),
+		'description' => __( 'Off replaces the sign-up form with a short note, and leaves sign-in working for members who already have an account.', 'roova' ),
+		'section'     => 'roova_auth',
+		'type'        => 'checkbox',
+	) );
+
+	/*
+	 * Its own setting rather than the site logo: the header's logo is picked to
+	 * sit on the hero photograph and is usually the light, reversed-out version
+	 * of a mark, which would vanish against the white form column here.
+	 */
+	$wp_customize->add_setting( 'roova_auth_logo', array(
+		'default'           => '',
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'roova_auth_logo', array(
+		'label'       => __( 'Logo on these pages', 'roova' ),
+		'description' => __( 'The full-colour version of your logo — these pages are white, so the light one used over the hero would disappear. The theme ships one, so this can stay empty.', 'roova' ),
+		'section'     => 'roova_auth',
+		'mime_type'   => 'image',
+	) ) );
+
+	// A photo each: the two pages are seen one after the other, and the same
+	// picture twice reads as a page that failed to change.
+	$auth_images = array(
+		'roova_auth_signin_image' => array(
+			__( 'Sign in photo', 'roova' ),
+			__( 'Tall crops read best — the panel is a full-height column on a desktop, and at least 700 × 900 keeps it sharp. The theme ships one, so this can stay empty.', 'roova' ),
+		),
+		'roova_auth_signup_image' => array(
+			__( 'Sign up photo', 'roova' ),
+			__( 'The same again for the sign-up page. Choose a different picture from the sign-in one.', 'roova' ),
+		),
+	);
+
+	foreach ( $auth_images as $key => $data ) {
+		$wp_customize->add_setting( $key, array(
+			'default'           => '',
+			'sanitize_callback' => 'absint',
+		) );
+		$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, $key, array(
+			'label'       => $data[0],
+			'description' => $data[1],
+			'section'     => 'roova_auth',
+			'mime_type'   => 'image',
+		) ) );
+	}
 
 	/* ------------------------------------------------------------- Footer */
 	$wp_customize->add_section( 'roova_footer', array(

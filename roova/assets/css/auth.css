@@ -1,0 +1,623 @@
+/**
+ * Sign in and sign up.
+ *
+ * Loaded only on those two pages (see roova_enqueue_auth_assets), on top of
+ * theme.css — every colour here is one of its tokens.
+ *
+ * The whole page is one split screen: the form on the left, a photograph on the
+ * right. Below 1024px the photograph becomes a short band above the form, so
+ * the page still opens with an image rather than a bare field list.
+ */
+
+.roova-auth-page {
+	/* The hairlines these forms are drawn with, as on checkout. */
+	--roova-field-line: rgba(13, 58, 82, .28);
+	--roova-divider: rgba(13, 58, 82, .12);
+	--roova-error: #b23b2e;
+	--roova-ok: #2f7d5f;
+	--roova-placeholder: #a8b4b9;
+	--roova-bar: #e8ecee;
+
+	background: #fff;
+}
+
+.roova-auth {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, .8fr);
+	min-height: 100vh;
+	background: #fff;
+}
+
+/* ---------------------------------------------------------- Left: the form */
+
+.roova-auth__form-col {
+	display: flex;
+	flex-direction: column;
+	padding: 34px 60px 52px;
+}
+
+.roova-auth__logo {
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.015em;
+	color: var(--roova-deep);
+	align-self: flex-start;
+}
+
+.roova-auth__logo:hover {
+	color: var(--roova-deep);
+}
+
+/*
+ * The logo is a lockup with a tagline stacked under it, so it needs more height
+ * than the 27px wordmark it replaces. Height, not width: the file's own aspect
+ * decides how wide it lands.
+ */
+.roova-auth__logo img {
+	height: 72px;
+	width: auto;
+	max-width: 100%;
+}
+
+/* Only reached when there is no logo file at all — see roova_auth_wordmark(). */
+.roova-auth__logo em {
+	font-style: normal;
+	color: var(--roova-gold);
+}
+
+.roova-auth__body {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	padding: 40px 0 0;
+}
+
+.roova-auth__inner {
+	width: 100%;
+	max-width: 470px;
+	animation: roova-rise .7s var(--roova-ease) both;
+}
+
+/* Sign in has four fewer fields, so its column is drawn a little narrower. */
+.roova-auth__inner--signin {
+	max-width: 440px;
+}
+
+.roova-auth__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 14px;
+	font-size: .69rem;
+	font-weight: 500;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-auth__rule {
+	display: block;
+	width: 28px;
+	height: 1px;
+	background: var(--roova-gold);
+}
+
+.roova-auth__title {
+	margin: 0;
+	font-size: 2.63rem;
+	font-weight: 400;
+	line-height: 1.1;
+	letter-spacing: -.02em;
+	color: var(--roova-deep);
+}
+
+.roova-auth__sub {
+	margin: 12px 0 0;
+	font-size: .91rem;
+	line-height: 1.65;
+	color: var(--roova-soft);
+}
+
+.roova-auth__alert {
+	margin: 22px 0 0;
+	padding: 13px 16px;
+	border: 1px solid rgba(178, 59, 46, .3);
+	border-radius: 8px;
+	background: rgba(178, 59, 46, .06);
+	font-size: .84rem;
+	line-height: 1.6;
+	color: var(--roova-error);
+}
+
+.roova-auth__alert-admin {
+	display: block;
+	margin-top: 6px;
+	color: var(--roova-soft);
+}
+
+.roova-auth__form {
+	margin-top: 30px;
+}
+
+.roova-auth__fields {
+	display: grid;
+	gap: 14px;
+}
+
+.roova-auth__pair {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px;
+}
+
+/* --------------------------------------------------------- The field shell */
+
+/*
+ * The label is the box and the input inside it is borderless, so the caption
+ * and the value read as one control. Clicking anywhere in the box focuses the
+ * input, which is what `cursor: text` promises.
+ */
+.roova-field {
+	display: block;
+	padding: 12px 16px 11px;
+	border: 1px solid var(--roova-field-line);
+	border-radius: 6px;
+	background: #fff;
+	cursor: text;
+	transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.roova-field:focus-within {
+	border-color: var(--roova-deep);
+	box-shadow: 0 0 0 3px rgba(13, 58, 82, .08);
+}
+
+.roova-field.is-invalid {
+	border-color: rgba(178, 59, 46, .55);
+}
+
+.roova-field.is-invalid:focus-within {
+	border-color: var(--roova-error);
+	box-shadow: 0 0 0 3px rgba(178, 59, 46, .09);
+}
+
+/*
+ * A field with something beside its value — the eye toggle, the confirm tick —
+ * is a row. Without this the extra element wraps under the input and the box
+ * grows a line taller than every other field on the page.
+ */
+.roova-field--password,
+.roova-field--match {
+	display: flex;
+	align-items: flex-end;
+	gap: 12px;
+}
+
+.roova-field__main {
+	display: block;
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-field__caption {
+	display: block;
+	font-size: .72rem;
+	letter-spacing: .02em;
+	color: #6c7f86;
+}
+
+.roova-field__req {
+	color: var(--roova-gold);
+}
+
+.roova-field__input {
+	display: block;
+	width: 100%;
+	margin-top: 3px;
+	padding: 0;
+	border: 0;
+	outline: none;
+	background: transparent;
+	font-family: var(--roova-font-body);
+	/* 16px: anything smaller and iOS zooms the page on focus. */
+	font-size: 1rem;
+	line-height: 1.4;
+	color: var(--roova-ink);
+}
+
+.roova-field__input::placeholder {
+	color: var(--roova-placeholder);
+}
+
+/* The browser's own autofill paint would otherwise flood the borderless box. */
+.roova-field__input:-webkit-autofill,
+.roova-field__input:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--roova-ink);
+	box-shadow: 0 0 0 60px #fff inset;
+}
+
+.roova-field__eye,
+.roova-field__match {
+	flex: none;
+	display: flex;
+	align-items: center;
+	padding: 0 0 3px;
+	border: 0;
+	background: none;
+	color: var(--roova-faint);
+	cursor: pointer;
+	transition: color .25s ease;
+}
+
+.roova-field__eye:hover,
+.roova-field__eye:focus-visible {
+	color: var(--roova-deep);
+}
+
+/* One of the two eyes is always hidden; the button swaps them. */
+.roova-field__eye-off,
+.roova-field__eye.is-on .roova-field__eye-on {
+	display: none;
+}
+
+.roova-field__eye.is-on .roova-field__eye-off {
+	display: flex;
+}
+
+/* The tick only appears once a confirm field actually matches. */
+.roova-field__match {
+	color: var(--roova-ok);
+	cursor: text;
+	opacity: 0;
+	transition: opacity .25s ease;
+}
+
+.roova-field__match.is-match {
+	opacity: 1;
+}
+
+.roova-field__error {
+	margin: 7px 0 0;
+	font-size: .78rem;
+	line-height: 1.5;
+	color: var(--roova-error);
+}
+
+.roova-field__error[hidden] {
+	display: none;
+}
+
+/* ---------------------------------------------------- Strength meter */
+
+.roova-strength {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 9px;
+}
+
+.roova-strength__bars {
+	display: flex;
+	flex: 1;
+	gap: 4px;
+}
+
+.roova-strength__bars i {
+	flex: 1;
+	height: 3px;
+	border-radius: 999px;
+	background: var(--roova-bar);
+	transition: background .3s ease;
+}
+
+.roova-strength__label {
+	font-size: .75rem;
+	color: var(--roova-placeholder);
+}
+
+/* Filled bars take the level's colour; the rest stay grey. */
+.roova-strength[data-level="1"] .roova-strength__bars i:nth-child(-n+1) {
+	background: var(--roova-error);
+}
+
+.roova-strength[data-level="2"] .roova-strength__bars i:nth-child(-n+2) {
+	background: var(--roova-gold);
+}
+
+.roova-strength[data-level="3"] .roova-strength__bars i:nth-child(-n+3),
+.roova-strength[data-level="4"] .roova-strength__bars i {
+	background: var(--roova-ok);
+}
+
+.roova-strength[data-level="1"] .roova-strength__label {
+	color: var(--roova-error);
+}
+
+.roova-strength[data-level="2"] .roova-strength__label {
+	color: var(--roova-gold);
+}
+
+.roova-strength[data-level="3"] .roova-strength__label,
+.roova-strength[data-level="4"] .roova-strength__label {
+	color: var(--roova-ok);
+}
+
+/* ------------------------------------------------- Checkboxes and options */
+
+.roova-check {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	font-size: .81rem;
+	color: var(--roova-soft);
+	cursor: pointer;
+}
+
+.roova-check input {
+	flex: none;
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	accent-color: var(--roova-deep);
+	cursor: pointer;
+}
+
+.roova-check--terms {
+	align-items: flex-start;
+	gap: 11px;
+	font-size: .81rem;
+	line-height: 1.6;
+}
+
+.roova-check--terms input {
+	margin-top: 3px;
+}
+
+.roova-check--terms a {
+	color: var(--roova-soft);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.roova-check--terms a:hover {
+	color: var(--roova-gold);
+}
+
+.roova-auth__options {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 18px;
+}
+
+.roova-auth__forgot {
+	font-size: .81rem;
+	font-weight: 500;
+	color: var(--roova-deep);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.roova-auth__forgot:hover {
+	color: var(--roova-gold);
+}
+
+.roova-auth__terms {
+	margin-top: 20px;
+}
+
+/* -------------------------------------------------------------- Submit */
+
+.roova-auth__submit {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	width: 100%;
+	margin-top: 24px;
+	padding: 18px 24px;
+	border: 0;
+	border-radius: 8px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	font-family: var(--roova-font-body);
+	font-size: 1rem;
+	font-weight: 500;
+	letter-spacing: .01em;
+	cursor: pointer;
+	transition: background .3s ease, transform .3s var(--roova-ease), box-shadow .3s ease;
+}
+
+.roova-auth__submit:hover {
+	background: #0a2c3f;
+	transform: translateY(-2px);
+	box-shadow: 0 16px 30px -16px rgba(8, 38, 53, .55);
+}
+
+.roova-auth__submit:active {
+	transform: translateY(0);
+}
+
+.roova-auth__submit[disabled] {
+	opacity: .7;
+	cursor: progress;
+	transform: none;
+	box-shadow: none;
+}
+
+.roova-auth__foot {
+	margin: 26px 0 0;
+	font-size: .84rem;
+	color: #6c7f86;
+}
+
+.roova-auth__foot a {
+	font-weight: 500;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+/* -------------------------------------------------------- Right: the photo */
+
+.roova-auth__panel {
+	position: relative;
+	overflow: hidden;
+	background: var(--roova-deep);
+}
+
+.roova-auth__panel-media,
+.roova-auth__panel-media img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* Rendered 1:1 — scaling the photograph only softened it. */
+.roova-auth__panel-media img {
+	object-fit: cover;
+	object-position: center;
+}
+
+/*
+ * The handoff's wash is `.86 → .34 → .12`, which assumes a photograph that is
+ * already dark where the words sit. Neither shipped photo is — the towers put
+ * lit city blocks directly behind the figures, and no install can be assumed to
+ * upload anything better — so the bottom end is deeper here. Measured, not
+ * styled by eye: see the note on the mobile band below for how.
+ */
+.roova-auth__panel-scrim {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(6, 30, 42, .93) 0%, rgba(6, 30, 42, .46) 55%, rgba(6, 30, 42, .14) 100%);
+	pointer-events: none;
+}
+
+.roova-auth__panel-inner {
+	position: absolute;
+	inset: auto 0 0 0;
+	padding: 0 48px 52px;
+	pointer-events: none;
+}
+
+.roova-auth__panel-headline {
+	margin: 0;
+	max-width: 30ch;
+	font-family: var(--roova-font-display);
+	font-size: 1.88rem;
+	font-weight: 300;
+	line-height: 1.32;
+	color: var(--roova-cream);
+	text-wrap: pretty;
+}
+
+.roova-auth__stats {
+	display: flex;
+	gap: 30px;
+	margin-top: 30px;
+	padding-top: 26px;
+	border-top: 1px solid rgba(251, 248, 243, .16);
+}
+
+.roova-auth__stat-figure {
+	display: block;
+	font-family: var(--roova-font-display);
+	font-size: 1.63rem;
+	line-height: 1.1;
+	color: var(--roova-cream);
+}
+
+.roova-auth__stat-label {
+	display: block;
+	margin-top: 4px;
+	font-size: .75rem;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: rgba(251, 248, 243, .6);
+}
+
+/* ---------------------------------------------------------------- Responsive */
+
+@media (max-width: 1024px) {
+	.roova-auth {
+		grid-template-columns: 1fr;
+		min-height: 0;
+	}
+
+	/* The photo leads, as a band, so the page still opens with an image. */
+	.roova-auth__panel {
+		order: -1;
+		height: 180px;
+	}
+
+	/*
+	 * The full-height scrim only reaches its dark end in the last fifth of the
+	 * column; squeezed into a 180px band the headline lands in the pale part of
+	 * it, and cream on the bundled pool photo measured 2.7:1 there. This wash is
+	 * flatter and darker, which takes it to AA. Change the panel photo and this
+	 * is worth re-checking: hide .roova-auth__panel-inner, screenshot the band
+	 * and sample the lightest pixel under the words.
+	 */
+	.roova-auth__panel-scrim {
+		background: linear-gradient(to top, rgba(6, 30, 42, .92) 0%, rgba(6, 30, 42, .8) 60%, rgba(6, 30, 42, .62) 100%);
+	}
+
+	.roova-auth__panel-inner {
+		padding: 0 28px 24px;
+	}
+
+	.roova-auth__panel-headline {
+		font-size: 1.38rem;
+		max-width: 40ch;
+	}
+
+	.roova-auth__stats {
+		display: none;
+	}
+
+	.roova-auth__form-col {
+		padding: 28px 40px 48px;
+	}
+
+	.roova-auth__body {
+		padding-top: 28px;
+	}
+
+	.roova-auth__inner,
+	.roova-auth__inner--signin {
+		max-width: 520px;
+		margin: 0 auto;
+	}
+}
+
+@media (max-width: 768px) {
+	.roova-auth__form-col {
+		padding: 28px 20px 48px;
+	}
+
+	.roova-auth__logo img {
+		height: 56px;
+	}
+
+	.roova-auth__title {
+		font-size: 2rem;
+	}
+
+	.roova-auth__pair {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.roova-auth__inner {
+		animation: none;
+	}
+
+	.roova-auth__submit:hover {
+		transform: none;
+	}
+}

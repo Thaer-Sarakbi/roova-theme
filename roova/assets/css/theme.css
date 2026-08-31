@@ -411,6 +411,12 @@ p {
 	color: var(--roova-gold);
 }
 
+/*
+ * The account control is .roova-btn--nav in both states — "Sign in" for a
+ * visitor, "Manage account" for a member — so the top right of the header keeps
+ * its shape when someone signs in. It needs no rules of its own.
+ */
+
 .roova-nav__toggle {
 	display: none;
 	width: 38px;

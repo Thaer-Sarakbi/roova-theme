@@ -79,6 +79,10 @@ is active** — then explicitly calls `Roova_Schema::init()`, `Roova_Holds::init
 `Roova_Orders::init()`, `Roova_Blocks::init()`. Admin-only files load behind `is_admin()`. A new class
 file needs both a `roova_require()` line and its `::init()` call.
 
+`inc/auth.php` is in the unconditional group on purpose: `header.php` calls `roova_account_control()`
+on every page, and signing in has to keep working on a site whose WooCommerce is switched off. Its
+WooCommerce calls are each guarded by `function_exists()`.
+
 ### Products
 
 Hotels and rooms are WooCommerce product types, not custom post types:
@@ -234,6 +238,9 @@ Reusable markup lives in `inc/template-tags.php` as `roova_*` functions, not in 
 `checkout.php` is the one page that is not: it prints its own `<html>` document, because the design
 strips the header down to a wordmark and a padlock. See *Checkout*.
 
+`template-signin.php` and `template-signup.php` are page templates that print their own documents too,
+for the same reason. See *Accounts*.
+
 `header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
 site name through `roova_wordmark()`, which picks out a domain suffix in gold ("roova**.my**").
@@ -249,6 +256,74 @@ corners**. That is a deliberate departure from the handoff (which draws a sticky
 above a 28px-rounded hero panel inset by 20px) — asked for directly, so don't "restore" it. The panel
 carries the header's height in its `min-height` (700px, against the spec's 620px) so the composition
 keeps its proportions.
+
+The right of the header is `roova_account_control()`: one `.roova-btn--nav`, reading **"Sign in"** for a
+visitor and **"Manage account"** for a member, so the corner keeps its shape when someone signs in. It
+replaced a "Manage booking" button that sent both to the same place — which for a signed-out guest was
+a login form with no context. There is still no cart link; see *One booking per cart*.
+
+### Accounts
+
+`inc/auth.php` owns the two pages, `template-signin.php` / `template-signup.php` render them, and
+`assets/css/auth.css` + `assets/js/auth.js` load only there. WordPress and WooCommerce both ship login
+forms and neither can be laid out to the handoff without fighting its markup, so the theme owns the
+pages — but **not the authentication**: that is still `wp_signon()` and `wc_create_new_customer()`.
+
+- **Both pages print their own document**, like `checkout.php`: the design's whole header is the
+  wordmark, and nothing on the page should lead anywhere but into the account or the other form.
+- **The pages are created on activation** (`roova_create_auth_pages()`, options `roova_signin_page_id` /
+  `roova_signup_page_id`), and re-checked on `admin_init` once per release behind `roova_auth_version` —
+  the same shape as the checkout page's setup, and for the same reason: `after_switch_theme` never
+  fires for a theme updated in place. A page that already exists is adopted, never rewritten.
+- **`roova_is_auth_page()` matches the template, not the option**, so a page the client rebuilt by
+  hand and assigned the template still counts.
+- **Errors and typed values live in `roova_auth_state()`**, a static filled by the handler on
+  `template_redirect` (priority 5) and read by the template moments later in the same request. Nothing
+  survives a redirect, and nothing should — passwords are never carried back into the form.
+- **Every rule is checked twice**, in `inc/auth.php` and again in `auth.js`, deliberately word for
+  word: a guest must never read one message in the browser and a different one after the round trip.
+  The forms work with the script blocked. `novalidate` is on both, so the browser's own bubbles never
+  compete with the theme's messages.
+- **A signed-out visitor at My account is redirected to sign in** and back afterwards, so the site only
+  ever shows one login form. WooCommerce *endpoints* are exempt — lost-password and reset-password have
+  to work while signed out. `roova_redirect_account_to_signin` turns it off.
+- **`redirect_to` goes through `wp_validate_redirect()`**, or the sign-in page is an open redirect.
+- **`roova_registration_open()` reads the theme's own Customizer switch and nothing else**, default on.
+  It used to read WooCommerce's "Allow customers to create an account" — **the wrong gate**: that option
+  decides whether WooCommerce prints a registration form on *its* account page, and
+  `wc_create_new_customer()`, which is what this page calls, never consults it (check
+  `wc-user-functions.php` — it validates email, username and password, nothing else). Borrowing it shipped
+  the sign-up page closed on every store still at WooCommerce's default, for a reason that had nothing to
+  do with the page, and led to a worse second mistake: writing to that store setting on activation to work
+  around it. Both are gone — the theme does not touch anyone else's settings, and the page is open unless
+  this site says otherwise. When it *is* closed, `roova_registration_closed_reason()` tells an admin which
+  of the two things did it, the setting or the `roova_registration_open` filter.
+- A field with anything beside its value — the eye toggle, the confirm tick — has to be laid out as a
+  flex row (`.roova-field--password`, `.roova-field--match`), or that element wraps under the input and
+  the box grows a line taller than every other field on the page.
+- **The logo is `auth_logo`, deliberately not `the_custom_logo()`.** The header's logo is chosen to sit
+  on the hero photograph, so it is usually the reversed-out light version of a mark — invisible against
+  the white form column here. `roova_auth_wordmark()` reads its own setting, falls back to the bundled
+  full-colour `assets/images/logo.png`, and only then to the site name as text. Sized by height (72px,
+  56px on mobile) because the lockup's own aspect decides how wide it lands.
+- **A photo per page**, `auth_signin_image` / `auth_signup_image`, falling back to the bundled
+  `auth-signin.jpg` (Petronas Towers) and `auth-signup.jpg` (Batu Caves). Two settings, not one: the
+  pages are seen one after the other, and the same picture twice reads as a page that failed to change.
+  Both bundled files are **smaller than the panel** (452×678 and 510×601 against the handoff's
+  ~700×900), so they scale up and soften — the client's own photography is the fix, not upscaling.
+- **Both scrims are measured, not styled by eye.** The handoff's wash (`.86 → .34 → .12`) assumes a
+  photograph already dark where the words sit; the towers put lit city blocks straight behind the
+  figures and the 12px stat labels measured 4.29:1 — under AA. The panel wash is deeper here
+  (`.93 → .46 → .14`), and the ≤1024px band, which squeezes the whole gradient into 180px, gets a
+  flatter one again (`.92 → .8 → .62`). Worst-pixel readings with the bundled photos: sign in
+  5.98 / 11.68 / 5.14, sign up 7.94 / 11.00 / 5.46, bands 9.65 and 10.64. Same rule as the checkout
+  banner — **change either photo and re-check**: hide `.roova-auth__panel-inner`, screenshot, and sample
+  the lightest pixel under each text box (`.testenv/ratio.js` does the arithmetic).
+
+Two copy departures from the handoff, both Customizer defaults: sign-up's panel line drops "get a
+discount when you register" (a claim only the client can make good on), and there is no fake "we've
+sent a verification link" success banner — a successful submit redirects to My account, which is what
+actually happened.
 
 ### Checkout
 
@@ -290,11 +365,23 @@ Two hooks are moved in `inc/checkout.php`, at include time (WooCommerce register
 can sit under "Payment options", and `woocommerce_checkout_coupon_form` out of
 `woocommerce_before_checkout_form` so the coupon row can sit in the summary.
 
-Fields are cut to `billing_full_name`, `billing_phone`, `billing_email` and `order_comments`. The name
-is split back into first/last and the store's base country stood in for the missing one, both in
+Fields are cut to `billing_first_name`, `billing_last_name`, `billing_phone`, `billing_email` and
+`order_comments`, and the store's base country is stood in for the missing one in
 `roova_checkout_posted_data()` — an order with no country breaks taxes, gateways and the admin screen.
 `roova_cart_needs_shipping()` tells WooCommerce a cart of rooms never ships, but only when *every*
 line is a booking.
+
+**Every field key is one WooCommerce already knows, and that is what fills the form in for a member.**
+`WC_Checkout::get_value()` prefills a field by looking for a matching getter on the customer object
+(`get_billing_first_name()` and so on). The name used to be a single custom `billing_full_name`, split
+back into a pair on post; no such getter existed, so it rendered empty no matter how much the store
+knew about the guest. Adding a custom key here costs that prefill — take the pair, not a combined box.
+
+**`roova_checkout_signup_cta()` sits under "Payment options" for a signed-out guest**, offering
+membership. It is a **link, not a button**: anything that submits inside `form.checkout` would post the
+order, and a nested `<form>` would be dropped by the browser entirely — the same trap the summary
+avoids. Its copy is `checkout_signup_text` in the Customizer, and it hides itself for a member and
+wherever `roova_registration_open()` is false, so it never offers a door that is locked.
 
 Four things here are load-bearing and easy to undo by accident:
 
@@ -378,7 +465,10 @@ Two things bite here:
 
 The hero and both bands ship with stand-in photography in `assets/images/` (`hero.jpg`, `band-1.jpg`,
 `band-2.jpg` — 2400px JPEGs, ~1.1MB the three of them), and the checkout banner with `checkout.jpg`
-(1200px, 98KB — a reception desk, the photo the checkout handoff asks for). `roova_background_image()` prints the
+(1200px, 98KB — a reception desk, the photo the checkout handoff asks for). The account pages add
+`auth-signin.jpg` and `auth-signup.jpg` (452px and 510px, 126KB the pair) plus `logo.png`, the
+full-colour wordmark lockup they print instead of the site name (834×353, 184KB — see *Accounts*).
+`roova_background_image()` prints the
 Customizer attachment when there is one and the bundled file otherwise, so an install looks like the
 design before anyone touches the media library. Behind both is a navy gradient, for the case where a
 caller passes no fallback; a band with no image, no fallback and no statement renders nothing at all
@@ -402,6 +492,7 @@ destination's hotels; the two pills switch the framing.
 `assets/js/theme.js`, vanilla, no jQuery, wired entirely through `data-roova-*` attributes.
 (`assets/js/checkout.js` is the one exception, and only because WooCommerce's checkout events are
 jQuery's — see *Checkout*. It loads only on checkout pages, alongside `assets/css/checkout.css`.)
+`assets/js/auth.js` is vanilla too, and loads only on the two account pages — see *Accounts*.
 Dates are handled as `Y-m-d` strings and only converted to `Date` at local midnight so a stay never
 shifts a day across time zones. Server data arrives via the localized `roovaData` object built in
 `roova_script_data()`. Admin JS does use jQuery (WordPress admin convention).
@@ -413,8 +504,8 @@ than a section that never animated.
 
 ## Design system
 
-The look comes from the handoffs in `design_handoff_roova_home/` and `design_handoff_roova_checkout/`
-(spec plus HTML prototypes — reference only, never shipped). Its tokens are the `:root` block at the top of `assets/css/theme.css`: cream
+The look comes from the handoffs in `design_handoff_roova_home/`, `design_handoff_roova_checkout/` and
+`design_handoff_roova_auth/` (spec plus HTML prototypes — reference only, never shipped). Its tokens are the `:root` block at the top of `assets/css/theme.css`: cream
 `#fbf8f3`, navy `#0d3a52`, gold `#b4823c`, sand `#f6f1e8`, ink `#16302f`, **Newsreader** for display
 and **DM Sans** for UI, `cubic-bezier(.22,.8,.28,1)` as the standard easing. Six of those colours are
 Customizer settings re-emitted as custom properties by `roova_inline_brand_css()`, so change the
@@ -441,7 +532,9 @@ Prefer a token over a literal; the handful of literals left are the multi-stop s
 - **The bookings table:** bump `Roova_Schema::DB_VERSION`, which triggers `dbDelta` on the next
   `admin_init`. Note `order_item_id` is nullable on purpose — the UNIQUE index has to allow the many
   rows that are still holds and have no order.
-- **Releases:** `ROOVA_VERSION` in `functions.php` and `Version:` in `style.css` must match.
+- **Releases:** `ROOVA_VERSION` in `functions.php` and `Version:` in `style.css` must match. Bumping it
+  also re-runs the once-per-release setup on the next `admin_init` (`roova_setup_version` for the
+  checkout page and tax rates, `roova_auth_version` for the two account pages).
 - **Documentation:** `roova/README.md` ships to the client (setup, how conflict prevention works);
   the root `README.md` is for developers. Keep client-facing behaviour changes in the theme README.
 

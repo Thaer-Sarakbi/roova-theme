@@ -37,7 +37,8 @@ Everything on it is edited from **Appearance → Customize → Roova hotel theme
 | The four promises under the hero | **Booking promises** — clear a title to drop that promise |
 | Both full-width photo bands, and the words on the first one | **Homepage sections** |
 | Section headings, and switching the hotels, destinations or map sections off | **Homepage sections** |
-| The "Support" link beside *Manage booking* | **Header** |
+| The "Support" link beside the account control | **Header** |
+| The logo on the account pages, a photo each for their panels, the headlines and the two figures | **Sign in and sign up** |
 | Footer tagline, the three column headings, the bottom-right note | **Footer and contact** |
 
 Photography does the heavy lifting here. The theme ships with three stand-in photos — the hero and
@@ -177,9 +178,9 @@ What a guest sees:
 * A stripped-back header — just your wordmark and "Secure booking". No menu, nothing to click away
   with.
 * A photo banner reading "Checkout" and, under it, how many rooms are being held.
-* **Guest information** — full name, phone and email. Nothing else: a stay has no delivery address, so
-  every address, company and country field is gone. The name is split into first and last on the
-  order, so orders and emails look normal.
+* **Guest information** — first name, last name, phone and email. Nothing else: a stay has no delivery
+  address, so every address, company and country field is gone. **A signed-in member finds all four
+  already filled in** from their account.
 * **Order notes** (optional).
 * **Payment options** — one card per payment method you have switched on in **WooCommerce → Settings →
   Payments**. Their titles and descriptions are your own; choosing a card opens its description. Add,
@@ -188,6 +189,11 @@ What a guest sees:
   **WooCommerce → Settings → Advanced → Terms and conditions**, or to the link in **Customizer →
   Roova → Checkout** if you have not set one.
 * **Place order**, showing the live total, and the reassurance line underneath (Customizer).
+* Under that, for a guest with no account, an invitation to **sign up and become a member**. It is a
+  link, not a step — it never gets between the guest and the booking, and it brings them back to
+  checkout afterwards with their rooms still held. Members never see it. Its wording is
+  **Customizer → Roova → Checkout → Sign-up invitation**, and it disappears entirely if you switch
+  sign-up off.
 * On the right, the **order summary**: every room in the cart with its photo, hotel, dates, nights and
   guests, a coupon box, the totals, and a countdown showing how long the rooms stay held.
 * Each room has a **×** button to take it out of the booking. The dates it was holding go straight
@@ -253,10 +259,39 @@ Each order also has a **Bookings** panel on its edit screen.
   design fills them with Stay (Our hotels, Destinations, Long stays), Guests (Manage booking, Contact
   us, FAQ) and Company (About, Careers, Privacy). A column with no menu assigned is left out, and the
   headings are set in the Customizer.
-* The nav "Manage booking" button points at the WooCommerce **My account** page, where guests can see
-  and track their orders.
+* The top right of the header is the **account control**: one button, reading "Sign in" for a visitor
+  and "Manage account" — linking to **My account** — once they are signed in. See the next section.
 
-## 13. Developer notes
+## 13. Sign in and sign up
+
+Activating the theme creates two pages — **Sign in** (`/sign-in/`) and **Sign up** (`/sign-up/`) — and
+gives them the matching page templates. They are ordinary pages, so you can rename them or move them
+in a menu; keep the template assigned and everything keeps working.
+
+* **Signing out** is WooCommerce's own logout link, on the My account page.
+* **"Forgot password?"** goes to WooCommerce's lost-password form.
+* Someone who is signed out and opens **My account** is sent to the sign-in page and back again
+  afterwards, so the site only ever shows one login form — the designed one.
+* Signing up creates a **customer** account with the name, email and phone already filled in, so
+  checkout does not ask for them a second time. WooCommerce sends its usual new-account email.
+* Sign-up is **on out of the box** and does not depend on any WooCommerce setting. To close it, untick
+  **Let guests create accounts** under **Sign in and sign up** in the Customizer: the sign-up page then
+  shows a short note instead of the form, and sign-in keeps working for members who already have an
+  account.
+* The two pages print your **logo** where every other page prints the site name. It is its own
+  Customizer setting because these pages are white: the version of a logo that sits on the homepage
+  hero is usually the light one, and it would disappear here. Upload the full-colour version under
+  **Sign in and sign up → Logo on these pages**, or leave it empty for the one the theme ships.
+* Each page has its **own panel photo**, plus its headline and the two shared figures, under
+  **Sign in and sign up** in the Customizer. Clear either figure and its column disappears — do not
+  leave a number there that your hotels cannot back up.
+* The two photos the theme ships with (the Petronas Towers on sign in, Batu Caves on sign up) are
+  small — smaller than the panel they fill, so they look a little soft on a large screen. **Replace
+  them with your own at 700 × 900 or larger** and the panel sharpens up. Portrait crops suit it best.
+  If you change a photo, check the white text over it is still easy to read — a picture that is bright
+  along its bottom edge is the one to watch.
+
+## 14. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.
@@ -273,6 +308,9 @@ Each order also has a **Bookings** panel on its edit screen.
   WooCommerce.
 * Checkout filters: `roova_payment_icon`, `roova_payment_note` and `roova_payment_badge` decide the
   icon, the small grey line and the gold pill on each payment card.
+* Auth filters: `roova_registration_open` decides whether the sign-up form will create accounts, and
+  `roova_redirect_account_to_signin` (false) leaves a signed-out My account showing WooCommerce's own
+  login form instead. `roova_member_registered` fires with the new user ID and their details.
 * The cart still uses the Blocks version: stay details are exposed through the Store API, and checkout
   is blocked when a stay is no longer available.
 * Translations: `languages/roova.pot`.

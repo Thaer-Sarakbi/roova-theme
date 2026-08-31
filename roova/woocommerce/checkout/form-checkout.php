@@ -45,6 +45,15 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 			<h2 class="roova-checkout__heading"><?php esc_html_e( 'Payment options', 'roova' ); ?></h2>
 			<?php woocommerce_checkout_payment(); ?>
 		</section>
+
+		<?php
+		/*
+		 * A link, not a button: anything that submits would post the order, and
+		 * a nested <form> would be dropped by the browser outright — the same
+		 * trap the summary avoids. A link inside the form is inert.
+		 */
+		roova_checkout_signup_cta();
+		?>
 	</form>
 
 	<aside class="roova-summary" aria-label="<?php esc_attr_e( 'Order summary', 'roova' ); ?>">

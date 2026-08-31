@@ -42,7 +42,7 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: checkout.php:44 header.php:27
+#: checkout.php:44 header.php:27 template-signin.php:30 template-signup.php:28
 msgid "Skip to content"
 msgstr ""
 
@@ -50,23 +50,23 @@ msgstr ""
 msgid "© %1$s %2$s"
 msgstr ""
 
-#: footer.php:15 inc/customizer.php:320 inc/admin/order-metabox.php:53
+#: footer.php:15 inc/customizer.php:412 inc/admin/order-metabox.php:53
 msgid "Stay"
 msgstr ""
 
-#: footer.php:16 inc/customizer.php:321 inc/icons.php:103 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55 inc/booking/class-roova-cart.php:597 inc/booking/class-roova-cart.php:802
+#: footer.php:16 inc/customizer.php:413 inc/icons.php:103 inc/admin/bookings-page.php:235 inc/admin/order-metabox.php:55 inc/booking/class-roova-cart.php:597 inc/booking/class-roova-cart.php:802
 msgid "Guests"
 msgstr ""
 
-#: footer.php:17 inc/customizer.php:322
+#: footer.php:17 inc/customizer.php:414
 msgid "Company"
 msgstr ""
 
-#: footer.php:28 inc/customizer.php:319
+#: footer.php:28 inc/customizer.php:411
 msgid "Malaysian hotels, booked direct. Klang Valley and Malacca."
 msgstr ""
 
-#: footer.php:113 inc/customizer.php:323
+#: footer.php:113 inc/customizer.php:415
 msgid "Made in Malaysia"
 msgstr ""
 
@@ -98,15 +98,15 @@ msgstr ""
 msgid "Explore our destinations"
 msgstr ""
 
-#: functions.php:86
+#: functions.php:87
 msgid "Roova needs WooCommerce."
 msgstr ""
 
-#: functions.php:89
+#: functions.php:90
 msgid "Hotels, rooms, bookings and checkout all run on WooCommerce. %s to finish setting up the theme."
 msgstr ""
 
-#: functions.php:90
+#: functions.php:91
 msgid "Install WooCommerce"
 msgstr ""
 
@@ -114,15 +114,11 @@ msgstr ""
 msgid "Primary menu"
 msgstr ""
 
-#: header.php:70 inc/customizer.php:256 inc/icons.php:129
+#: header.php:70 inc/customizer.php:256 inc/icons.php:134
 msgid "Support"
 msgstr ""
 
-#: header.php:79
-msgid "Manage booking"
-msgstr ""
-
-#: header.php:84
+#: header.php:85
 msgid "Menu"
 msgstr ""
 
@@ -186,7 +182,7 @@ msgstr ""
 msgid "%1$s — %2$s · %3$s · %4$s"
 msgstr ""
 
-#: single-hotel.php:183 template-search.php:42 inc/checkout.php:946 inc/checkout.php:976 inc/template-tags.php:622 inc/admin/order-metabox.php:80
+#: single-hotel.php:183 template-search.php:42 inc/checkout.php:958 inc/checkout.php:988 inc/template-tags.php:622 inc/admin/order-metabox.php:80
 msgid "%d night"
 msgid_plural "%d nights"
 msgstr[0] ""
@@ -256,6 +252,130 @@ msgstr ""
 msgid "No hotels matched that search. Try another destination or different dates."
 msgstr ""
 
+#: template-signin.php:40
+msgid "Welcome back"
+msgstr ""
+
+#: template-signin.php:43 template-signin.php:94 template-signup.php:68 template-signup.php:196 inc/auth.php:36 inc/auth.php:738
+msgid "Sign in"
+msgstr ""
+
+#: template-signin.php:46
+msgid "Access your bookings, saved stays and member rates."
+msgstr ""
+
+#: template-signin.php:60 template-signup.php:102 inc/checkout.php:380
+msgid "Email address"
+msgstr ""
+
+#: template-signin.php:70 template-signup.php:135
+msgid "Password"
+msgstr ""
+
+#: template-signin.php:72
+msgid "Your password"
+msgstr ""
+
+#: template-signin.php:85
+msgid "Keep me signed in"
+msgstr ""
+
+#: template-signin.php:89
+msgid "Forgot password?"
+msgstr ""
+
+#: template-signin.php:103
+msgid "New to %s?"
+msgstr ""
+
+#: template-signin.php:107
+msgid "Create an account"
+msgstr ""
+
+#: template-signin.php:113 inc/customizer.php:324
+msgid "Your next stay is two taps away. Member rates apply the moment you sign in."
+msgstr ""
+
+#: template-signup.php:41
+msgid "Join %s"
+msgstr ""
+
+#: template-signup.php:47
+msgid "Create your account"
+msgstr ""
+
+#: template-signup.php:50
+msgid "Member rates, saved travellers and one-tap checkout across every Malaysian stay."
+msgstr ""
+
+#: template-signup.php:58
+msgid "New accounts are closed at the moment. Please get in touch if you need one."
+msgstr ""
+
+#: template-signup.php:67 template-signup.php:195
+msgid "Already have an account?"
+msgstr ""
+
+#: template-signup.php:83 inc/checkout.php:354
+msgid "First name"
+msgstr ""
+
+#: template-signup.php:84 inc/checkout.php:355
+msgid "Thaer"
+msgstr ""
+
+#: template-signup.php:91 inc/checkout.php:362
+msgid "Last name"
+msgstr ""
+
+#: template-signup.php:92 inc/checkout.php:363
+msgid "Ahmad"
+msgstr ""
+
+#: template-signup.php:116
+msgid "Confirm email address"
+msgstr ""
+
+#: template-signup.php:118
+msgid "Re-enter your email"
+msgstr ""
+
+#: template-signup.php:126 inc/checkout.php:370
+msgid "Phone number"
+msgstr ""
+
+#: template-signup.php:137
+msgid "At least 8 characters"
+msgstr ""
+
+#: template-signup.php:148
+msgid "Confirm password"
+msgstr ""
+
+#: template-signup.php:150
+msgid "Re-enter your password"
+msgstr ""
+
+#: template-signup.php:165 template-signup.php:166
+msgid "terms of service"
+msgstr ""
+
+#: template-signup.php:169 template-signup.php:170
+msgid "privacy notice"
+msgstr ""
+
+#: template-signup.php:174
+msgid "I agree to the %1$s and %2$s."
+msgstr ""
+
+#: template-signup.php:189
+msgid "Create account"
+msgstr ""
+
+#: template-signup.php:211 inc/customizer.php:325
+msgid "Book a room in Malaysia in under a minute, and keep every stay in one place."
+msgstr ""
+
 #: inc/ajax.php:76
 msgid "Room not found."
 msgstr ""
@@ -267,78 +387,138 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/assets.php:85
-msgid "Please enter the guest's full name."
+msgid "Enter the guest's first name."
 msgstr ""
 
 #: inc/assets.php:86
+msgid "Enter the guest's last name."
+msgstr ""
+
+#: inc/assets.php:87 inc/assets.php:126 inc/auth.php:513
 msgid "Enter a valid phone number."
 msgstr ""
 
-#: inc/assets.php:87
+#: inc/assets.php:88 inc/assets.php:124 inc/auth.php:415 inc/auth.php:501
 msgid "Enter a valid email address."
 msgstr ""
 
-#: inc/assets.php:88 inc/checkout.php:445
+#: inc/assets.php:89 inc/checkout.php:457
 msgid "Please accept the booking terms to continue."
 msgstr ""
 
-#: inc/assets.php:89
+#: inc/assets.php:90
 msgid "Your hold has run out — refresh to check the rooms are still free."
 msgstr ""
 
-#: inc/assets.php:91
+#: inc/assets.php:92
 msgid "%s removed."
 msgstr ""
 
-#: inc/assets.php:92
+#: inc/assets.php:93
 msgid "Undo"
 msgstr ""
 
-#: inc/assets.php:93
+#: inc/assets.php:94
 msgid "That did not work. Please reload the page and try again."
 msgstr ""
 
-#: inc/assets.php:200
+#: inc/assets.php:122 inc/auth.php:493
+msgid "Enter your first name."
+msgstr ""
+
+#: inc/assets.php:123 inc/auth.php:497
+msgid "Enter your last name."
+msgstr ""
+
+#: inc/assets.php:125 inc/auth.php:509
+msgid "Email addresses do not match."
+msgstr ""
+
+#: inc/assets.php:127 inc/auth.php:517
+msgid "Use at least 8 characters, with a letter and a number."
+msgstr ""
+
+#: inc/assets.php:128 inc/auth.php:419
+msgid "Enter your password."
+msgstr ""
+
+#: inc/assets.php:129 inc/auth.php:521
+msgid "Passwords do not match."
+msgstr ""
+
+#: inc/assets.php:130 inc/auth.php:525
+msgid "Please accept the terms to create your account."
+msgstr ""
+
+#: inc/assets.php:131 inc/auth.php:831 inc/icons.php:120
+msgid "Show password"
+msgstr ""
+
+#: inc/assets.php:132 inc/icons.php:121
+msgid "Hide password"
+msgstr ""
+
+#: inc/assets.php:133 inc/auth.php:863
+msgid "Password strength"
+msgstr ""
+
+#: inc/assets.php:134
+msgid "Weak"
+msgstr ""
+
+#: inc/assets.php:135
+msgid "Fair"
+msgstr ""
+
+#: inc/assets.php:136
+msgid "Good"
+msgstr ""
+
+#: inc/assets.php:137
+msgid "Strong"
+msgstr ""
+
+#: inc/assets.php:244
 msgid "room"
 msgstr ""
 
-#: inc/assets.php:201
+#: inc/assets.php:245
 msgid "rooms"
 msgstr ""
 
-#: inc/assets.php:202
+#: inc/assets.php:246
 msgid "guest"
 msgstr ""
 
-#: inc/assets.php:203
+#: inc/assets.php:247
 msgid "guests"
 msgstr ""
 
-#: inc/assets.php:204
+#: inc/assets.php:248
 msgid "night"
 msgstr ""
 
-#: inc/assets.php:205
+#: inc/assets.php:249
 msgid "nights"
 msgstr ""
 
-#: inc/assets.php:206
+#: inc/assets.php:250
 msgid "Select dates"
 msgstr ""
 
-#: inc/assets.php:207
+#: inc/assets.php:251
 msgid "Nothing matched that search."
 msgstr ""
 
-#: inc/assets.php:208
+#: inc/assets.php:252
 msgid "Loading…"
 msgstr ""
 
-#: inc/assets.php:209
+#: inc/assets.php:253
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:210 inc/icons.php:110 inc/template-tags.php:959
+#: inc/assets.php:254 inc/icons.php:110 inc/template-tags.php:959
 msgid "Close"
 msgstr ""
 
@@ -350,6 +530,54 @@ msgstr ""
 msgid "Amenity"
 msgstr ""
 
+#: inc/auth.php:42
+msgid "Sign up"
+msgstr ""
+
+#: inc/auth.php:403 inc/auth.php:463
+msgid "That form had expired. Please try again."
+msgstr ""
+
+#: inc/auth.php:445
+msgid "That email and password do not match an account."
+msgstr ""
+
+#: inc/auth.php:468
+msgid "New accounts are closed at the moment. Please contact us if you need one."
+msgstr ""
+
+#: inc/auth.php:503
+msgid "An account already uses that email address. Sign in instead."
+msgstr ""
+
+#: inc/auth.php:636
+msgid "Only you can see this: sign-up is switched off in Appearance → Customize → Roova hotel theme → Sign in and sign up."
+msgstr ""
+
+#: inc/auth.php:641
+msgid "Only you can see this: the setting is on, so something on this site is filtering \"roova_registration_open\" to false — usually a plugin or a code snippet."
+msgstr ""
+
+#: inc/auth.php:738
+msgid "Manage account"
+msgstr ""
+
+#: inc/auth.php:923 inc/customizer.php:326
+msgid "1,240+"
+msgstr ""
+
+#: inc/auth.php:923 inc/customizer.php:327
+msgid "Stays across Malaysia"
+msgstr ""
+
+#: inc/auth.php:924 inc/customizer.php:328
+msgid "Zero"
+msgstr ""
+
+#: inc/auth.php:924 inc/customizer.php:329
+msgid "Booking fees, always"
+msgstr ""
+
 #: inc/checkout.php:132
 msgid "Tourism Tax"
 msgstr ""
@@ -358,129 +586,117 @@ msgstr ""
 msgid "SST"
 msgstr ""
 
-#: inc/checkout.php:348
-msgid "Full name"
-msgstr ""
-
-#: inc/checkout.php:349
-msgid "e.g. Thaer Ahmad"
-msgstr ""
-
-#: inc/checkout.php:356
-msgid "Phone number"
-msgstr ""
-
-#: inc/checkout.php:357
+#: inc/checkout.php:371
 msgid "+60 12 345 6789"
 msgstr ""
 
-#: inc/checkout.php:366
-msgid "Email address"
-msgstr ""
-
-#: inc/checkout.php:367
+#: inc/checkout.php:381
 msgid "you@example.com"
 msgstr ""
 
-#: inc/checkout.php:380
+#: inc/checkout.php:394
 msgid "Notes about your stay"
 msgstr ""
 
-#: inc/checkout.php:381
+#: inc/checkout.php:395
 msgid "Late check-in around 11pm, high floor if possible, extra pillows…"
 msgstr ""
 
-#: inc/checkout.php:493 inc/checkout.php:498
+#: inc/checkout.php:505 inc/checkout.php:510
 msgid "That room is no longer in your booking."
 msgstr ""
 
-#: inc/checkout.php:501
+#: inc/checkout.php:513
 msgid "That room"
 msgstr ""
 
-#: inc/checkout.php:537 inc/checkout.php:546
+#: inc/checkout.php:549 inc/checkout.php:558
 msgid "That room could not be put back."
 msgstr ""
 
-#: inc/checkout.php:669
+#: inc/checkout.php:681
 msgid "%1$s — %2$s"
 msgstr ""
 
-#: inc/checkout.php:716 inc/customizer.php:274
+#: inc/checkout.php:728 inc/customizer.php:274
 msgid "Secure booking"
 msgstr ""
 
-#: inc/checkout.php:740 inc/customizer.php:273
+#: inc/checkout.php:752 inc/customizer.php:273
 msgid "Secure checkout"
 msgstr ""
 
-#: inc/checkout.php:768
+#: inc/checkout.php:780
 msgid "%s held for you — complete your details to confirm."
 msgstr ""
 
-#: inc/checkout.php:771 inc/template-tags.php:336 inc/template-tags.php:623
+#: inc/checkout.php:783 inc/template-tags.php:336 inc/template-tags.php:623
 msgid "%d room"
 msgid_plural "%d rooms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/checkout.php:850
+#: inc/checkout.php:862
 msgid "Required"
 msgstr ""
 
-#: inc/checkout.php:883
+#: inc/checkout.php:895
 msgid "Remove %s from your booking"
 msgstr ""
 
-#: inc/checkout.php:929
+#: inc/checkout.php:941
 msgid "%1$s × %2$d"
 msgstr ""
 
-#: inc/checkout.php:941
+#: inc/checkout.php:953
 msgid "%1$s × %2$s"
 msgstr ""
 
-#: inc/checkout.php:968
+#: inc/checkout.php:980
 msgid "Check in %1$s — out %2$s"
 msgstr ""
 
-#: inc/checkout.php:1001
+#: inc/checkout.php:1013
 msgid "Subtotal"
 msgstr ""
 
-#: inc/checkout.php:1040
+#: inc/checkout.php:1052
 msgid "Taxes & fees"
 msgstr ""
 
-#: inc/checkout.php:1047 woocommerce/checkout/thankyou.php:64
+#: inc/checkout.php:1059 woocommerce/checkout/thankyou.php:64
 msgid "Total"
 msgstr ""
 
-#: inc/checkout.php:1093
+#: inc/checkout.php:1105
 msgid "Tax"
 msgstr ""
 
-#: inc/checkout.php:1112
+#: inc/checkout.php:1124
 msgid "%1$s (%2$s%%)"
 msgstr ""
 
-#: inc/checkout.php:1136 inc/icons.php:111
+#: inc/checkout.php:1148 inc/icons.php:111
 msgid "Included"
 msgstr ""
 
-#: inc/checkout.php:1157
+#: inc/checkout.php:1172 inc/customizer.php:276
+msgid "Sign up, become a member and get rewards"
+msgstr ""
+
+#: inc/checkout.php:1206
 msgid "Rate held for %s"
 msgstr ""
 
-#: inc/checkout.php:1184
+#: inc/checkout.php:1233
 msgid "Your booking is empty"
 msgstr ""
 
-#: inc/checkout.php:1185
+#: inc/checkout.php:1234
 msgid "Nothing is being held right now. Pick your dates and we will find the rooms that are free."
 msgstr ""
 
-#: inc/checkout.php:1187 inc/search.php:28
+#: inc/checkout.php:1236 inc/search.php:28
 msgid "Find a room"
 msgstr ""
 
@@ -677,7 +893,7 @@ msgid "Header"
 msgstr ""
 
 #: inc/customizer.php:241
-msgid "The links beside the \"Manage booking\" button. Menus themselves live under Appearance > Menus."
+msgid "The links beside the account control — a \"Sign in\" button for a visitor, a profile icon for a member. Menus themselves live under Appearance > Menus."
 msgstr ""
 
 #: inc/customizer.php:249
@@ -712,55 +928,123 @@ msgstr ""
 msgid "Free cancellation until 24 hours before check-in."
 msgstr ""
 
-#: inc/customizer.php:295
-msgid "Banner photo"
+#: inc/customizer.php:276
+msgid "Sign-up invitation"
 msgstr ""
 
 #: inc/customizer.php:296
+msgid "Banner photo"
+msgstr ""
+
+#: inc/customizer.php:297
 msgid "A wide reception or check-in photo. The theme ships one, so this can stay empty."
 msgstr ""
 
-#: inc/customizer.php:306
+#: inc/customizer.php:307
 msgid "Booking terms link"
 msgstr ""
 
-#: inc/customizer.php:307
+#: inc/customizer.php:308
 msgid "Only used when no terms page is set in WooCommerce > Settings > Advanced."
 msgstr ""
 
-#: inc/customizer.php:314
-msgid "Footer and contact"
+#: inc/customizer.php:315
+msgid "Sign in and sign up"
 msgstr ""
 
-#: inc/customizer.php:319
-msgid "Footer tagline"
-msgstr ""
-
-#: inc/customizer.php:320
-msgid "Column 1 heading"
-msgstr ""
-
-#: inc/customizer.php:321
-msgid "Column 2 heading"
-msgstr ""
-
-#: inc/customizer.php:322
-msgid "Column 3 heading"
-msgstr ""
-
-#: inc/customizer.php:323
-msgid "Bottom-right note"
+#: inc/customizer.php:317
+msgid "The photo panel beside the two account forms. The figures are yours to stand behind — clear either one and its column disappears rather than showing a number nobody can back up."
 msgstr ""
 
 #: inc/customizer.php:324
-msgid "Phone"
+msgid "Sign in headline"
 msgstr ""
 
 #: inc/customizer.php:325
+msgid "Sign up headline"
+msgstr ""
+
+#: inc/customizer.php:326
+msgid "First figure"
+msgstr ""
+
+#: inc/customizer.php:327
+msgid "First figure label"
+msgstr ""
+
+#: inc/customizer.php:328
+msgid "Second figure"
+msgstr ""
+
+#: inc/customizer.php:329
+msgid "Second figure label"
+msgstr ""
+
+#: inc/customizer.php:356
+msgid "Let guests create accounts"
+msgstr ""
+
+#: inc/customizer.php:357
+msgid "Off replaces the sign-up form with a short note, and leaves sign-in working for members who already have an account."
+msgstr ""
+
+#: inc/customizer.php:372
+msgid "Logo on these pages"
+msgstr ""
+
+#: inc/customizer.php:373
+msgid "The full-colour version of your logo — these pages are white, so the light one used over the hero would disappear. The theme ships one, so this can stay empty."
+msgstr ""
+
+#: inc/customizer.php:382
+msgid "Sign in photo"
+msgstr ""
+
+#: inc/customizer.php:383
+msgid "Tall crops read best — the panel is a full-height column on a desktop, and at least 700 × 900 keeps it sharp. The theme ships one, so this can stay empty."
+msgstr ""
+
+#: inc/customizer.php:386
+msgid "Sign up photo"
+msgstr ""
+
+#: inc/customizer.php:387
+msgid "The same again for the sign-up page. Choose a different picture from the sign-in one."
+msgstr ""
+
+#: inc/customizer.php:406
+msgid "Footer and contact"
+msgstr ""
+
+#: inc/customizer.php:411
+msgid "Footer tagline"
+msgstr ""
+
+#: inc/customizer.php:412
+msgid "Column 1 heading"
+msgstr ""
+
+#: inc/customizer.php:413
+msgid "Column 2 heading"
+msgstr ""
+
+#: inc/customizer.php:414
+msgid "Column 3 heading"
+msgstr ""
+
+#: inc/customizer.php:415
+msgid "Bottom-right note"
+msgstr ""
+
+#: inc/customizer.php:416
+msgid "Phone"
+msgstr ""
+
+#: inc/customizer.php:417
 msgid "Email"
 msgstr ""
 
-#: inc/customizer.php:326 inc/admin/metabox-hotel-details.php:99
+#: inc/customizer.php:418 inc/admin/metabox-hotel-details.php:99
 msgid "Address"
 msgstr ""
 
@@ -1097,38 +1381,42 @@ msgid "Confirmed"
 msgstr ""
 
 #: inc/icons.php:119
+msgid "Account"
+msgstr ""
+
+#: inc/icons.php:124
 msgid "Secure"
 msgstr ""
 
-#: inc/icons.php:120
+#: inc/icons.php:125
 msgid "Online banking"
 msgstr ""
 
-#: inc/icons.php:121
+#: inc/icons.php:126
 msgid "Card"
 msgstr ""
 
-#: inc/icons.php:122
+#: inc/icons.php:127
 msgid "E-wallet"
 msgstr ""
 
-#: inc/icons.php:123
+#: inc/icons.php:128
 msgid "Pay at the hotel"
 msgstr ""
 
-#: inc/icons.php:126
+#: inc/icons.php:131
 msgid "Best rate"
 msgstr ""
 
-#: inc/icons.php:127
+#: inc/icons.php:132
 msgid "No booking fees"
 msgstr ""
 
-#: inc/icons.php:128
+#: inc/icons.php:133
 msgid "Instant confirmation"
 msgstr ""
 
-#: inc/icons.php:257
+#: inc/icons.php:262
 msgid "%d star hotel"
 msgid_plural "%d star hotel"
 msgstr[0] ""
@@ -1876,7 +2164,7 @@ msgstr ""
 msgid "Payment options"
 msgstr ""
 
-#: woocommerce/checkout/form-checkout.php:50 woocommerce/checkout/form-checkout.php:53
+#: woocommerce/checkout/form-checkout.php:59 woocommerce/checkout/form-checkout.php:62
 msgid "Order summary"
 msgstr ""
 
