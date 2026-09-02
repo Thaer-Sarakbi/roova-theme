@@ -820,6 +820,53 @@
 		} ).catch( function () {} );
 	}() );
 
+	/* -------------------------------------------------------------- likes */
+
+	/*
+	 * The saved-stays heart. It lives here rather than in account.js because the
+	 * same button sits on every hotel card on the site; the account page only
+	 * listens for the event below, to drop a card out of the Likes grid.
+	 *
+	 * A signed-out visitor never reaches this — their heart is a link to the
+	 * sign-in page (see roova_like_button()). The 401 branch is the case where a
+	 * session ran out while the page was open.
+	 */
+	( function initLikes() {
+		document.addEventListener( 'click', function ( event ) {
+			var button = event.target.closest( '[data-roova-like]' );
+			if ( ! button || button.dataset.busy ) {
+				return;
+			}
+
+			event.preventDefault();
+			button.dataset.busy = '1';
+
+			post( 'roova_toggle_like', { hotel_id: button.getAttribute( 'data-roova-like' ) } ).then( function ( response ) {
+				delete button.dataset.busy;
+
+				if ( ! response || ! response.success ) {
+					if ( response && response.data && response.data.signinUrl ) {
+						window.location.href = response.data.signinUrl;
+					}
+					return;
+				}
+
+				var detail = response.data;
+
+				button.classList.toggle( 'is-liked', !! detail.liked );
+				button.setAttribute( 'aria-pressed', detail.liked ? 'true' : 'false' );
+
+				if ( detail.label ) {
+					button.setAttribute( 'aria-label', detail.label );
+				}
+
+				document.dispatchEvent( new CustomEvent( 'roova:like', { detail: detail } ) );
+			} ).catch( function () {
+				delete button.dataset.busy;
+			} );
+		} );
+	}() );
+
 	/* --------------------------------------------------------------- maps */
 
 	( function initMap() {

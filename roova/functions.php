@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROOVA_VERSION', '1.4.0' );
+define( 'ROOVA_VERSION', '1.6.0' );
 define( 'ROOVA_DIR', trailingslashit( get_template_directory() ) );
 define( 'ROOVA_URI', trailingslashit( get_template_directory_uri() ) );
 
@@ -40,6 +40,7 @@ roova_require( 'inc/icons.php' );
 roova_require( 'inc/customizer.php' );
 roova_require( 'inc/template-tags.php' );
 roova_require( 'inc/auth.php' );
+roova_require( 'inc/verification.php' );
 
 if ( roova_has_woocommerce() ) {
 	roova_require( 'inc/attributes.php' );
@@ -59,12 +60,26 @@ if ( roova_has_woocommerce() ) {
 	roova_require( 'inc/woocommerce.php' );
 	roova_require( 'inc/checkout.php' );
 
+	// My account: the saved stays and the VIP tiers stand on their own, the
+	// account page reads all five features, and reviews and cashback both need
+	// its stay list — which is why inc/account.php loads after them and they
+	// only ever reach it through a function call, never at include time.
+	roova_require( 'inc/likes.php' );
+	roova_require( 'inc/vip.php' );
+	roova_require( 'inc/cashback.php' );
+	roova_require( 'inc/account.php' );
+	roova_require( 'inc/reviews.php' );
+	roova_require( 'inc/account-tabs.php' );
+
 	if ( is_admin() ) {
 		roova_require( 'inc/admin/metabox-hotel-details.php' );
 		roova_require( 'inc/admin/metabox-room-details.php' );
 		roova_require( 'inc/admin/amenity-icons.php' );
 		roova_require( 'inc/admin/bookings-page.php' );
 		roova_require( 'inc/admin/order-metabox.php' );
+		roova_require( 'inc/admin/vip-settings.php' );
+		roova_require( 'inc/admin/vip-user-profile.php' );
+		roova_require( 'inc/admin/cashback-settings.php' );
 	}
 
 	Roova_Schema::init();

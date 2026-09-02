@@ -621,3 +621,103 @@
 		transform: none;
 	}
 }
+
+/* ------------------------------------------------- Confirming an address */
+
+/*
+ * The alert is red by default because it is nearly always a refusal. The two
+ * that are not — the link already spent, the link on its way — get the green.
+ */
+.roova-auth__alert--ok {
+	border-color: rgba(47, 125, 95, .3);
+	background: rgba(47, 125, 95, .06);
+	color: var(--roova-ok);
+}
+
+/*
+ * "Send it again" is a form, not a link: it posts, and a GET that sends email
+ * is a thing that gets triggered by a prefetch. It is styled as the quiet
+ * button it should be.
+ */
+.roova-auth__resend {
+	margin: 12px 0 0;
+}
+
+.roova-auth__resend button {
+	padding: 9px 16px;
+	border: 1px solid var(--roova-field-line);
+	border-radius: 6px;
+	background: #fff;
+	font-family: var(--roova-font-body);
+	font-size: .81rem;
+	font-weight: 500;
+	color: var(--roova-deep);
+	cursor: pointer;
+	transition: background .25s ease, color .25s ease, border-color .25s ease;
+}
+
+.roova-auth__resend button:hover {
+	background: var(--roova-deep);
+	border-color: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+/* The screen that replaces the form once the account exists. */
+.roova-auth__sent {
+	margin-top: 30px;
+	padding: 26px 28px 24px;
+	border: 1px solid var(--roova-divider);
+	border-radius: 12px;
+	background: var(--roova-sand);
+	animation: roova-rise .5s var(--roova-ease) both;
+}
+
+.roova-auth__sent-lead {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--roova-ink);
+}
+
+.roova-auth__sent-lead strong {
+	font-weight: 500;
+	/* An address can be long and has no spaces to break on. */
+	word-break: break-word;
+}
+
+.roova-auth__sent-body {
+	margin: 10px 0 0;
+	font-size: .88rem;
+	line-height: 1.7;
+	color: var(--roova-soft);
+}
+
+.roova-auth__sent-actions {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	flex-wrap: wrap;
+	margin-top: 18px;
+}
+
+.roova-auth__sent-actions .roova-auth__resend {
+	margin: 0;
+}
+
+.roova-auth__sent-link {
+	font-size: .81rem;
+	color: var(--roova-soft);
+	text-decoration: underline;
+}
+
+.roova-auth__sent-link:hover {
+	color: var(--roova-deep);
+}
+
+.roova-auth__sent-note {
+	margin: 18px 0 0;
+	padding-top: 16px;
+	border-top: 1px solid var(--roova-divider);
+	font-size: .78rem;
+	color: var(--roova-faint);
+}

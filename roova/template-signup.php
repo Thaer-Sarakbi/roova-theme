@@ -13,6 +13,11 @@ defined( 'ABSPATH' ) || exit;
 $roova_redirect = roova_auth_redirect_target();
 $roova_open     = roova_registration_open();
 $roova_legal    = roova_auth_legal_urls();
+
+// Set the moment an account is created: the form is done, and what is left
+// to say is which inbox to go and look in. See inc/verification.php.
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a key into a transient this page wrote itself; it grants nothing.
+$roova_sent = isset( $_GET['roova_sent'] ) ? roova_pending_notice( sanitize_text_field( wp_unslash( $_GET['roova_sent'] ) ) ) : null;
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -36,23 +41,39 @@ $roova_legal    = roova_auth_legal_urls();
 				<p class="roova-auth__eyebrow">
 					<span class="roova-auth__rule" aria-hidden="true"></span>
 					<?php
-					printf(
-						/* translators: %s: site name */
-						esc_html__( 'Join %s', 'roova' ),
-						esc_html( get_bloginfo( 'name' ) )
+					if ( $roova_sent ) {
+						esc_html_e( 'Almost there', 'roova' );
+					} else {
+						printf(
+							/* translators: %s: site name */
+							esc_html__( 'Join %s', 'roova' ),
+							esc_html( get_bloginfo( 'name' ) )
+						);
+					}
+					?>
+				</p>
+
+				<h1 class="roova-auth__title">
+					<?php echo esc_html( $roova_sent ? __( 'Check your email', 'roova' ) : __( 'Create your account', 'roova' ) ); ?>
+				</h1>
+
+				<p class="roova-auth__sub">
+					<?php
+					echo esc_html(
+						$roova_sent
+							? __( 'One link, one tap, and your account is ready.', 'roova' )
+							: __( 'Member rates, saved travellers and one-tap checkout across every Malaysian stay.', 'roova' )
 					);
 					?>
 				</p>
 
-				<h1 class="roova-auth__title"><?php esc_html_e( 'Create your account', 'roova' ); ?></h1>
-
-				<p class="roova-auth__sub">
-					<?php esc_html_e( 'Member rates, saved travellers and one-tap checkout across every Malaysian stay.', 'roova' ); ?>
-				</p>
-
 				<?php roova_auth_form_error(); ?>
 
-				<?php if ( ! $roova_open ) : ?>
+				<?php if ( $roova_sent ) : ?>
+
+					<?php roova_auth_sent_panel( $roova_sent ); ?>
+
+				<?php elseif ( ! $roova_open ) : ?>
 
 					<p class="roova-auth__alert">
 						<?php esc_html_e( 'New accounts are closed at the moment. Please get in touch if you need one.', 'roova' ); ?>
@@ -71,7 +92,7 @@ $roova_legal    = roova_auth_legal_urls();
 				<?php else : ?>
 
 					<form class="roova-auth__form" method="post" action="<?php echo esc_url( get_permalink() ); ?>" novalidate data-roova-auth-form="signup">
-						<?php wp_nonce_field( 'roova_signup', 'roova_signup_nonce' ); ?>
+						<?php roova_auth_nonce_field( 'roova_signup', 'roova_signup_nonce' ); ?>
 						<input type="hidden" name="roova_auth_action" value="signup" />
 						<input type="hidden" name="redirect_to" value="<?php echo esc_url( $roova_redirect ); ?>" />
 
@@ -104,21 +125,6 @@ $roova_legal    = roova_auth_legal_urls();
 								'placeholder'  => 'you@example.com',
 								'autocomplete' => 'email',
 								'rule'         => 'email',
-							) );
-
-							/*
-							 * Not in the handoff — the booking confirmation and every
-							 * later change to the stay go to this address and nowhere
-							 * else, so a typo here costs the guest their booking.
-							 */
-							roova_auth_field( array(
-								'name'         => 'email_confirm',
-								'label'        => __( 'Confirm email address', 'roova' ),
-								'type'         => 'email',
-								'placeholder'  => __( 'Re-enter your email', 'roova' ),
-								'autocomplete' => 'email',
-								'rule'         => 'confirm-email',
-								'match'        => true,
 							) );
 
 							roova_auth_field( array(

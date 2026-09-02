@@ -196,3 +196,175 @@
 	color: #8a1f1f;
 	font-weight: 700;
 }
+
+/* ------------------------------------------- WooCommerce → Settings → RoovaVIP */
+
+.roova-vip-settings {
+	max-width: 900px;
+}
+
+.roova-vip-settings > .description {
+	max-width: 700px;
+	margin: 8px 0;
+}
+
+.roova-vip-settings__list {
+	margin: 20px 0;
+}
+
+.roova-vip-tier {
+	margin-bottom: 16px;
+	padding: 16px 18px;
+	border: 1px solid #dcdcde;
+	border-left: 4px solid #b4823c;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.roova-vip-tier__head {
+	display: flex;
+	align-items: flex-end;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.roova-vip-tier__field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.roova-vip-tier__field > span {
+	font-size: 12px;
+	color: #50575e;
+}
+
+.roova-vip-tier__field--small input {
+	width: 120px;
+}
+
+.roova-vip-tier__remove {
+	margin-left: auto;
+	color: #b32d2e;
+}
+
+.roova-vip-tier__benefits {
+	margin: 16px 0 12px;
+}
+
+/* One benefit per row: icon, what it is, and the small print under it. */
+.roova-vip-benefit {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 0;
+	border-top: 1px solid #f0f0f1;
+}
+
+.roova-vip-benefit__title,
+.roova-vip-benefit__note {
+	flex: 1;
+}
+
+.roova-vip-benefit__title input,
+.roova-vip-benefit__note input {
+	width: 100%;
+}
+
+.roova-vip-benefit__remove {
+	flex: none;
+	font-size: 18px;
+	line-height: 1;
+	color: #b32d2e;
+	text-decoration: none;
+}
+
+/* ------------------------------- WooCommerce → Settings → Cashback rewards */
+
+.roova-cashback-settings {
+	max-width: 1100px;
+}
+
+.roova-cashback-settings > .description {
+	max-width: 760px;
+	margin: 8px 0;
+}
+
+.roova-cashback-settings__note {
+	color: #8a6100;
+}
+
+.roova-cashback-settings__list {
+	margin: 20px 0;
+}
+
+.roova-cashback-settings__empty {
+	margin: 20px 0;
+	padding: 16px 18px;
+	border: 1px dashed #dcdcde;
+	border-radius: 4px;
+	color: #50575e;
+}
+
+.roova-cashback-reward {
+	margin-bottom: 16px;
+	padding: 16px 18px;
+	border: 1px solid #dcdcde;
+	border-left: 4px solid #2f7d5f;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.roova-cashback-reward__row {
+	display: flex;
+	align-items: flex-end;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+/* The optional copy sits under the rule it describes. */
+.roova-cashback-reward__row--copy {
+	margin-top: 14px;
+	padding-top: 14px;
+	border-top: 1px solid #f0f0f1;
+}
+
+.roova-cashback-reward__field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.roova-cashback-reward__field > span {
+	font-size: 12px;
+	color: #50575e;
+}
+
+.roova-cashback-reward__field--small input {
+	width: 130px;
+}
+
+.roova-cashback-reward__field--wide select {
+	min-width: 220px;
+	max-width: 320px;
+}
+
+.roova-cashback-reward__field--grow {
+	flex: 1;
+	min-width: 220px;
+}
+
+.roova-cashback-reward__field--grow input {
+	width: 100%;
+}
+
+.roova-cashback-reward__remove {
+	margin-left: auto;
+	color: #b32d2e;
+}
+
+.roova-cashback-reward__since {
+	margin: 12px 0 0;
+	font-size: 12px;
+	color: #787c82;
+}

@@ -571,6 +571,22 @@ function roova_get_hotel_ids( $args = array() ) {
 }
 
 /**
+ * Is this product one of the hotels?
+ *
+ * @param int $product_id Product ID.
+ * @return bool
+ */
+function roova_is_hotel( $product_id ) {
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		return false;
+	}
+
+	$product = wc_get_product( absint( $product_id ) );
+
+	return (bool) $product && 'hotel' === $product->get_type();
+}
+
+/**
  * Rooms that belong to a hotel.
  *
  * @param int $hotel_id Hotel product ID.

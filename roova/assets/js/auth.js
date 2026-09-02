@@ -51,12 +51,6 @@
 			case 'email':
 				return EMAIL.test( value ) ? '' : text( 'email', 'Enter a valid email address.' );
 
-			// An empty confirm is a mismatch, not a pass — see inc/auth.php.
-			case 'confirm-email':
-				return value && value.toLowerCase() === valueOf( form, 'roova_email' ).trim().toLowerCase()
-					? ''
-					: text( 'emailConfirm', 'Email addresses do not match.' );
-
 			case 'phone':
 				return PHONE.test( value ) ? '' : text( 'phone', 'Enter a valid phone number.' );
 
@@ -230,14 +224,10 @@
 
 		qsa( '[data-roova-match]', form ).forEach( function ( tick ) {
 			var input = tick.closest( '[data-roova-field]' ).querySelector( '.roova-field__input' );
-			var rule = input ? input.getAttribute( 'data-roova-rule' ) : '';
-			var other = rule === 'confirm-email' ? 'roova_email' : 'roova_password';
-			var matched = !! input && !! input.value && input.value.trim().toLowerCase() === valueOf( form, other ).trim().toLowerCase();
 
-			// Passwords match exactly; email addresses match case-insensitively.
-			if ( rule === 'confirm-password' ) {
-				matched = !! input && !! input.value && input.value === valueOf( form, other );
-			}
+			// The only confirm field left is the password one, and a password has
+			// to match exactly — case and all.
+			var matched = !! input && !! input.value && input.value === valueOf( form, 'roova_password' );
 
 			tick.classList.toggle( 'is-match', matched );
 		} );

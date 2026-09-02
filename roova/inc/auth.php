@@ -132,7 +132,21 @@ function roova_auth_page_id( $which ) {
 		return 0;
 	}
 
-	return (int) get_option( $pages[ $which ]['option'] );
+	$page_id = (int) get_option( $pages[ $which ]['option'] );
+
+	/*
+	 * Only a page that is actually published counts. get_permalink() builds a
+	 * URL for a trashed page just as happily as for a live one, and that URL is
+	 * a 404 — which would be the address baked into every confirmation email
+	 * the site sends. Callers fall back to WordPress's own login instead, which
+	 * always exists. roova_create_auth_pages() reads the option directly, so it
+	 * can still find and untrash the page this hides.
+	 */
+	if ( $page_id && 'publish' !== get_post_status( $page_id ) ) {
+		return 0;
+	}
+
+	return $page_id;
 }
 
 /**
@@ -185,14 +199,30 @@ function roova_signup_url( $redirect = '' ) {
  * @return string
  */
 function roova_account_url() {
-	if ( function_exists( 'wc_get_page_permalink' ) ) {
-		$url = wc_get_page_permalink( 'myaccount' );
-		if ( $url ) {
-			return $url;
+	if ( function_exists( 'wc_get_page_id' ) ) {
+		$page_id = (int) wc_get_page_id( 'myaccount' );
+
+		/*
+		 * Published, not merely pointed at. `wc_get_page_permalink()` builds a
+		 * URL for a page that has been trashed or never published just as
+		 * happily as for a live one — and that URL is a 404. It is the address
+		 * the header button, the sign-in redirect and the email confirmation
+		 * link all end at, so a 404 there is the last thing a member sees after
+		 * confirming their address.
+		 */
+		if ( $page_id > 0 && 'publish' === get_post_status( $page_id ) ) {
+			$url = get_permalink( $page_id );
+			if ( $url ) {
+				return $url;
+			}
 		}
+
+		// The page is missing or broken — roova_ensure_account_page() puts it
+		// back on the next admin load. Home is somewhere; a 404 is not.
+		return home_url( '/' );
 	}
 
-	// No WooCommerce, or no account page: the profile screen is all there is.
+	// No WooCommerce at all: the profile screen is the only account there is.
 	return admin_url( 'profile.php' );
 }
 
@@ -328,6 +358,90 @@ function roova_auth_set_value( $field, $value ) {
 }
 
 /* -------------------------------------------------------------------------
+ * Nonces
+ *
+ * Every form on these pages is posted by somebody who is signed out, and a
+ * logged-out nonce is built against "user 0" — except that WooCommerce swaps
+ * that for its session customer id, and other plugins filter it too. So the
+ * moment a cart session begins or ends between a form being drawn and posted —
+ * a room added in another tab is enough, and on older WooCommerce simply
+ * touching the cart at all was — the nonce is checked against a different user
+ * than the one it was made for, and a perfectly good form comes back as
+ * "That form had expired."
+ *
+ * Pinning the value at both ends makes the nonce depend on the action and the
+ * clock alone, which is what WordPress does for anonymous forms by default.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Force the "user" behind a logged-out nonce to 0.
+ *
+ * @param int $uid Incoming user ID.
+ * @return int
+ */
+function roova_auth_pinned_nonce_user( $uid ) {
+	unset( $uid );
+	return 0;
+}
+
+/**
+ * Run a callback with the logged-out nonce user pinned.
+ *
+ * Priority 99, so it is the last word over WooCommerce's own filter at 10.
+ *
+ * @param callable $callback What to run.
+ * @return mixed Whatever the callback returns.
+ */
+function roova_auth_with_pinned_nonce( $callback ) {
+	// A signed-in member's nonce uses their real ID and never consults the
+	// filter, so there is nothing to pin and nothing to undo.
+	if ( is_user_logged_in() ) {
+		return $callback();
+	}
+
+	add_filter( 'nonce_user_logged_out', 'roova_auth_pinned_nonce_user', 99 );
+	$result = $callback();
+	remove_filter( 'nonce_user_logged_out', 'roova_auth_pinned_nonce_user', 99 );
+
+	return $result;
+}
+
+/**
+ * Print a nonce field for one of the auth forms.
+ *
+ * @param string $action Nonce action.
+ * @param string $name   Field name.
+ */
+function roova_auth_nonce_field( $action, $name ) {
+	roova_auth_with_pinned_nonce(
+		static function () use ( $action, $name ) {
+			wp_nonce_field( $action, $name );
+		}
+	);
+}
+
+/**
+ * Check the nonce one of the auth forms posted.
+ *
+ * @param string $name   Field name in $_POST.
+ * @param string $action Nonce action.
+ * @return bool
+ */
+function roova_auth_verify_nonce( $name, $action ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- this *is* the check.
+	$posted = isset( $_POST[ $name ] ) ? sanitize_text_field( wp_unslash( $_POST[ $name ] ) ) : '';
+
+	if ( '' === $posted ) {
+		return false;
+	}
+
+	return (bool) roova_auth_with_pinned_nonce(
+		static function () use ( $posted, $action ) {
+			return wp_verify_nonce( $posted, $action );
+		}
+	);
+}
+/* -------------------------------------------------------------------------
  * Validation rules
  *
  * The same rules the handoff gives the client-side script, so a guest never
@@ -391,6 +505,8 @@ function roova_handle_auth_forms() {
 		roova_process_signin();
 	} elseif ( 'signup' === $action ) {
 		roova_process_signup();
+	} elseif ( 'resend' === $action ) {
+		roova_process_resend();
 	}
 }
 add_action( 'template_redirect', 'roova_handle_auth_forms', 5 );
@@ -399,7 +515,7 @@ add_action( 'template_redirect', 'roova_handle_auth_forms', 5 );
  * Sign an existing guest in.
  */
 function roova_process_signin() {
-	if ( ! isset( $_POST['roova_signin_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['roova_signin_nonce'] ) ), 'roova_signin' ) ) {
+	if ( ! roova_auth_verify_nonce( 'roova_signin_nonce', 'roova_signin' ) ) {
 		roova_auth_add_error( 'form', __( 'That form had expired. Please try again.', 'roova' ) );
 		return;
 	}
@@ -447,6 +563,18 @@ function roova_process_signin() {
 			$message = wp_strip_all_tags( $user->get_error_message() );
 		}
 
+		/*
+		 * The password was right and the account is real — it is the address
+		 * that has not been confirmed. Saying so at field level would bury it
+		 * under the password box, and there is something to *do* about it, so
+		 * it goes above the form with a button beside it.
+		 */
+		if ( 'roova_unverified' === $code ) {
+			roova_auth_add_error( 'form', $message );
+			roova_auth_set_value( 'resend_email', $email );
+			return;
+		}
+
 		roova_auth_add_error( 'password', $message );
 		return;
 	}
@@ -459,7 +587,7 @@ function roova_process_signin() {
  * Create an account, then sign the new member straight in.
  */
 function roova_process_signup() {
-	if ( ! isset( $_POST['roova_signup_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['roova_signup_nonce'] ) ), 'roova_signup' ) ) {
+	if ( ! roova_auth_verify_nonce( 'roova_signup_nonce', 'roova_signup' ) ) {
 		roova_auth_add_error( 'form', __( 'That form had expired. Please try again.', 'roova' ) );
 		return;
 	}
@@ -472,18 +600,16 @@ function roova_process_signup() {
 	$first   = isset( $_POST['roova_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['roova_first_name'] ) ) : '';
 	$last    = isset( $_POST['roova_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['roova_last_name'] ) ) : '';
 	$email   = isset( $_POST['roova_email'] ) ? sanitize_text_field( wp_unslash( $_POST['roova_email'] ) ) : '';
-	$email2  = isset( $_POST['roova_email_confirm'] ) ? sanitize_text_field( wp_unslash( $_POST['roova_email_confirm'] ) ) : '';
 	$phone   = isset( $_POST['roova_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['roova_phone'] ) ) : '';
 	$pass    = isset( $_POST['roova_password'] ) ? (string) wp_unslash( $_POST['roova_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitised -- hashed by WordPress, never printed.
 	$pass2   = isset( $_POST['roova_password_confirm'] ) ? (string) wp_unslash( $_POST['roova_password_confirm'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitised -- compared only.
 	$terms   = ! empty( $_POST['roova_terms'] );
 
 	foreach ( array(
-		'first_name'    => $first,
-		'last_name'     => $last,
-		'email'         => $email,
-		'email_confirm' => $email2,
-		'phone'         => $phone,
+		'first_name' => $first,
+		'last_name'  => $last,
+		'email'      => $email,
+		'phone'      => $phone,
 	) as $field => $value ) {
 		roova_auth_set_value( $field, $value );
 	}
@@ -501,12 +627,6 @@ function roova_process_signup() {
 		roova_auth_add_error( 'email', __( 'Enter a valid email address.', 'roova' ) );
 	} elseif ( email_exists( $email ) ) {
 		roova_auth_add_error( 'email', __( 'An account already uses that email address. Sign in instead.', 'roova' ) );
-	}
-
-	// An empty confirm is a mismatch, not a pass, even when the first field is
-	// empty too — otherwise a guest who fills in neither is told about one.
-	if ( '' === $email2 || strtolower( $email2 ) !== strtolower( $email ) ) {
-		roova_auth_add_error( 'email_confirm', __( 'Email addresses do not match.', 'roova' ) );
 	}
 
 	if ( ! roova_auth_valid_phone( $phone ) ) {
@@ -530,9 +650,21 @@ function roova_process_signup() {
 	}
 
 	/*
+	 * Both of these send a welcome email of their own, and the guest is about to
+	 * get the confirmation one. Two emails a second apart, one of which says
+	 * "your account is ready" when it is not yet, is worse than either — so the
+	 * welcome is held back while confirmation is on. The confirmation email is
+	 * the welcome.
+	 */
+	$roova_confirming = roova_verification_required();
+	if ( $roova_confirming ) {
+		add_filter( 'woocommerce_email_enabled_customer_new_account', '__return_false', 99 );
+	}
+
+	/*
 	 * WooCommerce's helper is preferred: it applies the store's username and
-	 * password settings, gives the account the customer role and sends the new
-	 * account email. Without WooCommerce, core's own insert does.
+	 * password settings and gives the account the customer role. Without
+	 * WooCommerce, core's own insert does.
 	 */
 	if ( function_exists( 'wc_create_new_customer' ) ) {
 		$user_id = wc_create_new_customer(
@@ -554,9 +686,13 @@ function roova_process_signup() {
 			'role'       => get_option( 'default_role', 'subscriber' ),
 		) );
 
-		if ( ! is_wp_error( $user_id ) ) {
+		if ( ! is_wp_error( $user_id ) && ! $roova_confirming ) {
 			wp_new_user_notification( $user_id, null, 'both' );
 		}
+	}
+
+	if ( $roova_confirming ) {
+		remove_filter( 'woocommerce_email_enabled_customer_new_account', '__return_false', 99 );
 	}
 
 	if ( is_wp_error( $user_id ) ) {
@@ -584,6 +720,22 @@ function roova_process_signup() {
 		'email'      => $email,
 		'phone'      => $phone,
 	) );
+
+	/*
+	 * Nobody is signed in yet. The address has to prove itself first — see
+	 * inc/verification.php — and the account stays unusable until the link in
+	 * it is opened. With confirmation filtered off, sign-up behaves as it did
+	 * before and signs the new member straight in.
+	 */
+	if ( roova_verification_required() ) {
+		roova_mark_unverified( $user_id );
+		roova_send_verification_email( $user_id );
+
+		wp_safe_redirect(
+			add_query_arg( 'roova_sent', roova_store_pending_notice( $user_id ), roova_signup_url() )
+		);
+		exit;
+	}
 
 	wp_set_current_user( $user_id );
 	wp_set_auth_cookie( $user_id, true, is_ssl() );

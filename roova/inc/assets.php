@@ -122,7 +122,6 @@ function roova_enqueue_auth_assets() {
 				'firstName'       => __( 'Enter your first name.', 'roova' ),
 				'lastName'        => __( 'Enter your last name.', 'roova' ),
 				'email'           => __( 'Enter a valid email address.', 'roova' ),
-				'emailConfirm'    => __( 'Email addresses do not match.', 'roova' ),
 				'phone'           => __( 'Enter a valid phone number.', 'roova' ),
 				'password'        => __( 'Use at least 8 characters, with a letter and a number.', 'roova' ),
 				'passwordEmpty'   => __( 'Enter your password.', 'roova' ),
@@ -140,6 +139,46 @@ function roova_enqueue_auth_assets() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_auth_assets', 20 );
+
+/**
+ * The account dashboard's own stylesheet and script.
+ *
+ * Only the dashboard: a WooCommerce endpoint underneath My account — a single
+ * order, the address book, lost password — is WooCommerce's own screen and has
+ * none of this markup on it.
+ *
+ * The script is vanilla like theme.js, and every rule it checks is checked
+ * again in inc/account.php, so the forms work with it blocked.
+ */
+function roova_enqueue_account_assets() {
+	if ( ! function_exists( 'roova_is_account_dashboard' ) || ! roova_is_account_dashboard() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-account', ROOVA_URI . 'assets/css/account.css', array( 'roova-style' ), ROOVA_VERSION );
+	wp_enqueue_script( 'roova-account', ROOVA_URI . 'assets/js/account.js', array(), ROOVA_VERSION, true );
+
+	wp_localize_script(
+		'roova-account',
+		'roovaAccount',
+		array(
+			'i18n' => array(
+				'saved'           => __( 'Saved', 'roova' ),
+				'showPassword'    => __( 'Show password', 'roova' ),
+				'hidePassword'    => __( 'Hide password', 'roova' ),
+				'firstName'       => __( 'Enter your first name.', 'roova' ),
+				'lastName'        => __( 'Enter your last name.', 'roova' ),
+				'phone'           => __( 'Enter a valid phone number.', 'roova' ),
+				'currentPassword' => __( 'Enter your current password.', 'roova' ),
+				'newPassword'     => __( 'New password needs 8+ characters with a letter and a number.', 'roova' ),
+				'confirmPassword' => __( 'New passwords don\'t match.', 'roova' ),
+				'rating'          => __( 'Choose a rating from 1 to 5 stars.', 'roova' ),
+				'reviewBody'      => __( 'Tell other guests a little more — at least a sentence.', 'roova' ),
+			),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_account_assets', 20 );
 
 /**
  * The pinned map libraries, with the hashes their tags are checked against.

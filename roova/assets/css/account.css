@@ -1,0 +1,1722 @@
+/**
+ * My account.
+ *
+ * Loaded only on the account dashboard (see roova_enqueue_account_assets), on
+ * top of theme.css — every colour here is one of its tokens.
+ *
+ * The field shell is a deliberate second copy of the one in auth.css rather
+ * than a shared block: each page in this theme ships its own stylesheet with
+ * its own token header (checkout.css does the same), and the account page has
+ * to stand up on its own when neither of the others is loaded.
+ */
+
+.roova-account-page {
+	--roova-field-line: rgba(13, 58, 82, .28);
+	--roova-divider: rgba(13, 58, 82, .12);
+	--roova-card-line: rgba(13, 58, 82, .14);
+	--roova-error: #b23b2e;
+	--roova-ok: #2f7d5f;
+	--roova-placeholder: #a8b4b9;
+	--roova-gold-light: #d9a75a;
+	--roova-rail: #e8ecee;
+	--roova-rail-node: #eef1f2;
+
+	background: #fff;
+	text-rendering: optimizeLegibility;
+}
+
+/* ------------------------------------------------------------- Top bar */
+
+.roova-account__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	padding: 18px 48px;
+	border-bottom: 1px solid var(--roova-hairline);
+	background: #fff;
+}
+
+.roova-account__logo {
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.015em;
+	color: var(--roova-deep);
+}
+
+.roova-account__logo em {
+	font-style: normal;
+	color: var(--roova-gold);
+}
+
+.roova-account__bar-right {
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	font-size: .81rem;
+	color: var(--roova-soft);
+}
+
+.roova-account__tier,
+.roova-account__signout {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+}
+
+.roova-account__tier .roova-icon {
+	color: var(--roova-gold);
+}
+
+.roova-account__signout {
+	color: #6c7f86;
+	transition: color .25s ease;
+}
+
+.roova-account__signout:hover {
+	color: var(--roova-deep);
+}
+
+/* --------------------------------------------------------- The container */
+
+.roova-account {
+	max-width: 1240px;
+	margin: 0 auto;
+	padding: 40px 32px 90px;
+}
+
+/* ---------------------------------------------------------------- Hero */
+
+.roova-account__hero {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 28px;
+	flex-wrap: wrap;
+	margin-bottom: 30px;
+	animation: roova-rise .7s var(--roova-ease) both;
+}
+
+.roova-account__identity {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.roova-account__avatar {
+	position: relative;
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--roova-avatar-size, 74px);
+	height: var(--roova-avatar-size, 74px);
+	border-radius: 50%;
+	overflow: hidden;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+.roova-account__avatar img {
+	/* Laid over the initial — a member with no Gravatar gets a transparent
+	   image here and the letter underneath shows through. */
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.roova-account__avatar-initial {
+	font-family: var(--roova-font-display);
+	font-size: 1.75rem;
+	line-height: 1;
+}
+
+.roova-account__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 10px;
+	font-size: .69rem;
+	font-weight: 500;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-account__rule {
+	display: block;
+	width: 24px;
+	height: 1px;
+	background: var(--roova-gold);
+}
+
+.roova-account__name {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 2.38rem;
+	font-weight: 400;
+	line-height: 1.05;
+	letter-spacing: -.02em;
+	color: var(--roova-deep);
+}
+
+.roova-account__since {
+	margin: 8px 0 0;
+	font-size: .84rem;
+	color: #6c7f86;
+}
+
+/* Cashback balance, then stays booked — the money figure sits to the left. */
+.roova-account__stats {
+	display: flex;
+	align-items: flex-end;
+	gap: 34px;
+}
+
+.roova-account__stat {
+	text-align: right;
+}
+
+.roova-account__stat-figure {
+	display: block;
+	font-family: var(--roova-font-display);
+	font-size: 1.63rem;
+	line-height: 1.1;
+	color: var(--roova-deep);
+}
+
+/*
+ * wc_price() returns a nest of spans, so the figure has to inherit rather than
+ * be styled through a descendant rule — one of those would put the currency
+ * symbol on a line of its own. See CLAUDE.md.
+ */
+.roova-account__stat-figure--money > .amount {
+	font: inherit;
+	color: inherit;
+	white-space: nowrap;
+}
+
+.roova-account__stat-label {
+	display: block;
+	margin-top: 2px;
+	font-size: .72rem;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+/* ---------------------------------------------------------------- Tabs */
+
+.roova-account__tabs {
+	display: flex;
+	gap: 4px;
+	border-bottom: 1px solid var(--roova-divider);
+	overflow-x: auto;
+	margin-bottom: 34px;
+	/* The strip scrolls rather than wrapping, so a tab is never half-hidden. */
+	scrollbar-width: none;
+}
+
+.roova-account__tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.roova-account__tab {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 13px 18px;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: none;
+	font-family: var(--roova-font-body);
+	font-size: .88rem;
+	font-weight: 400;
+	white-space: nowrap;
+	color: var(--roova-faint);
+	cursor: pointer;
+	transition: color .25s ease, border-color .25s ease;
+}
+
+.roova-account__tab:hover {
+	color: var(--roova-deep);
+}
+
+.roova-account__tab.is-active {
+	font-weight: 500;
+	color: var(--roova-deep);
+	border-bottom-color: var(--roova-deep);
+}
+
+.roova-account__pill {
+	padding: 2px 7px;
+	border-radius: 999px;
+	background: rgba(13, 58, 82, .05);
+	font-size: .69rem;
+	color: var(--roova-faint);
+	transition: background .25s ease, color .25s ease;
+}
+
+.roova-account__tab.is-active .roova-account__pill {
+	background: rgba(13, 58, 82, .09);
+	color: var(--roova-deep);
+}
+
+/* -------------------------------------------------------------- Panels */
+
+.roova-account__panel {
+	animation: roova-rise .55s var(--roova-ease) both;
+}
+
+.roova-account__panel[hidden] {
+	display: none;
+}
+
+.roova-account__column {
+	max-width: 680px;
+}
+
+.roova-account__head {
+	margin-bottom: 22px;
+}
+
+.roova-account__h2 {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.63rem;
+	font-weight: 400;
+	line-height: 1.2;
+	color: var(--roova-deep);
+}
+
+.roova-account__sub {
+	margin: 6px 0 0;
+	font-size: .84rem;
+	color: var(--roova-faint);
+}
+
+.roova-account__list {
+	display: grid;
+	gap: 16px;
+}
+
+.roova-account__grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 20px;
+}
+
+.roova-account__empty {
+	padding: 34px 30px;
+	border: 1px dashed var(--roova-card-line);
+	border-radius: 12px;
+	text-align: center;
+	color: var(--roova-soft);
+}
+
+.roova-account__empty p {
+	margin: 0 0 18px;
+	font-size: .91rem;
+}
+
+/* The 18px is the gap above the button; with no button there is nothing to
+   hold it open, and the box would sit a line taller than its own text. */
+.roova-account__empty p:last-child {
+	margin-bottom: 0;
+}
+
+.roova-account__flash {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 20px;
+	font-size: .81rem;
+	color: var(--roova-ok);
+}
+
+/* Printed by roova_auth_form_error(), which the account forms share. */
+.roova-auth__alert {
+	margin: 0 0 20px;
+	padding: 12px 16px;
+	border: 1px solid rgba(178, 59, 46, .3);
+	border-radius: 8px;
+	background: rgba(178, 59, 46, .05);
+	font-size: .84rem;
+	color: var(--roova-error);
+}
+
+/* ------------------------------------------------------------- Buttons */
+
+.roova-account__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 16px 28px;
+	border: 0;
+	border-radius: 8px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	font-family: var(--roova-font-body);
+	font-size: .94rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background .3s ease, transform .3s var(--roova-ease), box-shadow .3s var(--roova-ease);
+}
+
+.roova-account__btn:hover {
+	background: #0a2c3f;
+	color: var(--roova-cream);
+	transform: translateY(-2px);
+	box-shadow: 0 16px 30px -16px rgba(8, 38, 53, .55);
+}
+
+.roova-account__btn--sm {
+	padding: 11px 20px;
+	border-radius: 6px;
+	font-size: .81rem;
+}
+
+/* The tick only replaces the arrow once a save has come back. */
+.roova-account__btn-check,
+.roova-account__btn.is-saved .roova-account__btn-arrow {
+	display: none;
+}
+
+.roova-account__btn.is-saved .roova-account__btn-check {
+	display: block;
+}
+
+.roova-account__ghost {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 11px 20px;
+	border: 1px solid var(--roova-field-line);
+	border-radius: 6px;
+	background: none;
+	font-family: var(--roova-font-body);
+	font-size: .84rem;
+	font-weight: 500;
+	color: var(--roova-deep);
+	cursor: pointer;
+	transition: background .25s ease, color .25s ease, border-color .25s ease;
+}
+
+.roova-account__ghost:hover {
+	background: var(--roova-deep);
+	border-color: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+/* --------------------------------------------------------- Field shell */
+
+/*
+ * The label is the box and the input inside it is borderless, so the caption
+ * and the value read as one control — the same shell the sign-in and sign-up
+ * pages use, because the markup is literally the same function.
+ */
+.roova-field {
+	display: block;
+	padding: 12px 16px 11px;
+	border: 1px solid var(--roova-field-line);
+	border-radius: 6px;
+	background: #fff;
+	cursor: text;
+	transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.roova-field:focus-within {
+	border-color: var(--roova-deep);
+	box-shadow: 0 0 0 3px rgba(13, 58, 82, .08);
+}
+
+.roova-field.is-invalid {
+	border-color: rgba(178, 59, 46, .55);
+}
+
+.roova-field.is-invalid:focus-within {
+	border-color: var(--roova-error);
+	box-shadow: 0 0 0 3px rgba(178, 59, 46, .09);
+}
+
+/*
+ * A field with something beside its value — the eye toggle, the confirm tick —
+ * is a row, or that element wraps under the input and the box grows a line
+ * taller than every other field on the page.
+ */
+.roova-field--password,
+.roova-field--match {
+	display: flex;
+	align-items: flex-end;
+	gap: 12px;
+}
+
+.roova-field__main {
+	display: block;
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-field__caption {
+	display: block;
+	font-size: .72rem;
+	letter-spacing: .02em;
+	color: #6c7f86;
+}
+
+.roova-field__input {
+	display: block;
+	width: 100%;
+	margin-top: 3px;
+	padding: 0;
+	border: 0;
+	outline: none;
+	background: transparent;
+	font-family: var(--roova-font-body);
+	/* 16px: anything smaller and iOS zooms the page on focus. */
+	font-size: 1rem;
+	line-height: 1.4;
+	color: var(--roova-ink);
+}
+
+.roova-field__input::placeholder {
+	color: var(--roova-placeholder);
+}
+
+.roova-field__input:-webkit-autofill,
+.roova-field__input:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--roova-ink);
+	box-shadow: 0 0 0 60px #fff inset;
+}
+
+.roova-field--select .roova-field__input,
+.roova-field--area .roova-field__input {
+	cursor: pointer;
+}
+
+.roova-field--area .roova-field__input {
+	cursor: text;
+	resize: vertical;
+	line-height: 1.6;
+}
+
+.roova-field__eye,
+.roova-field__match {
+	flex: none;
+	display: flex;
+	align-items: center;
+	padding: 0 0 3px;
+	border: 0;
+	background: none;
+	color: var(--roova-faint);
+	cursor: pointer;
+	transition: color .25s ease;
+}
+
+.roova-field__eye:hover,
+.roova-field__eye:focus-visible {
+	color: var(--roova-deep);
+}
+
+.roova-field__eye-off,
+.roova-field__eye.is-on .roova-field__eye-on {
+	display: none;
+}
+
+.roova-field__eye.is-on .roova-field__eye-off {
+	display: flex;
+}
+
+.roova-field__match {
+	color: var(--roova-ok);
+	cursor: text;
+	opacity: 0;
+	transition: opacity .25s ease;
+}
+
+.roova-field__match.is-match {
+	opacity: 1;
+}
+
+.roova-field__error {
+	margin: 7px 0 0;
+	font-size: .78rem;
+	line-height: 1.5;
+	color: var(--roova-error);
+}
+
+.roova-field__error[hidden] {
+	display: none;
+}
+
+/* ------------------------------------------------------------- Profile */
+
+.roova-account__fields {
+	display: grid;
+	gap: 14px;
+}
+
+.roova-account__row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px;
+}
+
+.roova-account__row--three {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* The email box is not a field: it is the value, and a note about it. */
+.roova-account__readonly {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 14px 16px;
+	border: 1px solid var(--roova-divider);
+	border-radius: 6px;
+	background: rgba(13, 58, 82, .02);
+}
+
+.roova-account__readonly-value {
+	display: block;
+	margin-top: 3px;
+	font-size: 1rem;
+	color: var(--roova-ink);
+}
+
+.roova-account__verified {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: .75rem;
+	color: var(--roova-ok);
+}
+
+.roova-account__note {
+	margin: 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-account__note a {
+	color: var(--roova-deep);
+	text-decoration: underline;
+}
+
+.roova-account__password {
+	margin-top: 30px;
+	padding-top: 26px;
+	border-top: 1px solid rgba(13, 58, 82, .1);
+}
+
+.roova-account__password-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.roova-account__password-fields {
+	display: grid;
+	gap: 14px;
+	margin-top: 20px;
+	animation: roova-rise .4s ease both;
+}
+
+.roova-account__password-fields[hidden] {
+	display: none;
+}
+
+.roova-account__save {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	flex-wrap: wrap;
+	margin-top: 30px;
+}
+
+.roova-account__saved {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	font-size: .81rem;
+	color: var(--roova-ok);
+}
+
+.roova-account__saved[hidden] {
+	display: none;
+}
+
+/* ------------------------------------------------------------ Bookings */
+
+.roova-booking {
+	display: flex;
+	gap: 20px;
+	padding: 18px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	background: #fff;
+	transition: border-color .3s ease, box-shadow .3s ease, transform .3s var(--roova-ease);
+}
+
+.roova-booking:hover {
+	border-color: rgba(13, 58, 82, .3);
+	box-shadow: 0 18px 34px -26px rgba(8, 38, 53, .4);
+	transform: translateY(-2px);
+}
+
+.roova-booking__thumb {
+	flex: none;
+	width: 122px;
+	height: 96px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: #e8e2d8;
+}
+
+.roova-booking__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.roova-booking__body {
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-booking__top {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin: 0;
+}
+
+.roova-booking__chip {
+	padding: 4px 11px;
+	border-radius: 999px;
+	background: rgba(13, 58, 82, .08);
+	font-size: .69rem;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--roova-deep);
+}
+
+.roova-booking--completed .roova-booking__chip {
+	background: rgba(47, 125, 95, .1);
+	color: var(--roova-ok);
+}
+
+.roova-booking--cancelled .roova-booking__chip {
+	background: rgba(178, 59, 46, .09);
+	color: var(--roova-error);
+}
+
+/*
+ * "Payment due" is the theme's own fourth state — see
+ * roova_account_stay_status(). Gold, because it is neither a confirmation nor
+ * a failure: it is something still to do.
+ */
+.roova-booking--payment .roova-booking__chip {
+	background: rgba(180, 130, 60, .12);
+	color: var(--roova-gold);
+}
+
+.roova-booking__ref {
+	font-size: .78rem;
+	color: var(--roova-placeholder);
+}
+
+.roova-booking__hotel {
+	margin: 9px 0 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.31rem;
+	font-weight: 400;
+	line-height: 1.25;
+	color: var(--roova-deep);
+}
+
+.roova-booking__hotel a {
+	color: inherit;
+}
+
+.roova-booking__meta {
+	margin: 6px 0 0;
+	font-size: .81rem;
+	color: #6c7f86;
+}
+
+.roova-booking__side {
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 14px;
+	text-align: right;
+}
+
+.roova-booking__total {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.38rem;
+	color: var(--roova-ink);
+}
+
+/* The price is a nest of spans, so scope the label rules with > (see CLAUDE.md). */
+.roova-booking__total > .woocommerce-Price-amount {
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- Reviews */
+
+.roova-account__prompt {
+	margin-bottom: 22px;
+	padding: 18px 20px;
+	border: 1px solid rgba(180, 130, 60, .35);
+	border-radius: 12px;
+	background: rgba(180, 130, 60, .05);
+}
+
+.roova-account__prompt-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.roova-account__prompt-text {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	font-size: .91rem;
+}
+
+.roova-account__prompt-text > .roova-icon {
+	flex: none;
+	margin-top: 2px;
+	color: var(--roova-gold);
+}
+
+.roova-account__prompt-text strong {
+	display: block;
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-account__prompt-sub {
+	display: block;
+	margin-top: 3px;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-account__review-form {
+	display: grid;
+	gap: 14px;
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid rgba(180, 130, 60, .25);
+	animation: roova-rise .4s ease both;
+}
+
+.roova-account__review-form[hidden] {
+	display: none;
+}
+
+.roova-account__review-form .roova-account__save {
+	margin-top: 4px;
+}
+
+.roova-rate {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.roova-rate__stars {
+	display: flex;
+	gap: 4px;
+	margin-top: 6px;
+}
+
+.roova-rate__star {
+	cursor: pointer;
+	font-size: 1.63rem;
+	line-height: 1;
+	color: #dfe4e6;
+	transition: color .2s ease, transform .2s var(--roova-pop);
+}
+
+.roova-rate__star input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+
+.roova-rate__star:hover {
+	transform: scale(1.1);
+}
+
+/*
+ * A star lights up with everything before it. CSS can only look forwards from a
+ * sibling, so the rule is written the other way round: light a star that has a
+ * *later* sibling which is checked (or hovered). The radios are what the form
+ * posts, so a browser without :has still records the rating — it just does not
+ * paint the run.
+ */
+.roova-rate__star:has(input:checked),
+.roova-rate__star:has(~ .roova-rate__star input:checked) {
+	color: var(--roova-gold-light);
+}
+
+/* Hovering previews a rating, and overrides whatever is currently chosen. */
+.roova-rate__stars:hover .roova-rate__star:hover,
+.roova-rate__stars:hover .roova-rate__star:has(~ .roova-rate__star:hover) {
+	color: var(--roova-gold-light);
+}
+
+.roova-rate__stars:hover .roova-rate__star:not(:hover):not(:has(~ .roova-rate__star:hover)) {
+	color: #dfe4e6;
+}
+
+.roova-rate__star:has(input:focus-visible) {
+	outline: 2px solid var(--roova-deep);
+	outline-offset: 2px;
+}
+
+.roova-review {
+	padding: 20px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	background: #fff;
+}
+
+.roova-review.is-pending {
+	border-style: dashed;
+}
+
+.roova-review__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.roova-review__hotel {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.25rem;
+	font-weight: 400;
+	color: var(--roova-deep);
+}
+
+.roova-review__hotel a {
+	color: inherit;
+}
+
+.roova-review__rating {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+}
+
+.roova-review__stars {
+	font-size: 1.06rem;
+	letter-spacing: 2px;
+	line-height: 1;
+}
+
+.roova-review__stars-on {
+	color: var(--roova-gold-light);
+}
+
+.roova-review__stars-off {
+	color: #dfe4e6;
+}
+
+.roova-review__date {
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-review__body {
+	margin: 12px 0 14px;
+	font-size: .91rem;
+	line-height: 1.7;
+	color: var(--roova-soft);
+	text-wrap: pretty;
+}
+
+.roova-review__scores {
+	display: flex;
+	gap: 22px;
+	flex-wrap: wrap;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-review__scores strong {
+	margin-left: 5px;
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-review__pending {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	margin: 14px 0 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+/* --------------------------------------------------------------- Likes */
+
+.roova-like-card {
+	border: 1px solid var(--roova-divider);
+	border-radius: 12px;
+	overflow: hidden;
+	background: #fff;
+	transition: box-shadow .35s var(--roova-ease), transform .35s var(--roova-ease), opacity .25s ease;
+}
+
+.roova-like-card:hover {
+	box-shadow: 0 22px 40px -28px rgba(8, 38, 53, .45);
+	transform: translateY(-3px);
+}
+
+/* Unsaving a stay fades its card out before the script removes it. */
+.roova-like-card.is-leaving {
+	opacity: 0;
+	transform: scale(.97);
+}
+
+.roova-like-card__media {
+	position: relative;
+	height: 148px;
+	background: #e8e2d8;
+}
+
+.roova-like-card__media a,
+.roova-like-card__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.roova-like-card__body {
+	padding: 15px 17px 18px;
+}
+
+.roova-like-card__name {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.19rem;
+	font-weight: 400;
+	line-height: 1.25;
+	color: var(--roova-deep);
+}
+
+.roova-like-card__name a {
+	color: inherit;
+}
+
+.roova-like-card__place {
+	margin: 4px 0 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-like-card__foot {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.roova-like-card__price {
+	margin: 0;
+	font-size: .94rem;
+	color: var(--roova-ink);
+}
+
+/* Scoped with > so it cannot reach inside WooCommerce's price markup. */
+.roova-like-card__price > span {
+	font-size: .75rem;
+	color: var(--roova-faint);
+}
+
+.roova-like-card__rating {
+	margin: 0;
+	font-size: .78rem;
+	color: var(--roova-gold);
+}
+
+/* ----------------------------------------------------------------- VIP */
+
+.roova-vip__card {
+	padding: 30px 34px 34px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 14px;
+	background: #fff;
+	box-shadow: 0 26px 50px -40px rgba(8, 38, 53, .5);
+	margin-bottom: 42px;
+}
+
+.roova-vip__greeting {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.roova-vip__initial {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 62px;
+	height: 62px;
+	border-radius: 50%;
+	background: var(--roova-deep);
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	color: var(--roova-cream);
+}
+
+.roova-vip__hi {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.81rem;
+	line-height: 1.15;
+	letter-spacing: -.015em;
+	color: var(--roova-ink);
+}
+
+.roova-vip__badge {
+	display: inline-flex;
+	margin: 8px 0 0;
+	border-radius: 5px;
+	overflow: hidden;
+	font-size: .75rem;
+	font-weight: 500;
+	letter-spacing: .04em;
+}
+
+.roova-vip__badge-left,
+.roova-vip__badge-right {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 9px;
+}
+
+.roova-vip__badge-left {
+	background: var(--roova-ink);
+	color: var(--roova-cream);
+}
+
+.roova-vip__badge-left .roova-icon {
+	color: var(--roova-gold-light);
+	fill: currentColor;
+}
+
+.roova-vip__badge-right {
+	background: var(--roova-gold);
+	color: #fff;
+}
+
+.roova-vip__status {
+	margin: 26px 0 22px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid rgba(13, 58, 82, .1);
+}
+
+.roova-vip__status-label {
+	margin: 0;
+	font-size: .84rem;
+	color: #6c7f86;
+}
+
+.roova-vip__status-name {
+	margin: 6px 0 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.88rem;
+	line-height: 1.1;
+	letter-spacing: -.015em;
+	color: var(--roova-ink);
+}
+
+.roova-vip__progress {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 20px;
+	flex-wrap: wrap;
+	margin-bottom: 26px;
+}
+
+.roova-vip__progress p {
+	margin: 0;
+	font-size: .88rem;
+	color: #6c7f86;
+}
+
+.roova-vip__progress-count {
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+/* The tier rail */
+
+/*
+ * The rail scrolls rather than compressing: five labels squeezed into a phone's
+ * width become five stacks of single words. The wrapper is what scrolls, so the
+ * card itself never grows a horizontal scrollbar.
+ */
+.roova-vip__rail-wrap {
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.roova-vip__rail {
+	display: grid;
+	grid-template-columns: repeat(var(--roova-rail-steps, 5), minmax(0, 1fr));
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.roova-vip__step {
+	text-align: center;
+}
+
+.roova-vip__track {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.roova-vip__line {
+	flex: 1;
+	height: 3px;
+	border-radius: 999px;
+	background: var(--roova-rail);
+	transition: background .4s ease;
+}
+
+.roova-vip__line.is-filled {
+	background: var(--roova-gold);
+}
+
+.roova-vip__line.is-hidden {
+	visibility: hidden;
+}
+
+.roova-vip__node {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background: var(--roova-rail-node);
+	color: var(--roova-placeholder);
+	transition: background .4s ease, color .4s ease, box-shadow .4s ease;
+}
+
+.roova-vip__node.is-reached {
+	background: var(--roova-gold);
+	color: #fff;
+}
+
+.roova-vip__node.is-reached .roova-icon {
+	fill: currentColor;
+}
+
+.roova-vip__node.is-current {
+	box-shadow: 0 0 0 4px rgba(180, 130, 60, .18);
+}
+
+.roova-vip__step-name {
+	display: block;
+	margin-top: 13px;
+	font-size: .88rem;
+	font-weight: 500;
+	color: var(--roova-faint);
+}
+
+.roova-vip__step-name.is-reached {
+	color: var(--roova-ink);
+}
+
+.roova-vip__step-req {
+	display: block;
+	margin-top: 2px;
+	font-size: .81rem;
+	line-height: 1.5;
+	color: var(--roova-faint);
+}
+
+.roova-vip__step-req.is-current {
+	color: var(--roova-ok);
+}
+
+.roova-vip__next {
+	margin: 26px 0 0;
+	font-size: .84rem;
+	color: #6c7f86;
+}
+
+.roova-vip__benefits {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0 44px;
+}
+
+.roova-vip__benefit {
+	display: flex;
+	gap: 14px;
+	padding: 15px 0;
+	border-bottom: 1px solid var(--roova-hairline);
+}
+
+.roova-vip__benefit > .roova-icon {
+	flex: none;
+	margin-top: 2px;
+	color: var(--roova-gold);
+}
+
+.roova-vip__benefit strong {
+	display: block;
+	font-size: .91rem;
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-vip__benefit strong + span {
+	display: block;
+	margin-top: 3px;
+	font-size: .78rem;
+	line-height: 1.6;
+	color: var(--roova-faint);
+}
+
+/* --------------------------------------------------- Cashback rewards */
+
+.roova-cashback__balances {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 20px;
+	margin-bottom: 34px;
+}
+
+.roova-cashback__balance {
+	display: flex;
+	flex-direction: column;
+	padding: 24px 26px 26px;
+	border: 1px solid var(--roova-divider);
+	border-radius: 12px;
+}
+
+/* The spendable card is the one with weight: a wash instead of an outline. */
+.roova-cashback__balance--available {
+	border-color: transparent;
+	background: rgba(13, 58, 82, .04);
+}
+
+.roova-cashback__balance-label {
+	font-size: .72rem;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+/* The 18px below the figure is the minimum gap; the foot of the card takes up
+   whatever is left, so all three cards line their last lines up. */
+.roova-cashback__balance-figure {
+	margin: 8px 0 18px;
+	font-family: var(--roova-font-display);
+	font-size: 2.13rem;
+	line-height: 1.1;
+	color: var(--roova-ink);
+}
+
+.roova-cashback__balance--available .roova-cashback__balance-figure {
+	color: var(--roova-deep);
+}
+
+/* Same reason as the hero stat: never reach inside WooCommerce's price spans. */
+.roova-cashback__balance-figure > .amount {
+	font: inherit;
+	color: inherit;
+	white-space: nowrap;
+}
+
+.roova-cashback__balance-note {
+	margin: 0;
+	font-size: .78rem;
+	line-height: 1.5;
+	color: var(--roova-faint);
+}
+
+/* Pushed to the foot of the card, so all three cards line their bases up. */
+.roova-cashback__balance-note,
+.roova-cashback__pending,
+.roova-cashback__cta {
+	margin-top: auto;
+}
+
+.roova-cashback__cta {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 8px;
+	margin-top: auto;
+	padding: 12px 20px;
+	border-radius: 6px;
+	background: var(--roova-deep);
+	font-size: .84rem;
+	font-weight: 500;
+	color: var(--roova-cream);
+	text-decoration: none;
+	transition: background .3s ease;
+}
+
+.roova-cashback__cta:hover,
+.roova-cashback__cta:focus-visible {
+	background: #0a2c3f;
+	color: var(--roova-cream);
+}
+
+.roova-cashback__pending {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	/* Shorthand, so it keeps the auto above rather than resetting it to 0. */
+	margin: auto 0 0;
+	font-size: .78rem;
+	line-height: 1.5;
+	color: var(--roova-faint);
+}
+
+/* A gold dot with a ring pulsing out of it — the ring is the ::after. */
+.roova-cashback__dot {
+	position: relative;
+	flex: none;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--roova-gold);
+}
+
+.roova-cashback__dot::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: var(--roova-gold);
+	animation: roova-pulse 2.4s ease-in-out infinite;
+}
+
+/* The offer grid */
+
+.roova-cashback__offers {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	margin-bottom: 40px;
+}
+
+.roova-cashback__offer {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+	padding: 20px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	background: #fff;
+	transition: border-color .3s var(--roova-ease), box-shadow .3s var(--roova-ease), transform .3s var(--roova-ease);
+}
+
+.roova-cashback__offer:hover {
+	border-color: rgba(13, 58, 82, .3);
+	box-shadow: 0 18px 34px -26px rgba(8, 38, 53, .4);
+	transform: translateY(-2px);
+}
+
+.roova-cashback__offer-icon {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: rgba(180, 130, 60, .1);
+	color: var(--roova-gold);
+}
+
+.roova-cashback__offer-body {
+	min-width: 0;
+	flex: 1;
+}
+
+.roova-cashback__offer-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 14px;
+}
+
+.roova-cashback__offer-title {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.19rem;
+	font-weight: 400;
+	line-height: 1.25;
+	color: var(--roova-deep);
+}
+
+.roova-cashback__offer-reward {
+	flex: none;
+	font-size: 1rem;
+	font-weight: 500;
+	white-space: nowrap;
+	color: var(--roova-ok);
+}
+
+.roova-cashback__offer-reward > .amount {
+	font: inherit;
+	color: inherit;
+}
+
+.roova-cashback__offer-detail {
+	margin: 6px 0 0;
+	font-size: .81rem;
+	line-height: 1.6;
+	color: #6c7f86;
+}
+
+.roova-cashback__offer-validity {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 12px 0 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+/*
+ * The icon must not shrink and the date must not be a bare text node beside it:
+ * an anonymous flex item collapses and breaks the date mid-phrase
+ * ("Until Dec 31, / 2026"). The template wraps it in its own span.
+ */
+.roova-cashback__offer-validity > .roova-icon {
+	flex: none;
+}
+
+.roova-cashback__offer-validity > span {
+	white-space: nowrap;
+}
+
+/* Activity */
+
+.roova-cashback__activity {
+	border: 1px solid var(--roova-divider);
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.roova-cashback__row {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	padding: 17px 22px;
+	border-bottom: 1px solid rgba(13, 58, 82, .08);
+	transition: background .25s ease;
+}
+
+.roova-cashback__row:last-child {
+	border-bottom: 0;
+}
+
+.roova-cashback__row:hover {
+	background: rgba(13, 58, 82, .02);
+}
+
+.roova-cashback__row > .roova-icon {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+.roova-cashback__row-body {
+	min-width: 0;
+	flex: 1;
+}
+
+.roova-cashback__row-label {
+	margin: 0;
+	font-size: .91rem;
+	color: var(--roova-ink);
+}
+
+.roova-cashback__row-meta {
+	margin: 3px 0 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-cashback__row-amount {
+	flex: none;
+	font-size: .94rem;
+	white-space: nowrap;
+}
+
+/* Scoped with > so it cannot reach inside WooCommerce's price markup. */
+.roova-cashback__row-amount > .amount {
+	font: inherit;
+	color: inherit;
+}
+
+.roova-cashback__row-amount.is-pending {
+	color: var(--roova-faint);
+}
+
+.roova-cashback__row-amount.is-cleared {
+	color: var(--roova-ok);
+}
+
+.roova-cashback__row-amount.is-spent {
+	color: var(--roova-ink);
+}
+
+/* ------------------------------------------------------------ Responsive */
+
+@media (max-width: 1024px) {
+	.roova-account {
+		padding: 32px 20px 64px;
+	}
+
+	.roova-account__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.roova-vip__benefits {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-cashback__balances,
+	.roova-cashback__offers {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 768px) {
+	.roova-account__bar {
+		padding: 14px 20px;
+	}
+
+	.roova-account__hero {
+		align-items: flex-start;
+	}
+
+	/* Stacked, the stats are no longer in a right-hand column. */
+	.roova-account__stats {
+		gap: 26px;
+	}
+
+	.roova-account__stat {
+		text-align: left;
+	}
+
+	/* The amount drops under the label rather than squeezing beside it. */
+	.roova-cashback__row {
+		flex-wrap: wrap;
+		gap: 12px 18px;
+	}
+
+	.roova-cashback__row-body {
+		flex: 1 1 auto;
+	}
+
+	.roova-cashback__row-amount {
+		flex: 1 0 100%;
+		padding-left: 35px;
+	}
+
+	.roova-account__name {
+		font-size: 1.88rem;
+	}
+
+	.roova-account__row,
+	.roova-account__row--three {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-account__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-account__column {
+		max-width: none;
+	}
+
+	.roova-booking {
+		flex-wrap: wrap;
+	}
+
+	.roova-booking__thumb {
+		width: 100%;
+		height: 160px;
+	}
+
+	.roova-booking__side {
+		flex-direction: row;
+		align-items: center;
+		width: 100%;
+	}
+
+	.roova-vip__card {
+		padding: 24px 20px 28px;
+	}
+
+	.roova-vip__rail {
+		min-width: 560px;
+	}
+}
+
+/* Every tap target stays at least 44px on a touch screen. */
+@media (pointer: coarse) {
+	.roova-account__tab,
+	.roova-account__ghost,
+	.roova-account__btn {
+		min-height: 44px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.roova-account-page *,
+	.roova-account-page *::before,
+	.roova-account-page *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+}

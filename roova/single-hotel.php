@@ -55,6 +55,15 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 
 		<h1><?php the_title(); ?></h1>
 
+		<?php
+		if ( function_exists( 'roova_like_button' ) ) {
+			roova_like_button( $roova_hotel_id, array(
+				'class' => 'roova-like--head',
+				'size'  => 18,
+			) );
+		}
+		?>
+
 		<div class="roova-hotel-head__loc">
 			<?php roova_the_icon( 'pin', 15 ); ?>
 

@@ -416,6 +416,18 @@ function roova_hotel_card( $hotel_id, $args = array() ) {
 				<span class="roova-hotel-card__loc"><?php echo esc_html( $location ); ?></span>
 			<?php endif; ?>
 		</a>
+
+		<?php
+		/*
+		 * A sibling of the media link, never a child of it: a browser drops a
+		 * button nested inside an anchor, so the heart would be in the HTML and
+		 * missing from the DOM. It is laid over the photo in CSS instead.
+		 */
+		if ( function_exists( 'roova_like_button' ) ) {
+			roova_like_button( $hotel_id, array( 'class' => 'roova-like--card' ) );
+		}
+		?>
+
 		<div class="roova-hotel-card__body">
 			<h3 class="roova-hotel-card__name">
 				<a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( get_the_title( $hotel_id ) ); ?></a>
@@ -809,17 +821,33 @@ function roova_landmarks( $hotel_id ) {
  */
 function roova_review_box( $hotel_id ) {
 	$details = roova_get_hotel_details( $hotel_id );
-	$score   = (float) $details['score'];
+
+	/*
+	 * Guests' own reviews decide the box as soon as there is one. The numbers on
+	 * the Hotel Details tab are the stand-in for a hotel nobody has reviewed
+	 * yet — not a second source of truth sitting beside the real one.
+	 */
+	$summary = function_exists( 'roova_hotel_review_summary' )
+		? roova_hotel_review_summary( $hotel_id )
+		: array( 'count' => 0 );
+
+	if ( $summary['count'] > 0 ) {
+		$score = $summary['score'];
+		$count = $summary['count'];
+		$bars  = $summary['subscores'];
+	} else {
+		$score = (float) $details['score'];
+		$count = (int) $details['review_count'];
+		$bars  = array(
+			__( 'Cleanliness', 'roova' ) => (float) $details['score_cleanliness'],
+			__( 'Location', 'roova' )    => (float) $details['score_location'],
+			__( 'Service', 'roova' )     => (float) $details['score_service'],
+		);
+	}
 
 	if ( $score <= 0 ) {
 		return;
 	}
-
-	$bars = array(
-		__( 'Cleanliness', 'roova' ) => (float) $details['score_cleanliness'],
-		__( 'Location', 'roova' )    => (float) $details['score_location'],
-		__( 'Service', 'roova' )     => (float) $details['score_service'],
-	);
 	?>
 	<div class="roova-card roova-reviews">
 		<div class="roova-reviews__head">
@@ -828,13 +856,13 @@ function roova_review_box( $hotel_id ) {
 				<?php if ( $details['score_label'] ) : ?>
 					<strong><?php echo esc_html( $details['score_label'] ); ?></strong>
 				<?php endif; ?>
-				<?php if ( $details['review_count'] ) : ?>
+				<?php if ( $count ) : ?>
 					<span>
 						<?php
 						printf(
 							/* translators: %s: number of reviews */
-							esc_html( _n( '%s review', '%s reviews', (int) $details['review_count'], 'roova' ) ),
-							esc_html( number_format_i18n( (int) $details['review_count'] ) )
+							esc_html( _n( '%s review', '%s reviews', $count, 'roova' ) ),
+							esc_html( number_format_i18n( $count ) )
 						);
 						?>
 					</span>

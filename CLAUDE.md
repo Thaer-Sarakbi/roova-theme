@@ -27,23 +27,27 @@ macOS has no system PHP; this repo assumes Homebrew PHP at `/opt/homebrew/bin/ph
 bin/build.sh                              # lint, then package dist/roova.zip
 bin/lint.sh                               # php -l over every theme file
 php tests/test-availability.php           # booking-logic checks (30 assertions, no WordPress)
+php tests/test-cashback.php               # cashback rules and balances (42 assertions, no WordPress)
 php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
 php bin/makepot.php roova roova/languages/roova.pot      # identical output, for machines without Python
 bin/testenv.sh                            # build a throwaway WP+WooCommerce site with the theme installed
 ```
 
-`tests/test-availability.php` is a single flat script with a `check( $label, $actual, $expected )`
-helper — there is no test runner and no per-test filtering. Add assertions by calling `check()`; it
-exits non-zero on any failure. It stubs the handful of WordPress functions the pure logic touches, so
-it runs anywhere PHP does.
+`tests/test-availability.php` and `tests/test-cashback.php` are single flat scripts with a
+`check( $label, $actual, $expected )` helper — there is no test runner and no per-test filtering. Add
+assertions by calling `check()`; they exit non-zero on any failure. Each stubs the handful of
+WordPress functions the pure logic touches, so they run anywhere PHP does. `test-cashback.php` stubs
+the ledger's storage and `roova_account_stays()` as well, and gives each case its own user id —
+`roova_cashback_sync()` guards itself with a static, so a reused id would silently skip the sync.
 
 `bin/build.sh` refuses to package if the lint fails, if `style.css` has lost its theme header, or if
 `screenshot.png` is missing.
 
 ## Verifying real behaviour
 
-Lint and the two test scripts cover syntax, include-time fatals and the pure booking maths. Anything
+Lint and the three test scripts cover syntax, include-time fatals, the pure booking maths and the
+cashback rules. Anything
 touching hooks, the database or templates needs a real site: run `bin/testenv.sh`, serve it with
 `php -S 127.0.0.1:8099 -t .testenv/site`, and drive it with curl (a cookie jar per "guest" is enough
 to simulate several visitors competing for the same room).
@@ -52,7 +56,10 @@ On Windows there is usually no PHP or MariaDB at all: `bin/testenv-win.sh` downl
 into `.testenv/`, installs the site, starts both services and seeds demo content
 (`bin/testenv-seed.php`). It also serves the site itself — a plain `php -S … site/index.php` routes
 every asset through WordPress and the page arrives unstyled, so the script generates a router that
-returns real files first. The theme is junctioned rather than copied, so edits are live.
+returns real files first. It junctions the theme rather than copying it, so edits are live — but
+**check before trusting that**: the junction does not survive every way the site gets rebuilt, and a
+`.testenv/site/wp-content/themes/roova` that is a real directory silently serves a stale copy. If a
+change seems to have no effect, `cp -r roova/. .testenv/site/wp-content/themes/roova/` first.
 
 Environment gotchas that cost real time once:
 
@@ -77,7 +84,13 @@ Environment gotchas that cost real time once:
 loads WooCommerce-independent files unconditionally, and loads everything else **only when WooCommerce
 is active** — then explicitly calls `Roova_Schema::init()`, `Roova_Holds::init()`, `Roova_Cart::init()`,
 `Roova_Orders::init()`, `Roova_Blocks::init()`. Admin-only files load behind `is_admin()`. A new class
-file needs both a `roova_require()` line and its `::init()` call.
+file needs both a `roova_require()` line and its `::init()` call. The account feature files —
+`inc/likes.php`, `inc/vip.php`, `inc/account.php`, `inc/reviews.php`, `inc/cashback.php`, `inc/account-tabs.php` — are
+plain function files, so they need only the `roova_require()` line, but their order matters:
+`inc/reviews.php` reads `roova_account_stays()`, `inc/vip.php` reads
+`roova_account_completed_count()`, and `inc/cashback.php` reads `roova_account_stays()` too. Each of
+those reaches into `inc/account.php` only through a function call, never at include time, which is
+what lets them load before it.
 
 `inc/auth.php` is in the unconditional group on purpose: `header.php` calls `roova_account_control()`
 on every page, and signing in has to keep working on a site whose WooCommerce is switched off. Its
@@ -241,6 +254,10 @@ strips the header down to a wordmark and a padlock. See *Checkout*.
 `template-signin.php` and `template-signup.php` are page templates that print their own documents too,
 for the same reason. See *Accounts*.
 
+`account.php` is the fourth: not a page template but a file `template_include` routes the My account
+*dashboard* to, printing its own document as well. Every WooCommerce endpoint underneath My account
+still goes through `woocommerce.php`. See *My account*.
+
 `header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
 site name through `roova_wordmark()`, which picks out a domain suffix in gold ("roova**.my**").
@@ -280,6 +297,16 @@ pages — but **not the authentication**: that is still `wp_signon()` and `wc_cr
 - **Errors and typed values live in `roova_auth_state()`**, a static filled by the handler on
   `template_redirect` (priority 5) and read by the template moments later in the same request. Nothing
   survives a redirect, and nothing should — passwords are never carried back into the form.
+- **The nonces on these forms pin the logged-out user to 0**, through `roova_auth_nonce_field()` and
+  `roova_auth_verify_nonce()`, and every auth form uses them instead of `wp_nonce_field()` /
+  `wp_verify_nonce()` directly. A logged-out nonce is built against "user 0" — but WooCommerce
+  swaps that for its **session customer id** (`nonce_user_logged_out`), so a cart session starting
+  or ending between a form being drawn and posted changes who the nonce belongs to and the form
+  comes back as *"That form had expired."* Adding a room in another tab is enough; on WooCommerce
+  before 5.3-ish, which applied the swap to every action rather than its own, simply touching the
+  cart was. Pinning at both ends makes the nonce depend on the action and the clock alone, which is
+  what WordPress does for anonymous forms anyway. It is not a weakening: a forged or missing nonce
+  is still refused.
 - **Every rule is checked twice**, in `inc/auth.php` and again in `auth.js`, deliberately word for
   word: a guest must never read one message in the browser and a different one after the round trip.
   The forms work with the script blocked. `novalidate` is on both, so the browser's own bubbles never
@@ -320,10 +347,207 @@ pages — but **not the authentication**: that is still `wp_signon()` and `wc_cr
   banner — **change either photo and re-check**: hide `.roova-auth__panel-inner`, screenshot, and sample
   the lightest pixel under each text box (`.testenv/ratio.js` does the arithmetic).
 
-Two copy departures from the handoff, both Customizer defaults: sign-up's panel line drops "get a
-discount when you register" (a claim only the client can make good on), and there is no fake "we've
-sent a verification link" success banner — a successful submit redirects to My account, which is what
-actually happened.
+One copy departure from the handoff, a Customizer default: sign-up's panel line drops "get a discount
+when you register", a claim only the client can make good on. The handoff's "we've sent a
+verification link" screen used to be the other one — it was cut for being a banner about something
+that had not happened. It is now the truth; see *Email confirmation*.
+
+### Email confirmation
+
+`inc/verification.php`. Signing up creates the account and **does not sign anyone in**: the address
+gets a link, and opening it is what proves the inbox is theirs. Until then
+`roova_block_unverified_login()` refuses the sign-in outright — on `wp_authenticate_user`, so the
+password is still checked but no cookie is ever set, and wp-login.php is covered as well as the
+theme's own form. Opening the link marks the address confirmed **and signs them in**, which is the
+whole point of confirming it.
+
+The sign-up form's "Confirm email address" field is gone with it: re-typing an address catches a
+slip of the fingers, and a link that only arrives at the real inbox catches everything.
+
+- **Only accounts made through this flow are ever held back.** `roova_user_is_verified()` treats an
+  account with no pending flag as confirmed, so switching this on cannot lock out a site's existing
+  members — they have already proved the address by using it. Turning the feature on for older
+  accounts is a filter (`roova_account_email_verified`), never a default.
+- **Only the token's hash is stored**, with an expiry, and it is spent on use — a password reset's
+  shape, because here the inbox is the credential. `hash_equals`, not `===`.
+- **A spent link opened by a confirmed member reads as success, not an error.** That is someone who
+  clicked twice or opened it on a second device, and telling them something failed would be a lie.
+- **Resending is a POST, never a link.** A GET that sends email is a thing a prefetch triggers. The
+  form is a sibling of the sign-in form, never nested inside it — the trap the checkout summary
+  avoids for the same reason.
+- **Resending answers identically whether or not there was anything to send**, or the form becomes a
+  way to find out which addresses have accounts.
+- **The store's own welcome email is held back while confirmation is on.** Two emails a second
+  apart, one of them saying an account is ready when it is not, is worse than either; the
+  confirmation email is the welcome.
+- `roova_require_email_verification` turns the whole thing off, and sign-up goes back to signing the
+  new member straight in.
+
+### My account
+
+WooCommerce's My account page keeps the URL, the login gate and the endpoint router. What the theme
+replaces is the **dashboard view**: `roova_account_template()` sends it to `account.php`, which prints
+its own document, for the reason checkout and the auth pages do — the design's whole header is a
+wordmark, the member's tier and a way out.
+
+**The page itself is guaranteed.** `roova_ensure_account_page()` adopts, untrashes or creates the My
+account page on `after_switch_theme` and again once per release, exactly as the checkout page's own
+check does — and for a stronger reason: this page is the header's "Manage account" button, where
+signing in returns to, and where the email confirmation link finally lands. Without it all three
+are a 404, because **`wc_get_page_permalink()` builds a URL for a trashed page just as happily as
+for a live one** (`?page_id=8`). `roova_account_url()` therefore checks the page is *published*
+rather than merely pointed at, and falls back to the home page; `roova_auth_page_id()` does the
+same for the two auth pages, so a trashed sign-in page cannot end up baked into a confirmation
+email as a dead link.
+
+**Only the dashboard.** `roova_is_account_dashboard()` is false for every WooCommerce *endpoint*, so
+view-order, edit-address, payment-methods, lost-password and customer-logout keep WooCommerce's own
+screens inside `header.php`/`footer.php`. That is what keeps the parts that have to work while signed
+out working, and it is why "View voucher" can simply link at `get_view_order_url()`.
+`roova_use_account_template` turns the whole thing off.
+
+The six panels are all rendered server-side and shown one at a time by `assets/js/account.js`. Each
+tab is a real link to its own `?tab=` URL as well as a button, so every tab is reachable with the
+script blocked, and a save can redirect back to the tab it came from. `inc/account.php` holds the
+routing, the data and the form handlers; `inc/account-tabs.php` holds the markup.
+
+**The forms reuse `roova_auth_field()` and the auth state.** The field shell is the same one the
+sign-in and sign-up pages are built from, down to the borderless input inside its label, so the
+account page pushes its errors and typed values into `roova_auth_state()` rather than inventing a
+second store. Success is always a redirect (`roova_account_redirect()`) — a reload must never repost
+a password change or a review.
+
+- **Profile** prefills from the user record and writes back to the same keys checkout prefills itself
+  from (`billing_first_name`, `billing_last_name`, `billing_phone`) — see *Checkout*. A password
+  change calls `wp_set_password()`, **which destroys every session including this one**, so the
+  handler signs the member straight back in; without that, saving a password throws them out of the
+  page they were standing on.
+- **Bookings** are one row per *booking line* (`roova_account_stays()`), read from the line's own
+  `_roova_booking` meta rather than the bookings table: the meta is what the order was placed on and
+  it outlives a cleaned-up booking row. Sorted by check-in date, newest first. The design draws three
+  status chips; there is a fourth, **Payment due**, because an unpaid order is not an upcoming stay
+  and telling a guest their room is booked when it is one failed payment from being released is the
+  one thing this page must not do.
+- **VIP** counts *completed* stays only. The hero's "stays booked" figure is the looser count —
+  everything that is neither cancelled nor unpaid.
+- **Cashback rewards** is the sixth tab, last in the strip, and the hero grew a second stat beside
+  "Stays booked" for its available balance. See *Cashback rewards*.
+
+### Reviews
+
+A review is a **WooCommerce product review** — a comment on the hotel product with a `rating` meta —
+and nothing here reimplements one. WooCommerce recounts `_wc_average_rating` on approval, its
+moderation settings apply, and the client moderates from the Comments screen. The theme adds the
+three sub-scores (`roova_score_cleanliness` / `_location` / `_service` comment meta) and the rule
+about who may write: `roova_can_review()` allows a hotel only to a member with a **completed stay
+there** and no review of it yet.
+
+- **The rating field is named `rating`, not `roova_rating`.** That is the exact key WooCommerce's own
+  `preprocess_comment` check and its rating-meta handler read; renaming it makes WooCommerce refuse
+  the comment.
+- **`verified` is set by hand**, and truthfully: WooCommerce's own check looks for a purchase of
+  *this* product, which never happens — a guest buys a room, and the review is on its hotel.
+- **The hotel page's score comes from real reviews as soon as there is one.** `roova_review_box()`
+  prefers `roova_hotel_review_summary()` and falls back to the Hotel Details numbers only when the
+  count is zero, so the metabox fields are a stand-in rather than a second source of truth.
+  `roova_hotel_rating()` (used on the saved-stays cards) halves a fallback score typed on a ten-point
+  scale, so the star beside it never promises "★ 8.9".
+- An unapproved review is still shown to **its own author**, marked *Waiting to be published* — a
+  review that vanished on submit reads as one that failed to save.
+
+### Saved stays
+
+One user meta key (`roova_liked_hotels`) holds the list, newest first, because that is exactly how
+the Likes tab reads it back. The heart is `roova_like_button()`: a button for a member, a **link to
+the sign-in page** for a visitor, so it works with the script blocked and never silently drops a save.
+
+**The heart is a sibling of the card's media link, never a child of it** — a browser drops
+interactive markup nested inside an `<a>` the same way it drops a nested `<form>`, so the element
+would be in the HTML and missing from the DOM. It is laid over the corner in CSS instead
+(`.roova-hotel-card` therefore carries `position: relative`).
+
+The toggle lives in **theme.js, not account.js**, because the same button is on hotel cards all over
+the site; it dispatches a `roova:like` event that the account page listens for to drop a card out of
+the grid and update the count pill.
+
+### RoovaVIP
+
+Tiers and their benefits are one option (`roova_vip_tiers`), edited under **WooCommerce → Settings →
+RoovaVIP** (`inc/admin/vip-settings.php`) — a plain settings tab rather than a `WC_Settings_Page`
+subclass, because the screen is one repeatable list inside another and there is nothing to inherit.
+Tiers are **display only**: nothing here changes what a guest is charged.
+
+- **`roova_vip_tiers()` distinguishes "no option" from "an empty array".** The defaults are returned
+  only when the option is absent; an admin who deletes every row means it, and gets the VIP tab
+  switched off rather than the defaults handed back on the next page load.
+- **Only Gold ships with benefits** — the only tier the handoff writes them for. The other four are
+  deliberately empty rather than invented, and a tier with no benefits leaves that section off the
+  page rather than printing an empty grid.
+- **The lowest tier is the floor.** `roova_vip_current_index()` returns 0 rather than -1 when no
+  threshold is met, so every member is at least Bronze — a site whose first tier sits above zero
+  bookings still has somewhere to put a new member instead of an empty card.
+- **An admin can pin a member to a tier** from Users → the profile screen
+  (`inc/admin/vip-user-profile.php`), stored in the `roova_vip_tier` user meta. It is the tier's
+  **name**, not its index: positions shift the moment a tier is added or deleted, and a pin that
+  silently became a different tier is worse than one that stops applying — a name matching no tier
+  is ignored and the member goes back to being counted. `roova_vip_index_for_user()` is what every
+  caller should read; `roova_vip_current_index()` is only the earned half of it.
+- **The pin sets the status, never the progress.** `roova_vip_next_tier()` takes the *index* the
+  member actually stands at and counts on from there, and returns null when the remainder would be
+  zero or less — a member pinned below what they have earned must not read "0 more bookings to
+  reach VIP Silver".
+- **The field is gated on `edit_users`, not `edit_user`.** The latter is true for a member editing
+  their own profile, which would let a customer promote themselves; the save handler checks the
+  same thing again, and its own nonce.
+- **New rows are numbered from a counter in `admin-vip.js`, not from the row count**, or deleting the
+  middle tier of three would make the next "Add tier" reuse an index still on the page and one row
+  would overwrite the other on save.
+- **The Save button is enabled by hand** when a row is added or removed: WooCommerce's settings script
+  binds its "something changed" handler directly to the inputs present at page load, so a field added
+  afterwards never reaches it.
+
+### Cashback rewards
+
+Two halves. The **offers** are one option (`roova_cashback_rewards`), edited under
+**WooCommerce → Settings → Cashback rewards** (`inc/admin/cashback-settings.php`) — the same plain
+settings tab shape as RoovaVIP's, for the same reason. Each offer is a rule: a hotel (`0` for all),
+a minimum number of nights, a flat amount, an expiry date, and days-until-cleared. The **ledger** is
+one user meta key (`roova_cashback_ledger`), keyed by stay, and it is the source of truth for every
+figure the tab shows. `inc/cashback.php` holds both.
+
+Cashback is **display only** — a number the theme keeps and shows, exactly as VIP shows benefits.
+Nothing here touches an order total. `roova_cashback_record()` is the door a site uses to write a
+redemption once it has honoured one, and the ledger already understands `redeem` entries so the
+handoff's fourth Activity row has a shape without anything in the theme inventing a redemption flow.
+
+- **The ledger exists so that editing an offer cannot rewrite history.** The amount and the clearing
+  date are frozen into the entry the moment the stay completes. Halving an offer next week changes
+  nothing already earned, and deleting it claws nothing back. That is the whole reason the balances
+  are not simply recomputed from the rules on each page load.
+- **Nothing needs a cron.** An entry stores the date it clears and `roova_cashback_entry_cleared()`
+  reads that off the calendar — the same principle as availability excluding expired holds in SQL,
+  so a balance is never wrong because a scheduled task did not fire.
+- **Earning is idempotent and lazy.** `roova_cashback_sync()` runs from
+  `roova_cashback_ledger()`, walks the member's completed stays and writes only the ones the ledger
+  is missing, guarded by a static so it runs once per member per request. It also *removes* an
+  earning whose stay stopped being completed — an order refunded after checkout — but leaves alone
+  one whose order has been deleted outright, because there is nothing left to judge it by.
+- **Every rule carries a `created` date it is given automatically**, and a stay must check out on or
+  after it. Without that, adding an offer today would silently pay out for stays that finished last
+  year. It is a hidden field on the settings form, posted back alongside the equally hidden `id`, so
+  **a save must never re-issue either** — a re-dated offer reaches back over stays it had already
+  declined, and a re-issued id breaks the link from a ledger entry to its rule.
+- **Nights are a minimum and rewards do not stack.** `roova_cashback_rewards()` comes back sorted
+  most valuable first precisely so `roova_cashback_best_reward()` can stop at its first match.
+- **There are no default offers**, unlike VIP. The handoff's four name a specific hotel and two of
+  them describe rules this model cannot express, so shipping them would invent promises on the
+  client's behalf. A fresh install reads three honest zeroes.
+- The tab shows **even with no offers configured**, because a member who earned from an offer that
+  has since ended still needs somewhere to read their balance.
+- The validity line repeats the handoff's own gotcha: the icon is `flex: none` and the date sits in
+  its own `<span>`, or the anonymous flex item shrinks and the date breaks mid-phrase.
+- `wc_price()` is a nest of spans, so every figure is scoped with `>` (`.amount`) rather than a
+  descendant rule — the trap CLAUDE.md already documents.
 
 ### Checkout
 
@@ -492,7 +716,10 @@ destination's hotels; the two pills switch the framing.
 `assets/js/theme.js`, vanilla, no jQuery, wired entirely through `data-roova-*` attributes.
 (`assets/js/checkout.js` is the one exception, and only because WooCommerce's checkout events are
 jQuery's — see *Checkout*. It loads only on checkout pages, alongside `assets/css/checkout.css`.)
-`assets/js/auth.js` is vanilla too, and loads only on the two account pages — see *Accounts*.
+`assets/js/auth.js` is vanilla too, and loads only on the two account pages — see *Accounts*;
+`assets/js/account.js` likewise, on the My account dashboard, alongside `assets/css/account.css`.
+The saved-stays heart is the exception to that split: it lives in `theme.js`, because the same button
+is on hotel cards site-wide, and account.js only listens for the `roova:like` event it fires.
 Dates are handled as `Y-m-d` strings and only converted to `Date` at local midnight so a stay never
 shifts a day across time zones. Server data arrives via the localized `roovaData` object built in
 `roova_script_data()`. Admin JS does use jQuery (WordPress admin convention).
@@ -519,6 +746,11 @@ strokes, the pin haloes — reads `--roova-page`, never `--roova-cream`.
 
 Prefer a token over a literal; the handful of literals left are the multi-stop scrims and the
 `rgba(13,58,82,…)` hairlines.
+
+Each page that prints its own document also carries its own stylesheet with its own token header —
+`checkout.css`, `auth.css`, `account.css`. The repetition is the convention here, not an oversight:
+the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the two are
+never loaded together and each page has to stand up alone.
 
 ## Conventions
 

@@ -46,10 +46,20 @@ $roova_redirect = roova_auth_redirect_target();
 					<?php esc_html_e( 'Access your bookings, saved stays and member rates.', 'roova' ); ?>
 				</p>
 
+				<?php roova_verification_alert(); ?>
+
 				<?php roova_auth_form_error(); ?>
 
+				<?php
+				/*
+				 * Set only when the password was right and the address has not been
+				 * confirmed — the one sign-in failure there is something to do about.
+				 */
+				roova_auth_resend_form( roova_auth_value( 'resend_email' ), __( 'Send the link again', 'roova' ) );
+				?>
+
 				<form class="roova-auth__form" method="post" action="<?php echo esc_url( get_permalink() ); ?>" novalidate data-roova-auth-form="signin">
-					<?php wp_nonce_field( 'roova_signin', 'roova_signin_nonce' ); ?>
+					<?php roova_auth_nonce_field( 'roova_signin', 'roova_signin_nonce' ); ?>
 					<input type="hidden" name="roova_auth_action" value="signin" />
 					<input type="hidden" name="redirect_to" value="<?php echo esc_url( $roova_redirect ); ?>" />
 

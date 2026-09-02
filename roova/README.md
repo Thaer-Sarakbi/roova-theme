@@ -273,7 +273,22 @@ in a menu; keep the template assigned and everything keeps working.
 * Someone who is signed out and opens **My account** is sent to the sign-in page and back again
   afterwards, so the site only ever shows one login form — the designed one.
 * Signing up creates a **customer** account with the name, email and phone already filled in, so
-  checkout does not ask for them a second time. WooCommerce sends its usual new-account email.
+  checkout does not ask for them a second time.
+* **New accounts confirm their email address before they can be used.** Signing up sends a link to
+  the address; opening it confirms the account and signs the member straight in. Until then they
+  cannot sign in at all — trying tells them so and offers to send the link again. The link works
+  for 48 hours, and asking for a new one replaces the old.
+  * There is no "confirm your email address" box on the form any more. Re-typing an address only
+    catches a slip of the fingers; a link that has to arrive at the real inbox catches everything.
+  * Members who already had an account before this were let in as they were — nobody is locked out
+    by it.
+  * Only one email is sent. WooCommerce's own "welcome" email is held back until confirmation is
+    off, so nobody gets two messages a second apart.
+  * If your host cannot send email, nobody can finish signing up. Test it: create an account and
+    check the link arrives. An SMTP plugin is the usual fix.
+  * If a form ever comes back saying **"That form had expired"**, the usual cause is a page cache
+    serving an old copy of the sign-in or sign-up page. Exclude both pages from caching — they are
+    forms, and there is nothing on them worth caching.
 * Sign-up is **on out of the box** and does not depend on any WooCommerce setting. To close it, untick
   **Let guests create accounts** under **Sign in and sign up** in the Customizer: the sign-up page then
   shows a short note instead of the form, and sign-in keeps working for members who already have an
@@ -291,7 +306,141 @@ in a menu; keep the template assigned and everything keeps working.
   If you change a photo, check the white text over it is still easy to read — a picture that is bright
   along its bottom edge is the one to watch.
 
-## 14. Developer notes
+## 14. My account
+
+**My account** is WooCommerce's page, laid out to the Roova design. It has six tabs — Profile,
+Bookings, Reviews, Likes, VIP and Cashback rewards — and everything on it is read from your site as
+the page loads: orders for the bookings, guest reviews for the reviews, each member's saved list for
+the likes, the tiers you set up for VIP, and each member's own cashback ledger. There is nothing to
+fill in.
+
+* **Profile** — first name, last name and phone, already filled in from the member's account, plus a
+  password panel. The email address is shown but not editable: it is the sign-in ID. Saving writes
+  the same fields checkout fills itself in from, so a member who corrects a name here does not have
+  to correct it again at checkout.
+* **Bookings** — one card per stay, newest first, with a status chip: **Upcoming**, **Completed**,
+  **Cancelled**, or **Payment due** for an order that has not been paid for yet. The button changes
+  with it — View voucher, Book again, See details, or Pay now.
+* **Reviews** — see section 15.
+* **Likes** — the stays a member has saved with the heart on any hotel card or hotel page. Tapping
+  the heart again removes it.
+* **VIP** — see section 16.
+* **Cashback rewards** — see section 17.
+
+Everything else under My account — a single order, the address book, lost password — is
+WooCommerce's own screen and is unchanged.
+
+The theme keeps the **My account page** itself in place: if it is missing, unpublished or in the
+trash, it is restored (or created) the next time you open the dashboard. Deleting that page breaks
+the account button, signing in, and the link in the confirmation email — so it is put back rather
+than left broken. Its content is never rewritten, so anything you have added to it stays.
+
+## 15. Guest reviews
+
+A review is a normal **WooCommerce product review** on the hotel, so it appears under **Comments** in
+the dashboard and is moderated there like any other. What the theme adds is who may write one, and
+what a review carries:
+
+* Only a guest who has **completed a stay at that hotel** can review it, and only **once per hotel**.
+  Their account offers it on the Reviews tab as a gold "Rate your stay at ..." prompt.
+* A review carries a star rating and three sub-scores — **Cleanliness, Location and Service**.
+* Until you approve it, the member sees their own review marked *Waiting to be published*. Nobody
+  else sees it.
+* Once there is at least one approved review, the **score box on the hotel page is calculated from
+  real reviews** — the score, the review count and the three bars. The numbers on the Hotel Details
+  tab are the stand-in until then, so a brand-new hotel still shows something.
+* Reviews follow WooCommerce's own settings: switch reviews off under **WooCommerce → Settings →
+  Products**, or close discussion on one hotel, and the prompt disappears for it.
+
+## 16. RoovaVIP
+
+Members climb tiers by **completing bookings** — a stay counts once the guest has checked out and the
+order is paid. Nothing else counts: no spend thresholds, no expiry dates.
+
+Set the tiers up under **WooCommerce → Settings → RoovaVIP**:
+
+* **Add tier** gives you a name and the number of completed bookings it needs. The order you add them
+  in does not matter — tiers are sorted by that number.
+* **Add benefit** adds a row to a tier: an icon, the benefit, and a note under it. These are shown to
+  the member on the VIP tab; nothing here changes what anyone is charged, so only promise what your
+  front desks will honour.
+* **Remove tier**, and the × beside a benefit, delete them. Delete every tier to switch RoovaVIP off
+  entirely — the tab disappears from My account and the tier stops showing in the account header. Add
+  one back and it returns.
+
+**Bronze is where everyone starts.** The lowest tier is the floor, so a member who has never stayed
+is Bronze rather than nothing at all — and if you raise your first tier above zero bookings, a new
+member still lands on it.
+
+### Setting a member's status by hand
+
+**Users → All Users →** open a member. Under **RoovaVIP** there is a **Member status** dropdown:
+
+* **Automatic** — the default. The status follows their completed bookings, and the option says
+  which tier that currently is, so you can see what you would be overriding.
+* **Any tier** — pins the member there. It stops moving with their bookings until you set it back
+  to Automatic. Use it for a comped VIP, your own staff, or a guest whose stays predate the site.
+
+The **VIP status** column on the Users list shows where every member stands, and marks the ones set
+by hand. A pinned member keeps their real booking count on their VIP tab — the tier is yours to
+give, the bookings are what actually happened.
+
+Renaming a tier drops any pin that pointed at it and those members go back to Automatic, so rename
+with that in mind.
+
+The theme ships five tiers — Bronze, VIP Silver, VIP Gold, VIP Platinum and VIP Diamond — with
+benefits written for Gold only. The other four are deliberately empty: their benefits are yours to
+decide, and a tier with none simply leaves that section off the page rather than showing an empty
+list.
+
+## 17. Cashback rewards
+
+Members earn cashback by **completing stays**. A stay counts once the guest has checked out and the
+order is paid — the same rule RoovaVIP uses.
+
+Set the offers up under **WooCommerce → Settings → Cashback rewards**. A site with no rewards runs no
+cashback, and every member's balance reads zero; the tab is still there, so a member can always find
+what they earned from an offer that has since ended.
+
+**Add reward** gives you one row with five things to fill in:
+
+* **Hotel** — one of your hotels, or **All Hotels** at the top of the list, which also covers hotels
+  you add later.
+* **Duration (nights)** — the shortest stay that qualifies. It is a **minimum**: a reward set to 7
+  nights also pays out on a 9-night stay, so a longer stay never earns less than a shorter one.
+* **Reward amount** — a flat amount in your store's currency, not a percentage.
+* **Expiry date** — the last day a stay can *check out* and still qualify. Leave it blank and the
+  reward runs until you delete it; the member's card reads "Always on".
+* **Clears after (days)** — how long after checkout the money moves from **Pending** to
+  **Available**. Set it to 0 and it lands immediately.
+
+There are three optional extras: an **icon** for the card, a **card title** (the hotel's name is used
+when you leave it blank) and a **card description** (the rule is described automatically when you
+leave it blank).
+
+Four things are worth knowing before you start adding rewards:
+
+* **Rewards do not stack.** A stay that qualifies for more than one reward earns the most valuable
+  of them, once.
+* **A new reward never pays out for stays that are already over.** It applies to stays that check out
+  between the day you add it and the day it expires, so adding one today cannot suddenly credit last
+  year's guests. Each row shows the date it started running.
+* **Editing or deleting a reward never changes what a member has already earned.** The amount and the
+  clearing date are fixed at the moment the stay completes. Cutting an offer in half only affects
+  stays from then on; deleting it does not claw anything back.
+* **A refunded or cancelled stay gives its cashback back.** If an order is cancelled or refunded
+  after the guest has checked out, the entry drops off the member's ledger and their balance falls.
+
+What the member sees on the tab: three balances — **Available**, **Pending** and **Earned all
+time** — the offers you are currently running, and an **Activity** list of everything they have
+earned, each row marked *Pending* or *Cleared*. Their available balance also appears beside "Stays
+booked" at the top of the account page.
+
+**Cashback is a promise, not a discount.** Nothing here changes what a guest is charged at checkout —
+the theme keeps the figure and shows it, and your front desk honours it, exactly as RoovaVIP benefits
+work. So only offer what you will actually pay out.
+
+## 18. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.
@@ -299,6 +448,13 @@ in a menu; keep the template assigned and everything keeps working.
   `roova_max_nights`, `roova_hide_rooms_from_catalog`, `roova_redirect_rooms_to_hotel`,
   `roova_icon_library`, `roova_guarantees`, `roova_popular_searches`, `roova_map_places`,
   `roova_destination_gazetteer`, `roova_atlas_url`, `roova_atlas_views`.
+* Cashback offers live in the `roova_cashback_rewards` option; each member's ledger is the
+  `roova_cashback_ledger` user meta, keyed by stay so earning is idempotent. Whether an amount has
+  cleared is read off the calendar rather than a stored flag, so no cron has to fire for a balance to
+  be right. Filters: `roova_cashback_enabled`, `roova_cashback_rewards`, `roova_cashback_sync`,
+  `roova_cashback_reward_matches`, `roova_cashback_icons`. `roova_cashback_record()` writes a
+  redemption into a member's ledger for a site that spends the balance itself; the action
+  `roova_cashback_earned` fires when a stay earns.
 * The homepage map draws real Natural Earth geometry with d3-geo and topojson, loaded from a CDN
   (pinned versions, checked with subresource integrity) only on the page that shows it. If they do
   not load, the town list beside the map still renders and still links.
@@ -308,6 +464,17 @@ in a menu; keep the template assigned and everything keeps working.
   WooCommerce.
 * Checkout filters: `roova_payment_icon`, `roova_payment_note` and `roova_payment_badge` decide the
   icon, the small grey line and the gold pill on each payment card.
+* My account filters: `roova_use_account_template` (false) hands the dashboard back to WooCommerce,
+  `roova_account_tabs` adds or removes a tab, `roova_account_completed_count` changes what a VIP tier
+  is counted from, `roova_account_email_verified` hides the Verified badge, `roova_show_like_button`
+  hides the heart, `roova_reviews_open` and `roova_review_subscores` govern reviews, and
+  `roova_vip_tiers` / `roova_vip_enabled` / `roova_vip_benefit_icons` govern the tiers. Actions:
+  `roova_account_profile_saved`, `roova_review_submitted`, `roova_like_toggled`.
+* Saved stays live in the `roova_liked_hotels` user meta; VIP tiers in the `roova_vip_tiers` option.
+* Confirmation filters: `roova_require_email_verification` (false) goes back to signing new members
+  in immediately, `roova_verification_lifetime` changes how long a link lasts,
+  `roova_verification_email` rewrites the message, and `roova_verification_url` changes where the link
+  points. `roova_email_verified` fires with the user ID once an address is confirmed.
 * Auth filters: `roova_registration_open` decides whether the sign-up form will create accounts, and
   `roova_redirect_account_to_signin` (false) leaves a signed-out My account showing WooCommerce's own
   login form instead. `roova_member_registered` fires with the new user ID and their details.

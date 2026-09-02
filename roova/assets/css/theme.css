@@ -1110,6 +1110,7 @@ p {
 }
 
 .roova-hotel-card {
+	position: relative;
 	background: #fff;
 	border: 1px solid var(--roova-hairline);
 	border-radius: var(--roova-radius);
@@ -1170,6 +1171,61 @@ p {
 	color: var(--roova-cream);
 	font-size: 11px;
 	letter-spacing: .04em;
+}
+
+/*
+ * The saved-stays heart, wherever it appears: over a card's photograph, or
+ * beside a hotel's name. It is a sibling of the media link rather than a child
+ * — a browser drops interactive markup nested inside an <a> — so it is laid
+ * over the corner here instead. See roova_like_button().
+ */
+.roova-like {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, .9);
+	color: var(--roova-faint);
+	cursor: pointer;
+	transition: background .25s ease, color .25s ease, transform .25s var(--roova-pop);
+}
+
+.roova-like:hover {
+	color: var(--roova-deep);
+	transform: scale(1.08);
+}
+
+/* Saved: the heart fills, and the button inverts to the deep navy. */
+.roova-like.is-liked {
+	background: var(--roova-deep);
+	color: #d9a75a;
+}
+
+.roova-like.is-liked .roova-icon {
+	fill: currentColor;
+}
+
+.roova-like:focus-visible {
+	outline: 2px solid var(--roova-deep);
+	outline-offset: 2px;
+}
+
+/* On a hotel page the heart is in the flow of the header, not over a photo. */
+.roova-like--head {
+	position: absolute;
+	top: 30px;
+	right: 0;
+	width: 42px;
+	height: 42px;
+	background: var(--roova-sand);
 }
 
 .roova-hotel-card__body {
@@ -1483,6 +1539,8 @@ p {
 }
 
 .roova-hotel-head {
+	/* The saved-stays heart is laid into the top right corner of this block. */
+	position: relative;
 	padding: 30px 0 18px;
 	border-bottom: 1px solid var(--roova-line);
 }
@@ -1490,6 +1548,8 @@ p {
 .roova-hotel-head h1 {
 	font-size: clamp(1.5rem, 2.6vw, 2rem);
 	margin-bottom: 8px;
+	/* Room for the heart, so a long hotel name never runs under it. */
+	padding-right: 56px;
 }
 
 .roova-hotel-head__loc {

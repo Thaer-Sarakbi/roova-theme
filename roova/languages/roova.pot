@@ -22,6 +22,10 @@ msgstr ""
 msgid "Back to the homepage"
 msgstr ""
 
+#: account.php:34 checkout.php:44 header.php:27 template-signin.php:30 template-signup.php:33
+msgid "Skip to content"
+msgstr ""
+
 #: checkout.php:23 woocommerce/checkout/thankyou.php:40 woocommerce/checkout/thankyou.php:85
 msgid "Booking confirmed"
 msgstr ""
@@ -40,10 +44,6 @@ msgstr ""
 
 #: checkout.php:29 inc/checkout.php:91 inc/checkout.php:96 inc/customizer.php:267
 msgid "Checkout"
-msgstr ""
-
-#: checkout.php:44 header.php:27 template-signin.php:30 template-signup.php:28
-msgid "Skip to content"
 msgstr ""
 
 #: checkout.php:68 footer.php:106
@@ -98,15 +98,15 @@ msgstr ""
 msgid "Explore our destinations"
 msgstr ""
 
-#: functions.php:87
+#: functions.php:102
 msgid "Roova needs WooCommerce."
 msgstr ""
 
-#: functions.php:90
+#: functions.php:105
 msgid "Hotels, rooms, bookings and checkout all run on WooCommerce. %s to finish setting up the theme."
 msgstr ""
 
-#: functions.php:91
+#: functions.php:106
 msgid "Install WooCommerce"
 msgstr ""
 
@@ -114,7 +114,7 @@ msgstr ""
 msgid "Primary menu"
 msgstr ""
 
-#: header.php:70 inc/customizer.php:256 inc/icons.php:134
+#: header.php:70 inc/customizer.php:256 inc/icons.php:154
 msgid "Support"
 msgstr ""
 
@@ -138,65 +138,65 @@ msgstr ""
 msgid "Nothing found."
 msgstr ""
 
-#: single-hotel.php:84
+#: single-hotel.php:93
 msgid "View on map"
 msgstr ""
 
-#: single-hotel.php:120
+#: single-hotel.php:129
 msgid "Previous photo"
 msgstr ""
 
-#: single-hotel.php:123
+#: single-hotel.php:132
 msgid "Next photo"
 msgstr ""
 
-#: single-hotel.php:131
+#: single-hotel.php:140
 msgid "Hotel photos"
 msgstr ""
 
-#: single-hotel.php:138
+#: single-hotel.php:147
 msgid "Photo %1$d of %2$d"
 msgstr ""
 
-#: single-hotel.php:152
+#: single-hotel.php:161
 msgid "Description"
 msgstr ""
 
-#: single-hotel.php:157 single-hotel.php:159
+#: single-hotel.php:166 single-hotel.php:168
 msgid "Read more"
 msgstr ""
 
-#: single-hotel.php:158
+#: single-hotel.php:167
 msgid "Read less"
 msgstr ""
 
-#: single-hotel.php:166 inc/attributes.php:49 inc/admin/metabox-hotel-details.php:198
+#: single-hotel.php:175 inc/attributes.php:49 inc/admin/metabox-hotel-details.php:198
 msgid "Facilities"
 msgstr ""
 
-#: single-hotel.php:172
+#: single-hotel.php:181
 msgid "Select your room"
 msgstr ""
 
-#: single-hotel.php:180
+#: single-hotel.php:189
 msgid "%1$s — %2$s · %3$s · %4$s"
 msgstr ""
 
-#: single-hotel.php:183 template-search.php:42 inc/checkout.php:958 inc/checkout.php:988 inc/template-tags.php:622 inc/admin/order-metabox.php:80
+#: single-hotel.php:192 template-search.php:42 inc/checkout.php:959 inc/checkout.php:989 inc/template-tags.php:634 inc/admin/order-metabox.php:80
 msgid "%d night"
 msgid_plural "%d nights"
 msgstr[0] ""
 msgstr[1] ""
 
-#: single-hotel.php:194
+#: single-hotel.php:203
 msgid "No rooms have been added to this hotel yet."
 msgstr ""
 
-#: single-hotel.php:200 inc/admin/metabox-hotel-details.php:184
+#: single-hotel.php:209 inc/admin/metabox-hotel-details.php:184
 msgid "Amenities"
 msgstr ""
 
-#: single-hotel.php:210 inc/admin/metabox-hotel-details.php:209
+#: single-hotel.php:219 inc/admin/metabox-hotel-details.php:209
 msgid "What's nearby"
 msgstr ""
 
@@ -216,7 +216,7 @@ msgstr ""
 msgid "All our hotels"
 msgstr ""
 
-#: template-search.php:71 inc/search.php:199 inc/template-tags.php:227 inc/template-tags.php:513
+#: template-search.php:71 inc/search.php:199 inc/template-tags.php:227 inc/template-tags.php:525
 msgid "%d hotel"
 msgid_plural "%d hotels"
 msgstr[0] ""
@@ -228,11 +228,11 @@ msgid_plural "Only %d rooms left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-search.php:139 inc/template-tags.php:918 inc/products/class-wc-product-hotel.php:103
+#: template-search.php:139 inc/template-tags.php:946 inc/products/class-wc-product-hotel.php:103
 msgid "From"
 msgstr ""
 
-#: template-search.php:141 inc/template-tags.php:466 inc/template-tags.php:612 inc/template-tags.php:920 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
+#: template-search.php:141 inc/account-tabs.php:790 inc/template-tags.php:478 inc/template-tags.php:624 inc/template-tags.php:948 inc/products/class-wc-product-hotel.php:105 inc/products/class-wc-product-room.php:112
 msgid "/ night"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr ""
 msgid "See rooms"
 msgstr ""
 
-#: template-search.php:148 inc/template-tags.php:435
+#: template-search.php:148 inc/template-tags.php:447
 msgid "No rooms free for these dates"
 msgstr ""
 
@@ -256,7 +256,7 @@ msgstr ""
 msgid "Welcome back"
 msgstr ""
 
-#: template-signin.php:43 template-signin.php:94 template-signup.php:68 template-signup.php:196 inc/auth.php:36 inc/auth.php:738
+#: template-signin.php:43 template-signin.php:104 template-signup.php:89 template-signup.php:202 inc/auth.php:36 inc/auth.php:890
 msgid "Sign in"
 msgstr ""
 
@@ -264,123 +264,519 @@ msgstr ""
 msgid "Access your bookings, saved stays and member rates."
 msgstr ""
 
-#: template-signin.php:60 template-signup.php:102 inc/checkout.php:380
+#: template-signin.php:58
+msgid "Send the link again"
+msgstr ""
+
+#: template-signin.php:70 template-signup.php:123 inc/account-tabs.php:263 inc/checkout.php:381
 msgid "Email address"
 msgstr ""
 
-#: template-signin.php:70 template-signup.php:135
+#: template-signin.php:80 template-signup.php:141 inc/account-tabs.php:294
 msgid "Password"
 msgstr ""
 
-#: template-signin.php:72
+#: template-signin.php:82
 msgid "Your password"
 msgstr ""
 
-#: template-signin.php:85
+#: template-signin.php:95
 msgid "Keep me signed in"
 msgstr ""
 
-#: template-signin.php:89
+#: template-signin.php:99
 msgid "Forgot password?"
 msgstr ""
 
-#: template-signin.php:103
+#: template-signin.php:113
 msgid "New to %s?"
 msgstr ""
 
-#: template-signin.php:107
+#: template-signin.php:117
 msgid "Create an account"
 msgstr ""
 
-#: template-signin.php:113 inc/customizer.php:324
+#: template-signin.php:123 inc/customizer.php:324
 msgid "Your next stay is two taps away. Member rates apply the moment you sign in."
 msgstr ""
 
-#: template-signup.php:41
+#: template-signup.php:45
+msgid "Almost there"
+msgstr ""
+
+#: template-signup.php:49
 msgid "Join %s"
 msgstr ""
 
-#: template-signup.php:47
+#: template-signup.php:57
+msgid "Check your email"
+msgstr ""
+
+#: template-signup.php:57
 msgid "Create your account"
 msgstr ""
 
-#: template-signup.php:50
+#: template-signup.php:64
+msgid "One link, one tap, and your account is ready."
+msgstr ""
+
+#: template-signup.php:65
 msgid "Member rates, saved travellers and one-tap checkout across every Malaysian stay."
 msgstr ""
 
-#: template-signup.php:58
+#: template-signup.php:79
 msgid "New accounts are closed at the moment. Please get in touch if you need one."
 msgstr ""
 
-#: template-signup.php:67 template-signup.php:195
+#: template-signup.php:88 template-signup.php:201
 msgid "Already have an account?"
 msgstr ""
 
-#: template-signup.php:83 inc/checkout.php:354
+#: template-signup.php:104 inc/account-tabs.php:231 inc/checkout.php:355
 msgid "First name"
 msgstr ""
 
-#: template-signup.php:84 inc/checkout.php:355
+#: template-signup.php:105 inc/checkout.php:356
 msgid "Thaer"
 msgstr ""
 
-#: template-signup.php:91 inc/checkout.php:362
+#: template-signup.php:112 inc/account-tabs.php:240 inc/checkout.php:363
 msgid "Last name"
 msgstr ""
 
-#: template-signup.php:92 inc/checkout.php:363
+#: template-signup.php:113 inc/checkout.php:364
 msgid "Ahmad"
 msgstr ""
 
-#: template-signup.php:116
-msgid "Confirm email address"
-msgstr ""
-
-#: template-signup.php:118
-msgid "Re-enter your email"
-msgstr ""
-
-#: template-signup.php:126 inc/checkout.php:370
+#: template-signup.php:132 inc/account-tabs.php:252 inc/checkout.php:371
 msgid "Phone number"
 msgstr ""
 
-#: template-signup.php:137
+#: template-signup.php:143 inc/account-tabs.php:332
 msgid "At least 8 characters"
 msgstr ""
 
-#: template-signup.php:148
+#: template-signup.php:154
 msgid "Confirm password"
 msgstr ""
 
-#: template-signup.php:150
+#: template-signup.php:156
 msgid "Re-enter your password"
 msgstr ""
 
-#: template-signup.php:165 template-signup.php:166
+#: template-signup.php:171 template-signup.php:172
 msgid "terms of service"
 msgstr ""
 
-#: template-signup.php:169 template-signup.php:170
+#: template-signup.php:175 template-signup.php:176
 msgid "privacy notice"
 msgstr ""
 
-#: template-signup.php:174
+#: template-signup.php:180
 msgid "I agree to the %1$s and %2$s."
 msgstr ""
 
-#: template-signup.php:189
+#: template-signup.php:195
 msgid "Create account"
 msgstr ""
 
-#: template-signup.php:211 inc/customizer.php:325
+#: template-signup.php:217 inc/customizer.php:325
 msgid "Book a room in Malaysia in under a minute, and keep every stay in one place."
+msgstr ""
+
+#: inc/account-tabs.php:42 inc/icons.php:120
+msgid "Sign out"
+msgstr ""
+
+#: inc/account-tabs.php:66 inc/account.php:84 inc/account.php:89
+msgid "My account"
+msgstr ""
+
+#: inc/account-tabs.php:70
+msgid "Your account"
+msgstr ""
+
+#: inc/account-tabs.php:84
+msgid "Cashback balance"
+msgstr ""
+
+#: inc/account-tabs.php:90
+msgid "Stays booked"
+msgstr ""
+
+#: inc/account-tabs.php:108
+msgid "Account sections"
+msgstr ""
+
+#: inc/account-tabs.php:216
+msgid "Personal details"
+msgstr ""
+
+#: inc/account-tabs.php:217
+msgid "These details appear on your booking vouchers."
+msgstr ""
+
+#: inc/account-tabs.php:270 inc/icons.php:125
+msgid "Verified"
+msgstr ""
+
+#: inc/account-tabs.php:281
+msgid "Email is your sign-in ID — %s to change it."
+msgstr ""
+
+#: inc/account-tabs.php:282
+msgid "contact support"
+msgstr ""
+
+#: inc/account-tabs.php:285
+msgid "Email is your sign-in ID — contact support to change it."
+msgstr ""
+
+#: inc/account-tabs.php:306 inc/account-tabs.php:309
+msgid "Change password"
+msgstr ""
+
+#: inc/account-tabs.php:307 inc/account-tabs.php:309 inc/admin/bookings-page.php:289
+msgid "Cancel"
+msgstr ""
+
+#: inc/account-tabs.php:317
+msgid "Current password"
+msgstr ""
+
+#: inc/account-tabs.php:330
+msgid "New password"
+msgstr ""
+
+#: inc/account-tabs.php:341
+msgid "Confirm new password"
+msgstr ""
+
+#: inc/account-tabs.php:355
+msgid "Save changes"
+msgstr ""
+
+#: inc/account-tabs.php:362
+msgid "Changes saved"
+msgstr ""
+
+#: inc/account-tabs.php:381
+msgid "Upcoming"
+msgstr ""
+
+#: inc/account-tabs.php:382
+msgid "Completed"
+msgstr ""
+
+#: inc/account-tabs.php:383 inc/admin/bookings-page.php:143
+msgid "Cancelled"
+msgstr ""
+
+#: inc/account-tabs.php:384
+msgid "Payment due"
+msgstr ""
+
+#: inc/account-tabs.php:397
+msgid "Pay now"
+msgstr ""
+
+#: inc/account-tabs.php:404
+msgid "Book again"
+msgstr ""
+
+#: inc/account-tabs.php:411
+msgid "See details"
+msgstr ""
+
+#: inc/account-tabs.php:417
+msgid "View voucher"
+msgstr ""
+
+#: inc/account-tabs.php:432
+msgid "Your bookings"
+msgstr ""
+
+#: inc/account-tabs.php:433
+msgid "Upcoming and past stays, newest first."
+msgstr ""
+
+#: inc/account-tabs.php:438
+msgid "No stays yet. When you book a room it will appear here, with your voucher."
+msgstr ""
+
+#: inc/account-tabs.php:439 inc/account-tabs.php:1108 inc/checkout.php:1237 inc/search.php:28
+msgid "Find a room"
+msgstr ""
+
+#: inc/account-tabs.php:522
+msgid "%1$s published · %2$s stay waiting for your rating."
+msgid_plural "%1$s published · %2$s stays waiting for your rating."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/account-tabs.php:527
+msgid "Your reviews"
+msgstr ""
+
+#: inc/account-tabs.php:533
+msgid "Thank you — your review has been sent."
+msgstr ""
+
+#: inc/account-tabs.php:546
+msgid "Once you have completed a stay you can rate it here."
+msgstr ""
+
+#: inc/account-tabs.php:583
+msgid "Waiting to be published."
+msgstr ""
+
+#: inc/account-tabs.php:610
+msgid "Rate your stay at %s"
+msgstr ""
+
+#: inc/account-tabs.php:624
+msgid "Checked out %s · takes about a minute"
+msgstr ""
+
+#: inc/account-tabs.php:639
+msgid "Write review"
+msgstr ""
+
+#: inc/account-tabs.php:649
+msgid "Your rating"
+msgstr ""
+
+#: inc/account-tabs.php:665
+msgid "%s star"
+msgid_plural "%s stars"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/account-tabs.php:685 inc/admin/metabox-hotel-details.php:48
+msgid "Not rated"
+msgstr ""
+
+#: inc/account-tabs.php:695
+msgid "Your review"
+msgstr ""
+
+#: inc/account-tabs.php:700
+msgid "What would you tell a friend about this stay?"
+msgstr ""
+
+#: inc/account-tabs.php:712
+msgid "Publish review"
+msgstr ""
+
+#: inc/account-tabs.php:734
+msgid "Saved stays"
+msgstr ""
+
+#: inc/account-tabs.php:735
+msgid "Tap the heart to remove a stay from your list."
+msgstr ""
+
+#: inc/account-tabs.php:740 inc/account-tabs.php:814
+msgid "Nothing saved yet. Tap the heart on any hotel and it will be waiting here."
+msgstr ""
+
+#: inc/account-tabs.php:741 inc/account-tabs.php:815
+msgid "Browse hotels"
+msgstr ""
+
+#: inc/account-tabs.php:793 inc/template-tags.php:457
+msgid "Check availability"
+msgstr ""
+
+#: inc/account-tabs.php:857
+msgid "Hi %s"
+msgstr ""
+
+#: inc/account-tabs.php:867 inc/account.php:209
+msgid "VIP"
+msgstr ""
+
+#: inc/account-tabs.php:876
+msgid "Your status"
+msgstr ""
+
+#: inc/account-tabs.php:882
+msgid "Roova %s"
+msgstr ""
+
+#: inc/account-tabs.php:886
+msgid "Not a member yet"
+msgstr ""
+
+#: inc/account-tabs.php:893
+msgid "Progress to RoovaVIP status"
+msgstr ""
+
+#: inc/account-tabs.php:898
+msgid "%1$s/%2$s bookings completed"
+msgstr ""
+
+#: inc/account-tabs.php:944
+msgid "%1$s more completed booking to reach %2$s."
+msgid_plural "%1$s more completed bookings to reach %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/account-tabs.php:957
+msgid "Your %s benefits"
+msgstr ""
+
+#: inc/account-tabs.php:960
+msgid "Applied automatically at checkout."
+msgstr ""
+
+#: inc/account-tabs.php:1002
+msgid "Available"
+msgstr ""
+
+#: inc/account-tabs.php:1010
+msgid "Redeem on next stay"
+msgstr ""
+
+#: inc/account-tabs.php:1015
+msgid "Cashback lands here once a qualifying stay has cleared."
+msgstr ""
+
+#: inc/account-tabs.php:1021 inc/cashback.php:706
+msgid "Pending"
+msgstr ""
+
+#: inc/account-tabs.php:1036
+msgid "Clears on %s"
+msgstr ""
+
+#: inc/account-tabs.php:1040
+msgid "Cashback clears a set number of days after checkout."
+msgstr ""
+
+#: inc/account-tabs.php:1048
+msgid "Earned all time"
+msgstr ""
+
+#: inc/account-tabs.php:1058
+msgid "Across %s stay."
+msgid_plural "Across %s stays."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/account-tabs.php:1062
+msgid "Nothing earned yet."
+msgstr ""
+
+#: inc/account-tabs.php:1070
+msgid "Our rewards"
+msgstr ""
+
+#: inc/account-tabs.php:1071
+msgid "Active offers — cashback is added automatically once the stay completes."
+msgstr ""
+
+#: inc/account-tabs.php:1107
+msgid "No offers are running just now. Cashback rewards appear here as soon as we add them."
+msgstr ""
+
+#: inc/account-tabs.php:1113
+msgid "Activity"
+msgstr ""
+
+#: inc/account-tabs.php:1127 inc/template-tags.php:335
+msgid "%1$s · %2$s"
+msgstr ""
+
+#: inc/account-tabs.php:1143
+msgid "Nothing here yet. Cashback shows up once a qualifying stay is complete."
+msgstr ""
+
+#: inc/account.php:186
+msgid "Profile"
+msgstr ""
+
+#: inc/account.php:191 inc/icons.php:124 inc/admin/bookings-page.php:16 inc/admin/bookings-page.php:17 inc/admin/bookings-page.php:155 inc/admin/order-metabox.php:21
+msgid "Bookings"
+msgstr ""
+
+#: inc/account.php:196
+msgid "Reviews"
+msgstr ""
+
+#: inc/account.php:201
+msgid "Likes"
+msgstr ""
+
+#: inc/account.php:218 inc/admin/cashback-settings.php:33 inc/admin/cashback-settings.php:85
+msgid "Cashback rewards"
+msgstr ""
+
+#: inc/account.php:447 inc/checkout.php:682
+msgid "%1$s — %2$s"
+msgstr ""
+
+#: inc/account.php:453 inc/account.php:458
+msgid "%1$s — %2$s, %3$s"
+msgstr ""
+
+#: inc/account.php:474
+msgid "%s adult"
+msgid_plural "%s adults"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/account.php:482
+msgid "%s child"
+msgid_plural "%s children"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/account.php:538
+msgid "Member since %1$s · %2$s"
+msgstr ""
+
+#: inc/account.php:617
+msgid "Last changed %s ago."
+msgstr ""
+
+#: inc/account.php:700 inc/account.php:803 inc/auth.php:519 inc/auth.php:591 inc/verification.php:446
+msgid "That form had expired. Please try again."
+msgstr ""
+
+#: inc/account.php:715 inc/assets.php:122 inc/assets.php:169 inc/auth.php:619
+msgid "Enter your first name."
+msgstr ""
+
+#: inc/account.php:719 inc/assets.php:123 inc/assets.php:170 inc/auth.php:623
+msgid "Enter your last name."
+msgstr ""
+
+#: inc/account.php:725 inc/assets.php:87 inc/assets.php:125 inc/assets.php:171 inc/auth.php:633
+msgid "Enter a valid phone number."
+msgstr ""
+
+#: inc/account.php:739 inc/assets.php:172
+msgid "Enter your current password."
+msgstr ""
+
+#: inc/account.php:741
+msgid "That is not your current password."
+msgstr ""
+
+#: inc/account.php:745 inc/assets.php:173
+msgid "New password needs 8+ characters with a letter and a number."
+msgstr ""
+
+#: inc/account.php:749 inc/assets.php:174
+msgid "New passwords don't match."
 msgstr ""
 
 #: inc/ajax.php:76
 msgid "Room not found."
 msgstr ""
 
-#: inc/ajax.php:113 inc/template-tags.php:561
+#: inc/ajax.php:113 inc/template-tags.php:573
 msgid "Max %d adult"
 msgid_plural "Max %d adults"
 msgstr[0] ""
@@ -394,15 +790,11 @@ msgstr ""
 msgid "Enter the guest's last name."
 msgstr ""
 
-#: inc/assets.php:87 inc/assets.php:126 inc/auth.php:513
-msgid "Enter a valid phone number."
-msgstr ""
-
-#: inc/assets.php:88 inc/assets.php:124 inc/auth.php:415 inc/auth.php:501
+#: inc/assets.php:88 inc/assets.php:124 inc/auth.php:531 inc/auth.php:627
 msgid "Enter a valid email address."
 msgstr ""
 
-#: inc/assets.php:89 inc/checkout.php:457
+#: inc/assets.php:89 inc/checkout.php:458
 msgid "Please accept the booking terms to continue."
 msgstr ""
 
@@ -422,103 +814,103 @@ msgstr ""
 msgid "That did not work. Please reload the page and try again."
 msgstr ""
 
-#: inc/assets.php:122 inc/auth.php:493
-msgid "Enter your first name."
-msgstr ""
-
-#: inc/assets.php:123 inc/auth.php:497
-msgid "Enter your last name."
-msgstr ""
-
-#: inc/assets.php:125 inc/auth.php:509
-msgid "Email addresses do not match."
-msgstr ""
-
-#: inc/assets.php:127 inc/auth.php:517
+#: inc/assets.php:126 inc/auth.php:637
 msgid "Use at least 8 characters, with a letter and a number."
 msgstr ""
 
-#: inc/assets.php:128 inc/auth.php:419
+#: inc/assets.php:127 inc/auth.php:535
 msgid "Enter your password."
 msgstr ""
 
-#: inc/assets.php:129 inc/auth.php:521
+#: inc/assets.php:128 inc/auth.php:641
 msgid "Passwords do not match."
 msgstr ""
 
-#: inc/assets.php:130 inc/auth.php:525
+#: inc/assets.php:129 inc/auth.php:645
 msgid "Please accept the terms to create your account."
 msgstr ""
 
-#: inc/assets.php:131 inc/auth.php:831 inc/icons.php:120
+#: inc/assets.php:130 inc/assets.php:167 inc/auth.php:983 inc/icons.php:130
 msgid "Show password"
 msgstr ""
 
-#: inc/assets.php:132 inc/icons.php:121
+#: inc/assets.php:131 inc/assets.php:168 inc/icons.php:131
 msgid "Hide password"
 msgstr ""
 
-#: inc/assets.php:133 inc/auth.php:863
+#: inc/assets.php:132 inc/auth.php:1015
 msgid "Password strength"
 msgstr ""
 
-#: inc/assets.php:134
+#: inc/assets.php:133
 msgid "Weak"
 msgstr ""
 
-#: inc/assets.php:135
+#: inc/assets.php:134
 msgid "Fair"
 msgstr ""
 
-#: inc/assets.php:136
+#: inc/assets.php:135
 msgid "Good"
 msgstr ""
 
-#: inc/assets.php:137
+#: inc/assets.php:136
 msgid "Strong"
 msgstr ""
 
-#: inc/assets.php:244
+#: inc/assets.php:166
+msgid "Saved"
+msgstr ""
+
+#: inc/assets.php:175 inc/reviews.php:374
+msgid "Choose a rating from 1 to 5 stars."
+msgstr ""
+
+#: inc/assets.php:176 inc/reviews.php:379
+msgid "Tell other guests a little more — at least a sentence."
+msgstr ""
+
+#: inc/assets.php:283
 msgid "room"
 msgstr ""
 
-#: inc/assets.php:245
+#: inc/assets.php:284
 msgid "rooms"
 msgstr ""
 
-#: inc/assets.php:246
+#: inc/assets.php:285
 msgid "guest"
 msgstr ""
 
-#: inc/assets.php:247
+#: inc/assets.php:286
 msgid "guests"
 msgstr ""
 
-#: inc/assets.php:248
+#: inc/assets.php:287
 msgid "night"
 msgstr ""
 
-#: inc/assets.php:249
+#: inc/assets.php:288
 msgid "nights"
 msgstr ""
 
-#: inc/assets.php:250
+#: inc/assets.php:289
 msgid "Select dates"
 msgstr ""
 
-#: inc/assets.php:251
+#: inc/assets.php:290
 msgid "Nothing matched that search."
 msgstr ""
 
-#: inc/assets.php:252
+#: inc/assets.php:291
 msgid "Loading…"
 msgstr ""
 
-#: inc/assets.php:253
+#: inc/assets.php:292
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:254 inc/icons.php:110 inc/template-tags.php:959
+#: inc/assets.php:293 inc/icons.php:110 inc/template-tags.php:987
 msgid "Close"
 msgstr ""
 
@@ -534,48 +926,76 @@ msgstr ""
 msgid "Sign up"
 msgstr ""
 
-#: inc/auth.php:403 inc/auth.php:463
-msgid "That form had expired. Please try again."
-msgstr ""
-
-#: inc/auth.php:445
+#: inc/auth.php:561
 msgid "That email and password do not match an account."
 msgstr ""
 
-#: inc/auth.php:468
+#: inc/auth.php:596
 msgid "New accounts are closed at the moment. Please contact us if you need one."
 msgstr ""
 
-#: inc/auth.php:503
+#: inc/auth.php:629
 msgid "An account already uses that email address. Sign in instead."
 msgstr ""
 
-#: inc/auth.php:636
+#: inc/auth.php:788
 msgid "Only you can see this: sign-up is switched off in Appearance → Customize → Roova hotel theme → Sign in and sign up."
 msgstr ""
 
-#: inc/auth.php:641
+#: inc/auth.php:793
 msgid "Only you can see this: the setting is on, so something on this site is filtering \"roova_registration_open\" to false — usually a plugin or a code snippet."
 msgstr ""
 
-#: inc/auth.php:738
+#: inc/auth.php:890
 msgid "Manage account"
 msgstr ""
 
-#: inc/auth.php:923 inc/customizer.php:326
+#: inc/auth.php:1075 inc/customizer.php:326
 msgid "1,240+"
 msgstr ""
 
-#: inc/auth.php:923 inc/customizer.php:327
+#: inc/auth.php:1075 inc/customizer.php:327
 msgid "Stays across Malaysia"
 msgstr ""
 
-#: inc/auth.php:924 inc/customizer.php:328
+#: inc/auth.php:1076 inc/customizer.php:328
 msgid "Zero"
 msgstr ""
 
-#: inc/auth.php:924 inc/customizer.php:329
+#: inc/auth.php:1076 inc/customizer.php:329
 msgid "Booking fees, always"
+msgstr ""
+
+#: inc/cashback.php:260 inc/cashback.php:266 inc/admin/cashback-settings.php:48
+msgid "All Hotels"
+msgstr ""
+
+#: inc/cashback.php:354
+msgid "Always on"
+msgstr ""
+
+#: inc/cashback.php:359
+msgid "Until %s"
+msgstr ""
+
+#: inc/cashback.php:590 inc/cashback.php:825
+msgid "Stay at %s"
+msgstr ""
+
+#: inc/cashback.php:703
+msgid "Applied"
+msgstr ""
+
+#: inc/cashback.php:706
+msgid "Cleared"
+msgstr ""
+
+#: inc/cashback.php:831
+msgid "Cashback redeemed"
+msgstr ""
+
+#: inc/cashback.php:831
+msgid "Cashback earned"
 msgstr ""
 
 #: inc/checkout.php:132
@@ -586,118 +1006,110 @@ msgstr ""
 msgid "SST"
 msgstr ""
 
-#: inc/checkout.php:371
+#: inc/checkout.php:372
 msgid "+60 12 345 6789"
 msgstr ""
 
-#: inc/checkout.php:381
+#: inc/checkout.php:382
 msgid "you@example.com"
 msgstr ""
 
-#: inc/checkout.php:394
+#: inc/checkout.php:395
 msgid "Notes about your stay"
 msgstr ""
 
-#: inc/checkout.php:395
+#: inc/checkout.php:396
 msgid "Late check-in around 11pm, high floor if possible, extra pillows…"
 msgstr ""
 
-#: inc/checkout.php:505 inc/checkout.php:510
+#: inc/checkout.php:506 inc/checkout.php:511
 msgid "That room is no longer in your booking."
 msgstr ""
 
-#: inc/checkout.php:513
+#: inc/checkout.php:514
 msgid "That room"
 msgstr ""
 
-#: inc/checkout.php:549 inc/checkout.php:558
+#: inc/checkout.php:550 inc/checkout.php:559
 msgid "That room could not be put back."
 msgstr ""
 
-#: inc/checkout.php:681
-msgid "%1$s — %2$s"
-msgstr ""
-
-#: inc/checkout.php:728 inc/customizer.php:274
+#: inc/checkout.php:729 inc/customizer.php:274
 msgid "Secure booking"
 msgstr ""
 
-#: inc/checkout.php:752 inc/customizer.php:273
+#: inc/checkout.php:753 inc/customizer.php:273
 msgid "Secure checkout"
 msgstr ""
 
-#: inc/checkout.php:780
+#: inc/checkout.php:781
 msgid "%s held for you — complete your details to confirm."
 msgstr ""
 
-#: inc/checkout.php:783 inc/template-tags.php:336 inc/template-tags.php:623
+#: inc/checkout.php:784 inc/template-tags.php:336 inc/template-tags.php:635
 msgid "%d room"
 msgid_plural "%d rooms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/checkout.php:862
+#: inc/checkout.php:863
 msgid "Required"
 msgstr ""
 
-#: inc/checkout.php:895
+#: inc/checkout.php:896
 msgid "Remove %s from your booking"
 msgstr ""
 
-#: inc/checkout.php:941
+#: inc/checkout.php:942
 msgid "%1$s × %2$d"
 msgstr ""
 
-#: inc/checkout.php:953
+#: inc/checkout.php:954
 msgid "%1$s × %2$s"
 msgstr ""
 
-#: inc/checkout.php:980
+#: inc/checkout.php:981
 msgid "Check in %1$s — out %2$s"
 msgstr ""
 
-#: inc/checkout.php:1013
+#: inc/checkout.php:1014
 msgid "Subtotal"
 msgstr ""
 
-#: inc/checkout.php:1052
+#: inc/checkout.php:1053
 msgid "Taxes & fees"
 msgstr ""
 
-#: inc/checkout.php:1059 woocommerce/checkout/thankyou.php:64
+#: inc/checkout.php:1060 woocommerce/checkout/thankyou.php:64
 msgid "Total"
 msgstr ""
 
-#: inc/checkout.php:1105
+#: inc/checkout.php:1106
 msgid "Tax"
 msgstr ""
 
-#: inc/checkout.php:1124
+#: inc/checkout.php:1125
 msgid "%1$s (%2$s%%)"
 msgstr ""
 
-#: inc/checkout.php:1148 inc/icons.php:111
+#: inc/checkout.php:1149 inc/icons.php:111
 msgid "Included"
 msgstr ""
 
-#: inc/checkout.php:1172 inc/customizer.php:276
+#: inc/checkout.php:1173 inc/customizer.php:276
 msgid "Sign up, become a member and get rewards"
 msgstr ""
 
-#: inc/checkout.php:1206
+#: inc/checkout.php:1207
 msgid "Rate held for %s"
 msgstr ""
 
-#: inc/checkout.php:1233
+#: inc/checkout.php:1234
 msgid "Your booking is empty"
 msgstr ""
 
-#: inc/checkout.php:1234
+#: inc/checkout.php:1235
 msgid "Nothing is being held right now. Pick your dates and we will find the rooms that are free."
-msgstr ""
-
-#: inc/checkout.php:1236 inc/search.php:28
-msgid "Find a room"
 msgstr ""
 
 #: inc/customizer.php:17
@@ -1348,7 +1760,7 @@ msgstr ""
 msgid "Dates"
 msgstr ""
 
-#: inc/icons.php:105 inc/template-tags.php:820 inc/template-tags.php:879 inc/admin/metabox-hotel-details.php:80
+#: inc/icons.php:105 inc/reviews.php:43 inc/template-tags.php:843 inc/template-tags.php:907 inc/admin/metabox-hotel-details.php:80
 msgid "Location"
 msgstr ""
 
@@ -1384,43 +1796,143 @@ msgstr ""
 msgid "Account"
 msgstr ""
 
-#: inc/icons.php:124
-msgid "Secure"
+#: inc/icons.php:121
+msgid "Membership"
 msgstr ""
 
-#: inc/icons.php:125
-msgid "Online banking"
+#: inc/icons.php:122
+msgid "Rating"
+msgstr ""
+
+#: inc/icons.php:123
+msgid "Saved stay"
 msgstr ""
 
 #: inc/icons.php:126
-msgid "Card"
+msgid "Write a review"
 msgstr ""
 
-#: inc/icons.php:127
-msgid "E-wallet"
+#: inc/icons.php:127 inc/icons.php:134
+msgid "Cashback"
 msgstr ""
 
 #: inc/icons.php:128
+msgid "Priority support"
+msgstr ""
+
+#: inc/icons.php:129 inc/vip.php:81
+msgid "Flexible cancellation"
+msgstr ""
+
+#: inc/icons.php:135
+msgid "Long stay"
+msgstr ""
+
+#: inc/icons.php:136
+msgid "Weekday stay"
+msgstr ""
+
+#: inc/icons.php:137
+msgid "Referral"
+msgstr ""
+
+#: inc/icons.php:138
+msgid "Repeat booking"
+msgstr ""
+
+#: inc/icons.php:139
+msgid "Bonus"
+msgstr ""
+
+#: inc/icons.php:140
+msgid "Earned"
+msgstr ""
+
+#: inc/icons.php:141
+msgid "Redeemed"
+msgstr ""
+
+#: inc/icons.php:144
+msgid "Secure"
+msgstr ""
+
+#: inc/icons.php:145
+msgid "Online banking"
+msgstr ""
+
+#: inc/icons.php:146
+msgid "Card"
+msgstr ""
+
+#: inc/icons.php:147
+msgid "E-wallet"
+msgstr ""
+
+#: inc/icons.php:148
 msgid "Pay at the hotel"
 msgstr ""
 
-#: inc/icons.php:131
+#: inc/icons.php:151
 msgid "Best rate"
 msgstr ""
 
-#: inc/icons.php:132
+#: inc/icons.php:152
 msgid "No booking fees"
 msgstr ""
 
-#: inc/icons.php:133
+#: inc/icons.php:153
 msgid "Instant confirmation"
 msgstr ""
 
-#: inc/icons.php:262
+#: inc/icons.php:282
 msgid "%d star hotel"
 msgid_plural "%d star hotel"
 msgstr[0] ""
 msgstr[1] ""
+
+#: inc/likes.php:182
+msgid "Sign in to save %s"
+msgstr ""
+
+#: inc/likes.php:198 inc/likes.php:242
+msgid "Remove %s from your saved stays"
+msgstr ""
+
+#: inc/likes.php:199 inc/likes.php:244
+msgid "Save %s to your stays"
+msgstr ""
+
+#: inc/likes.php:220
+msgid "Sign in to save this stay."
+msgstr ""
+
+#: inc/likes.php:230
+msgid "That stay could not be saved."
+msgstr ""
+
+#: inc/reviews.php:42 inc/template-tags.php:842
+msgid "Cleanliness"
+msgstr ""
+
+#: inc/reviews.php:44 inc/template-tags.php:844
+msgid "Service"
+msgstr ""
+
+#: inc/reviews.php:362
+msgid "Sign in to write a review."
+msgstr ""
+
+#: inc/reviews.php:368
+msgid "Reviews are for stays you have completed, and one per hotel."
+msgstr ""
+
+#: inc/reviews.php:401
+msgid "That review could not be saved. Please try again."
+msgstr ""
+
+#: inc/reviews.php:459
+msgid "%s out of 5"
+msgstr ""
 
 #: inc/setup.php:44
 msgid "Footer column 1"
@@ -1474,10 +1986,6 @@ msgstr ""
 msgid "Rooms and guests"
 msgstr ""
 
-#: inc/template-tags.php:335
-msgid "%1$s · %2$s"
-msgstr ""
-
 #: inc/template-tags.php:337
 msgid "%d guest"
 msgid_plural "%d guests"
@@ -1504,103 +2012,223 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: inc/template-tags.php:445
-msgid "Check availability"
-msgstr ""
-
-#: inc/template-tags.php:464 inc/template-tags.php:610
+#: inc/template-tags.php:476 inc/template-tags.php:622
 msgid "from"
 msgstr ""
 
-#: inc/template-tags.php:580
+#: inc/template-tags.php:592
 msgid "Max %1$d kid (up to %2$d years)"
 msgid_plural "Max %1$d kids (up to %2$d years)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:604
+#: inc/template-tags.php:616
 msgid "Room photos and details"
 msgstr ""
 
-#: inc/template-tags.php:620
+#: inc/template-tags.php:632
 msgid "%1$s total for %2$s, %3$s"
 msgstr ""
 
-#: inc/template-tags.php:634
+#: inc/template-tags.php:646
 msgid "Takes up to %1$d adults and %2$d children per room."
 msgstr ""
 
-#: inc/template-tags.php:643
+#: inc/template-tags.php:655
 msgid "Already in your booking"
 msgstr ""
 
-#: inc/template-tags.php:648
+#: inc/template-tags.php:660
 msgid "Minimum stay of %d night."
 msgid_plural "Minimum stay of %d nights."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:653
+#: inc/template-tags.php:665
 msgid "Sold out for these dates"
 msgstr ""
 
-#: inc/template-tags.php:662
+#: inc/template-tags.php:674
 msgid "Only %d left"
 msgid_plural "Only %d left"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:677 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
+#: inc/template-tags.php:689 inc/products/class-wc-product-room.php:73 inc/products/class-wc-product-room.php:82
 msgid "Book now"
 msgstr ""
 
-#: inc/template-tags.php:731
+#: inc/template-tags.php:743
 msgid "See every hotel in %s"
 msgstr ""
 
-#: inc/template-tags.php:778 inc/admin/metabox-hotel-details.php:214
+#: inc/template-tags.php:790 inc/admin/metabox-hotel-details.php:214
 msgid "Popular landmarks"
 msgstr ""
 
-#: inc/template-tags.php:779 inc/admin/metabox-hotel-details.php:222
+#: inc/template-tags.php:791 inc/admin/metabox-hotel-details.php:222
 msgid "Nearby landmarks"
 msgstr ""
 
-#: inc/template-tags.php:819
-msgid "Cleanliness"
-msgstr ""
-
-#: inc/template-tags.php:821
-msgid "Service"
-msgstr ""
-
-#: inc/template-tags.php:836
+#: inc/template-tags.php:864
 msgid "%s review"
 msgid_plural "%s reviews"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:895
+#: inc/template-tags.php:923
 msgid "Open in Google Maps"
 msgstr ""
 
-#: inc/template-tags.php:900
+#: inc/template-tags.php:928
 msgid "Get directions"
 msgstr ""
 
-#: inc/template-tags.php:928
+#: inc/template-tags.php:956
 msgid "View your booking"
 msgstr ""
 
-#: inc/template-tags.php:941
+#: inc/template-tags.php:969
 msgid "Check in from %1$s · check out by %2$s"
+msgstr ""
+
+#: inc/verification.php:252
+msgid "Confirm your email address for %s"
+msgstr ""
+
+#: inc/verification.php:259
+msgid "Hi %s,"
+msgstr ""
+
+#: inc/verification.php:265
+msgid "Confirm this email address to finish setting up your %s account:"
+msgstr ""
+
+#: inc/verification.php:273 inc/verification.php:555
+msgid "The link works for the next %s hour."
+msgid_plural "The link works for the next %s hours."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/verification.php:276
+msgid "If you did not create an account, ignore this email and nothing will happen."
+msgstr ""
+
+#: inc/verification.php:378
+msgid "Confirm your email address first — the link is in your inbox."
+msgstr ""
+
+#: inc/verification.php:474
+msgid "That link has expired. Sign in below and we will send you a new one."
+msgstr ""
+
+#: inc/verification.php:480
+msgid "That link is no longer valid. Sign in below and we will send you a new one."
+msgstr ""
+
+#: inc/verification.php:486
+msgid "That address is already confirmed — sign in below."
+msgstr ""
+
+#: inc/verification.php:492
+msgid "If that address has an account waiting to be confirmed, the link is on its way."
+msgstr ""
+
+#: inc/verification.php:518 inc/verification.php:562
+msgid "Send it again"
+msgstr ""
+
+#: inc/verification.php:544
+msgid "We have sent a confirmation link to %s."
+msgstr ""
+
+#: inc/verification.php:551
+msgid "Open it and your account is ready — you will be signed in straight away."
+msgstr ""
+
+#: inc/verification.php:565
+msgid "Use a different address"
+msgstr ""
+
+#: inc/verification.php:570
+msgid "Nothing after a minute or two? Check the spam folder — it is usually there."
+msgstr ""
+
+#: inc/vip.php:46
+msgid "Bronze"
+msgstr ""
+
+#: inc/vip.php:51
+msgid "VIP Silver"
+msgstr ""
+
+#: inc/vip.php:56 inc/admin/vip-settings.php:97
+msgid "VIP Gold"
+msgstr ""
+
+#: inc/vip.php:61
+msgid "6% cashback on every stay"
+msgstr ""
+
+#: inc/vip.php:62
+msgid "Credited 14 days after checkout."
+msgstr ""
+
+#: inc/vip.php:66 inc/admin/vip-settings.php:162
+msgid "Late checkout until 2pm"
+msgstr ""
+
+#: inc/vip.php:67
+msgid "Subject to availability, requested automatically."
+msgstr ""
+
+#: inc/vip.php:71
+msgid "Complimentary breakfast"
+msgstr ""
+
+#: inc/vip.php:72
+msgid "For two guests at participating hotels."
+msgstr ""
+
+#: inc/vip.php:76
+msgid "Priority support line"
+msgstr ""
+
+#: inc/vip.php:77
+msgid "Average answer time under 40 seconds."
+msgstr ""
+
+#: inc/vip.php:82
+msgid "Free until 24 hours before check-in."
+msgstr ""
+
+#: inc/vip.php:87
+msgid "VIP Platinum"
+msgstr ""
+
+#: inc/vip.php:92
+msgid "VIP Diamond"
+msgstr ""
+
+#: inc/vip.php:264
+msgid "Member"
+msgstr ""
+
+#: inc/vip.php:269
+msgid "%s booking"
+msgid_plural "%s bookings"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vip.php:462
+msgid "%s member"
 msgstr ""
 
 #: inc/admin/amenity-icons.php:50
 msgid "None"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:71 inc/admin/amenity-icons.php:96 inc/admin/amenity-icons.php:144
+#: inc/admin/amenity-icons.php:71 inc/admin/amenity-icons.php:96 inc/admin/amenity-icons.php:144 inc/admin/cashback-settings.php:221 inc/admin/vip-settings.php:146
 msgid "Icon"
 msgstr ""
 
@@ -1668,20 +2296,12 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: inc/admin/bookings-page.php:16 inc/admin/bookings-page.php:17 inc/admin/bookings-page.php:155 inc/admin/order-metabox.php:21
-msgid "Bookings"
-msgstr ""
-
 #: inc/admin/bookings-page.php:140
 msgid "In a cart"
 msgstr ""
 
 #: inc/admin/bookings-page.php:141
 msgid "Awaiting payment"
-msgstr ""
-
-#: inc/admin/bookings-page.php:143
-msgid "Cancelled"
 msgstr ""
 
 #: inc/admin/bookings-page.php:159
@@ -1756,10 +2376,6 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-#: inc/admin/bookings-page.php:289
-msgid "Cancel"
-msgstr ""
-
 #: inc/admin/bookings-page.php:308
 msgid "«"
 msgstr ""
@@ -1794,6 +2410,86 @@ msgstr[1] ""
 msgid "Each cell shows how many rooms of that type are still free that night."
 msgstr ""
 
+#: inc/admin/cashback-settings.php:55
+msgid "Hotel #%d"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:88
+msgid "A reward pays out once a guest's stay is complete — they have checked out and the order is paid. Members see their balance and everything they have earned on the Cashback rewards tab of My account."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:92
+msgid "The nights figure is a minimum: a reward set to 7 nights also pays out on a 9-night stay. A stay that qualifies for more than one reward earns the most valuable of them, once — rewards do not stack."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:96
+msgid "A reward applies to stays that check out between the day you add it and the day it expires, so adding one never pays out for stays that finished before it existed. Editing or deleting a reward never changes cashback a member has already earned."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:100
+msgid "Cashback is shown to the member; nothing here changes what they are charged at checkout."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:105
+msgid "There are no hotels published yet, so every reward here will apply to all hotels."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:117
+msgid "No rewards yet. Add one and it starts applying to stays that check out from today."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:123
+msgid "Add reward"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:153 inc/admin/metabox-room-details.php:46 inc/admin/order-metabox.php:51 inc/booking/class-roova-cart.php:579 inc/booking/class-roova-cart.php:805 inc/products/register.php:17
+msgid "Hotel"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:164
+msgid "Duration (nights)"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:179
+msgid "Reward amount (%s)"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:195
+msgid "Expiry date"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:204
+msgid "Clears after (days)"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:215
+msgid "Remove reward"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:232
+msgid "Card title (optional)"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:237
+msgid "Leave blank to use the hotel name"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:242
+msgid "Card description (optional)"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:247
+msgid "Leave blank to describe the rule automatically"
+msgstr ""
+
+#: inc/admin/cashback-settings.php:257
+msgid "Running since %s."
+msgstr ""
+
+#: inc/admin/cashback-settings.php:324
+msgid "Remove this reward? Cashback members have already earned from it is kept."
+msgstr ""
+
 #: inc/admin/metabox-hotel-details.php:18
 msgid "Hotel Details"
 msgstr ""
@@ -1804,10 +2500,6 @@ msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:45
 msgid "Star rating"
-msgstr ""
-
-#: inc/admin/metabox-hotel-details.php:48
-msgid "Not rated"
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:49
@@ -1944,10 +2636,6 @@ msgstr ""
 msgid "— Select a hotel —"
 msgstr ""
 
-#: inc/admin/metabox-room-details.php:46 inc/admin/order-metabox.php:51 inc/booking/class-roova-cart.php:579 inc/booking/class-roova-cart.php:805 inc/products/register.php:17
-msgid "Hotel"
-msgstr ""
-
 #: inc/admin/metabox-room-details.php:50
 msgid "The hotel this room belongs to. Rooms only appear on their hotel page."
 msgstr ""
@@ -2022,6 +2710,86 @@ msgstr ""
 
 #: inc/admin/order-metabox.php:101
 msgid "Open the bookings screen"
+msgstr ""
+
+#: inc/admin/vip-settings.php:31 inc/admin/vip-user-profile.php:50
+msgid "RoovaVIP"
+msgstr ""
+
+#: inc/admin/vip-settings.php:45
+msgid "RoovaVIP tiers"
+msgstr ""
+
+#: inc/admin/vip-settings.php:48
+msgid "Tiers are earned by completed bookings — a stay counts once the guest has checked out and the order is paid. Members see their tier, their progress and the benefits of the tier they are on, on the VIP tab of My account."
+msgstr ""
+
+#: inc/admin/vip-settings.php:52
+msgid "Benefits are shown to the member; nothing here changes what they are charged. Delete every tier to switch RoovaVIP off."
+msgstr ""
+
+#: inc/admin/vip-settings.php:63
+msgid "Add tier"
+msgstr ""
+
+#: inc/admin/vip-settings.php:92
+msgid "Tier name"
+msgstr ""
+
+#: inc/admin/vip-settings.php:103
+msgid "Completed bookings"
+msgstr ""
+
+#: inc/admin/vip-settings.php:114
+msgid "Remove tier"
+msgstr ""
+
+#: inc/admin/vip-settings.php:126
+msgid "Add benefit"
+msgstr ""
+
+#: inc/admin/vip-settings.php:157
+msgid "Benefit"
+msgstr ""
+
+#: inc/admin/vip-settings.php:167
+msgid "Note"
+msgstr ""
+
+#: inc/admin/vip-settings.php:172
+msgid "Subject to availability."
+msgstr ""
+
+#: inc/admin/vip-settings.php:176
+msgid "Remove benefit"
+msgstr ""
+
+#: inc/admin/vip-settings.php:227
+msgid "Remove this tier and its benefits?"
+msgstr ""
+
+#: inc/admin/vip-user-profile.php:54
+msgid "Member status"
+msgstr ""
+
+#: inc/admin/vip-user-profile.php:63
+msgid "Automatic — %s"
+msgstr ""
+
+#: inc/admin/vip-user-profile.php:64
+msgid "no tier"
+msgstr ""
+
+#: inc/admin/vip-user-profile.php:96
+msgid "Currently pinned to %s by hand."
+msgstr ""
+
+#: inc/admin/vip-user-profile.php:165
+msgid "VIP status"
+msgstr ""
+
+#: inc/admin/vip-user-profile.php:196
+msgid "%s (set by hand)"
 msgstr ""
 
 #: inc/booking/class-roova-blocks.php:90

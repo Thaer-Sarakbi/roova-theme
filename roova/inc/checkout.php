@@ -206,6 +206,7 @@ function roova_maybe_run_store_setup() {
 	}
 
 	roova_ensure_checkout_page();
+	roova_ensure_account_page();
 	roova_ensure_tax_rates();
 
 	update_option( 'roova_setup_version', ROOVA_VERSION );
