@@ -255,8 +255,11 @@ strips the header down to a wordmark and a padlock. See *Checkout*.
 for the same reason. See *Accounts*.
 
 `account.php` is the fourth: not a page template but a file `template_include` routes the My account
-*dashboard* to, printing its own document as well. Every WooCommerce endpoint underneath My account
-still goes through `woocommerce.php`. See *My account*.
+*dashboard* to, printing its own document as well. See *My account*.
+
+`view-order.php` is the fifth, routed the same way from WooCommerce's **view-order** endpoint — the
+one endpoint under My account the theme draws itself. See *View order*. Every other endpoint
+(edit-address, payment-methods, lost-password, customer-logout) still goes through `woocommerce.php`.
 
 `header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
@@ -401,10 +404,11 @@ same for the two auth pages, so a trashed sign-in page cannot end up baked into 
 email as a dead link.
 
 **Only the dashboard.** `roova_is_account_dashboard()` is false for every WooCommerce *endpoint*, so
-view-order, edit-address, payment-methods, lost-password and customer-logout keep WooCommerce's own
-screens inside `header.php`/`footer.php`. That is what keeps the parts that have to work while signed
-out working, and it is why "View voucher" can simply link at `get_view_order_url()`.
-`roova_use_account_template` turns the whole thing off.
+edit-address, payment-methods, lost-password and customer-logout keep WooCommerce's own screens
+inside `header.php`/`footer.php` — that is what keeps the parts that have to work while signed out
+working. view-order is the one exception, and it is a *separate* takeover with its own predicate
+(`roova_is_view_order()`); the dashboard's assets and form handlers still stay off there. See
+*View order*. `roova_use_account_template` turns the dashboard takeover off.
 
 The six panels are all rendered server-side and shown one at a time by `assets/js/account.js`. Each
 tab is a real link to its own `?tab=` URL as well as a button, so every tab is reachable with the
@@ -427,11 +431,57 @@ a password change or a review.
   it outlives a cleaned-up booking row. Sorted by check-in date, newest first. The design draws three
   status chips; there is a fourth, **Payment due**, because an unpaid order is not an upcoming stay
   and telling a guest their room is booked when it is one failed payment from being released is the
-  one thing this page must not do.
+  one thing this page must not do. Every card's button opens the order page
+  (`roova_account_stay_action()`) — a card is the summary, that page is the detail. An unpaid one is
+  the exception and says "Pay now", because nothing matters more than paying for it. A completed
+  stay used to say "Book again" and go straight to the hotel, which was the one route that skipped
+  the order page; re-booking now lives *on* it. See *View order*.
 - **VIP** counts *completed* stays only. The hero's "stays booked" figure is the looser count —
   everything that is neither cancelled nor unpaid.
 - **Cashback rewards** is the sixth tab, last in the strip, and the hero grew a second stat beside
   "Stays booked" for its available balance. See *Cashback rewards*.
+
+### View order
+
+One booking, written out in full: `inc/order.php` routes WooCommerce's **view-order** endpoint to
+`view-order.php`, which prints its own document for the reason checkout and the account dashboard do.
+This is where "View voucher" on the Bookings tab lands.
+
+WooCommerce keeps the URL, the login gate and the ownership check — `roova_view_order()` re-runs only
+the last of those (`get_user_id()` against the current user) and returns null for anything else, at
+which point the endpoint falls straight back to WooCommerce's own screen inside the site header. A
+guessed order ID and a signed-out visitor both get WooCommerce's gate, not this page.
+`roova_use_view_order_template` turns the takeover off.
+
+- **Everything is read off the order, not the bookings table.** The stay comes from each line's
+  `_roova_booking` meta — the same meta the Bookings tab reads, and for the same reason: it is what
+  the order was placed on and it outlives a cleaned-up booking row. `roova_order_status()` hands the
+  order to `roova_account_stay_status()`, so a stay cannot read "Completed" here and "Payment due"
+  on the card that linked to it.
+- **The buttons change with the status** (`roova_order_actions()`). The handoff draws one set — order
+  again, download the voucher, write a review — and that is a *completed* stay. Unpaid leads with
+  "Pay now"; upcoming offers the hotel, because a stay that has not happened cannot be reviewed and
+  there is nothing yet to re-book; cancelled is a record, not an invitation. "Write a review" is only
+  drawn where `roova_can_review()` says the guest may actually write one.
+- **"Order again" goes to the hotel page, not the cart.** The dates on a finished booking are in the
+  past and the checkout has no date picker, so a one-click re-add would have someone paying for dates
+  they never chose. The link carries the party size and lands on `#room-{id}`; picking dates there
+  and pressing "Book now" reaches checkout through `Roova_Cart::redirect_after_add()`, the door every
+  other booking comes through.
+- **"Download voucher" is a print.** The voucher *is* the page, so the button calls `window.print()`
+  and the `@media print` block at the foot of `order.css` strips the back link, the buttons and every
+  background — keeping the wordmark as a letterhead, because a guest hands this across a desk. It
+  also has to cancel `print.css`'s site-wide `a[href]::after`, which would otherwise append a URL to
+  that wordmark.
+- **"Total paid" is a claim, so it is only made about an order that was paid and stayed that way.**
+  Cancelled, failed and refunded orders read "Order total" and carry WooCommerce's own status name
+  instead of "Paid in full" — the sort of line a guest quotes back at the front desk.
+- **Taxes follow the same rule the checkout summary follows** — WooCommerce → Settings → Tax →
+  "Display tax totals", with the percentage read back off the rate (`roova_order_tax_label()`) — so
+  the two pages cannot disagree about what a stay was charged. Discounts, fees and shipping print
+  only when the order carries them.
+- `roova_payment_icon()` accepts a bare gateway ID as well as a gateway object, because an order
+  remembers only which gateway took it and that plugin may since have been uninstalled.
 
 ### Reviews
 
@@ -717,7 +767,9 @@ destination's hotels; the two pills switch the framing.
 (`assets/js/checkout.js` is the one exception, and only because WooCommerce's checkout events are
 jQuery's — see *Checkout*. It loads only on checkout pages, alongside `assets/css/checkout.css`.)
 `assets/js/auth.js` is vanilla too, and loads only on the two account pages — see *Accounts*;
-`assets/js/account.js` likewise, on the My account dashboard, alongside `assets/css/account.css`.
+`assets/js/account.js` likewise, on the My account dashboard, alongside `assets/css/account.css`,
+and `assets/js/order.js` on the single-order page with `assets/css/order.css` — that one does a single
+thing, print the voucher, and the page is otherwise all links, so a blocked script costs one button.
 The saved-stays heart is the exception to that split: it lives in `theme.js`, because the same button
 is on hotel cards site-wide, and account.js only listens for the `roova:like` event it fires.
 Dates are handled as `Y-m-d` strings and only converted to `Date` at local midnight so a stay never
@@ -748,9 +800,9 @@ Prefer a token over a literal; the handful of literals left are the multi-stop s
 `rgba(13,58,82,…)` hairlines.
 
 Each page that prints its own document also carries its own stylesheet with its own token header —
-`checkout.css`, `auth.css`, `account.css`. The repetition is the convention here, not an oversight:
-the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the two are
-never loaded together and each page has to stand up alone.
+`checkout.css`, `auth.css`, `account.css`, `order.css`. The repetition is the convention here, not an
+oversight: the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the
+two are never loaded together and each page has to stand up alone.
 
 ## Conventions
 

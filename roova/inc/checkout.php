@@ -581,7 +581,11 @@ add_action( 'wp_ajax_nopriv_roova_restore_cart_item', 'roova_ajax_restore_cart_i
  * Matching is by gateway ID only. An unknown gateway gets the neutral card
  * icon rather than a guess — the same rule the amenity icons follow.
  *
- * @param WC_Payment_Gateway $gateway Gateway.
+ * A bare ID string is accepted as well as a gateway object, because an order
+ * remembers only which gateway took it, and that gateway may since have been
+ * uninstalled — the order page still has to draw something beside the method.
+ *
+ * @param WC_Payment_Gateway|string $gateway Gateway, or its ID.
  * @return string Icon slug from the theme's library.
  */
 function roova_payment_icon( $gateway ) {
@@ -605,14 +609,14 @@ function roova_payment_icon( $gateway ) {
 		'card'          => 'credit-card',
 	);
 
-	$id   = $gateway->id;
+	$id   = is_object( $gateway ) ? $gateway->id : (string) $gateway;
 	$icon = isset( $map[ $id ] ) ? $map[ $id ] : 'credit-card';
 
 	/**
 	 * Filter the icon slug used for a payment gateway.
 	 *
-	 * @param string             $icon    Icon slug.
-	 * @param WC_Payment_Gateway $gateway Gateway.
+	 * @param string                    $icon    Icon slug.
+	 * @param WC_Payment_Gateway|string $gateway Gateway, or its ID.
 	 */
 	return apply_filters( 'roova_payment_icon', $icon, $gateway );
 }

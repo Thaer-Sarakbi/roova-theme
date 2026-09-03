@@ -118,6 +118,12 @@ function roova_icon_library() {
 		// Account chrome.
 		'user'          => array( __( 'Account', 'roova' ), '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5v-.9A5.6 5.6 0 0 1 10.1 14h3.8a5.6 5.6 0 0 1 5.6 5.6v.9"/>' ),
 		'log-out'       => array( __( 'Sign out', 'roova' ), '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>' ),
+		// The mirror of 'log-out' above, deliberately: side by side under a stay
+		// they are check-in and check-out, and an arrow pointing the same way on
+		// both would say nothing.
+		'log-in'        => array( __( 'Check in', 'roova' ), '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M13 7l-5 5 5 5"/><path d="M8 12h11"/>' ),
+		'mail'          => array( __( 'Email address', 'roova' ), '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/>' ),
+		'download'      => array( __( 'Download', 'roova' ), '<path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 19h16"/>' ),
 		'crown'         => array( __( 'Membership', 'roova' ), '<path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.8 10H4.8z"/><path d="M4.8 20h14.4"/>' ),
 		'star'          => array( __( 'Rating', 'roova' ), '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>' ),
 		'heart'         => array( __( 'Saved stay', 'roova' ), '<path d="M12 20.5S3.5 15 3.5 9.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 8.5 2.3c0 5.7-8.5 11.2-8.5 11.2z"/>' ),

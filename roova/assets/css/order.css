@@ -1,0 +1,731 @@
+/**
+ * View order.
+ *
+ * Loaded only on WooCommerce's view-order endpoint (see
+ * roova_enqueue_order_assets), on top of theme.css — every colour here is one of
+ * its tokens.
+ *
+ * Its own token header rather than a shared block with account.css: each page in
+ * this theme that prints its own document ships its own stylesheet (checkout.css
+ * and auth.css do the same), and this one has to stand up when neither of the
+ * others is loaded.
+ *
+ * The print rules at the foot are load-bearing, not decoration: "Download
+ * voucher" is a print, so what the printer puts on paper *is* the voucher.
+ */
+
+.roova-order-page {
+	--roova-divider: rgba(13, 58, 82, .1);
+	--roova-card-line: rgba(13, 58, 82, .14);
+	--roova-ok: #2f7d5f;
+	--roova-warn: #b4823c;
+	--roova-stop: #b23b2e;
+
+	background: #fff;
+	text-rendering: optimizeLegibility;
+}
+
+/* ------------------------------------------------------------- Top bar */
+
+.roova-order__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	padding: 18px 48px;
+	border-bottom: 1px solid var(--roova-hairline);
+	background: #fff;
+}
+
+.roova-order__logo {
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.015em;
+	color: var(--roova-deep);
+}
+
+.roova-order__logo em {
+	font-style: normal;
+	color: var(--roova-gold);
+}
+
+.roova-order__back {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: .81rem;
+	color: var(--roova-muted);
+	transition: color .25s var(--roova-ease);
+}
+
+.roova-order__back:hover {
+	color: var(--roova-deep);
+}
+
+.roova-order__back .roova-icon {
+	flex: none;
+	transition: transform .25s var(--roova-ease);
+}
+
+.roova-order__back:hover .roova-icon {
+	transform: translateX(-3px);
+}
+
+/* --------------------------------------------------------------- Shell */
+
+.roova-order {
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 40px 32px 90px;
+}
+
+.roova-order .woocommerce-notices-wrapper {
+	margin-bottom: 24px;
+}
+
+/* ---------------------------------------------------------------- Head */
+
+.roova-order__head {
+	animation: roova-order-rise .7s var(--roova-ease) both;
+}
+
+.roova-order__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 13px;
+	font-size: .69rem;
+	font-weight: 500;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-order__rule {
+	width: 24px;
+	height: 1px;
+	background: var(--roova-gold);
+}
+
+.roova-order__title-row {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 26px;
+	flex-wrap: wrap;
+}
+
+.roova-order__title {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 2.5rem;
+	line-height: 1.05;
+	letter-spacing: -.02em;
+	color: var(--roova-deep);
+}
+
+.roova-order__sub {
+	margin: 11px 0 0;
+	font-size: .91rem;
+	color: var(--roova-soft);
+}
+
+/* -------------------------------------------------------------- Status */
+
+.roova-order__status {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0;
+	padding: 8px 15px;
+	border-radius: 999px;
+	font-size: .75rem;
+	font-weight: 500;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+
+	/* Overridden per state below; completed is the design's own green. */
+	background: rgba(47, 125, 95, .1);
+	color: var(--roova-ok);
+}
+
+.roova-order__status-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: currentColor;
+	animation: roova-order-pulse 2.4s ease-in-out infinite;
+}
+
+.roova-order__status--upcoming {
+	background: rgba(29, 111, 150, .1);
+	color: var(--roova-ocean);
+}
+
+.roova-order__status--payment {
+	background: rgba(180, 130, 60, .12);
+	color: var(--roova-warn);
+}
+
+.roova-order__status--cancelled {
+	background: rgba(178, 59, 46, .09);
+	color: var(--roova-stop);
+}
+
+/* A finished or cancelled stay is not waiting for anything. */
+.roova-order__status--completed .roova-order__status-dot,
+.roova-order__status--cancelled .roova-order__status-dot {
+	animation: none;
+}
+
+/* ---------------------------------------------------------------- Grid */
+
+.roova-order__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.35fr) minmax(290px, 1fr);
+	gap: 36px;
+	align-items: start;
+	margin-top: 38px;
+}
+
+.roova-order__main {
+	min-width: 0;
+	animation: roova-order-rise .8s var(--roova-ease) .08s both;
+}
+
+.roova-order__side {
+	display: grid;
+	gap: 20px;
+	animation: roova-order-rise .9s var(--roova-ease) .16s both;
+}
+
+/* ---------------------------------------------------------- Order card */
+
+.roova-order__card {
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	overflow: hidden;
+	background: #fff;
+}
+
+.roova-order__line {
+	display: flex;
+	gap: 20px;
+	padding: 22px;
+}
+
+.roova-order__line + .roova-order__line {
+	border-top: 1px solid var(--roova-hairline);
+}
+
+.roova-order__thumb {
+	flex: none;
+	width: 118px;
+	height: 118px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--roova-line);
+}
+
+.roova-order__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.roova-order__line-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-order__line-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.roova-order__room {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.44rem;
+	line-height: 1.2;
+	letter-spacing: -.01em;
+	color: var(--roova-deep);
+}
+
+.roova-order__room-meta {
+	margin: 4px 0 0;
+	font-size: .81rem;
+	color: var(--roova-faint);
+}
+
+.roova-order__line-total {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.38rem;
+	color: var(--roova-ink);
+	white-space: nowrap;
+}
+
+/*
+ * wc_price() is a nest of spans, so the amount is scoped with `>` rather than a
+ * descendant rule — a loose rule here would land on the currency symbol and put
+ * it on a line of its own. See the trap CLAUDE.md documents.
+ */
+.roova-order__line-total > .amount,
+.roova-order__total-value > .amount {
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+}
+
+/* --------------------------------------------------------------- Facts */
+
+.roova-order__facts {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px 22px;
+	margin-top: 16px;
+	padding-top: 15px;
+	border-top: 1px solid var(--roova-hairline);
+}
+
+.roova-order__fact {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.roova-order__fact .roova-icon {
+	flex: none;
+	margin-top: 3px;
+	color: var(--roova-gold);
+}
+
+.roova-order__fact-label,
+.roova-order__fact-value {
+	display: block;
+}
+
+.roova-order__fact-label {
+	font-size: .72rem;
+	letter-spacing: .02em;
+	color: var(--roova-faint);
+}
+
+.roova-order__fact-value {
+	margin-top: 2px;
+	font-size: .84rem;
+	color: var(--roova-ink);
+}
+
+/* -------------------------------------------------------------- Totals */
+
+.roova-order__totals {
+	display: grid;
+	gap: 11px;
+	padding: 18px 22px;
+	border-top: 1px solid var(--roova-divider);
+	background: rgba(13, 58, 82, .02);
+	font-size: .88rem;
+	color: var(--roova-soft);
+}
+
+.roova-order__row {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.roova-order__row > span:last-child {
+	color: var(--roova-ink);
+	white-space: nowrap;
+}
+
+.roova-order__row--discount,
+.roova-order__row--discount > span:last-child {
+	color: var(--roova-gold);
+}
+
+.roova-order__total {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 19px 22px 22px;
+	border-top: 1px solid var(--roova-divider);
+}
+
+.roova-order__total-label {
+	font-family: var(--roova-font-display);
+	font-size: 1.5rem;
+	color: var(--roova-ink);
+}
+
+.roova-order__total-value {
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	color: var(--roova-deep);
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- Buttons */
+
+.roova-order__actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 22px;
+	flex-wrap: wrap;
+}
+
+.roova-order__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 15px 24px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	font-family: var(--roova-font-body);
+	font-size: .91rem;
+	font-weight: 500;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		background .3s var(--roova-ease),
+		color .25s var(--roova-ease),
+		border-color .25s var(--roova-ease),
+		transform .3s var(--roova-ease),
+		box-shadow .3s var(--roova-ease);
+}
+
+.roova-order__btn .roova-icon {
+	flex: none;
+}
+
+.roova-order__btn--primary {
+	padding: 15px 26px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+.roova-order__btn--primary:hover {
+	background: #0a2c3f;
+	color: var(--roova-cream);
+	transform: translateY(-2px);
+	box-shadow: 0 16px 30px -16px rgba(8, 38, 53, .55);
+}
+
+.roova-order__btn--primary:active {
+	transform: translateY(0);
+}
+
+.roova-order__btn--ghost {
+	border-color: rgba(13, 58, 82, .28);
+	background: #fff;
+	color: var(--roova-deep);
+}
+
+.roova-order__btn--ghost:hover {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+.roova-order__btn--gold {
+	border-color: rgba(180, 130, 60, .45);
+	background: #fff;
+	color: var(--roova-gold);
+}
+
+.roova-order__btn--gold:hover {
+	background: rgba(180, 130, 60, .07);
+	color: var(--roova-gold);
+}
+
+/* -------------------------------------------------------------- Panels */
+
+.roova-order__panel {
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	padding: 22px 24px 24px;
+	background: #fff;
+}
+
+.roova-order__panel--quiet {
+	background: rgba(13, 58, 82, .02);
+}
+
+.roova-order__panel-title {
+	margin: 0 0 18px;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.38rem;
+	line-height: 1.2;
+	color: var(--roova-ink);
+}
+
+/* ------------------------------------------------------------- Details */
+
+.roova-order__details {
+	display: grid;
+	gap: 15px;
+}
+
+.roova-order__detail-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: .72rem;
+	letter-spacing: .02em;
+	color: var(--roova-faint);
+}
+
+.roova-order__detail-label .roova-icon {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+.roova-order__detail-value {
+	margin: 4px 0 0;
+	font-size: .91rem;
+	color: var(--roova-ink);
+}
+
+/*
+ * An email address has no spaces to break at, so it is the one value allowed to
+ * break mid-word — without this a long address widens the whole sidebar.
+ */
+.roova-order__detail-value--wrap {
+	overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------- Payment */
+
+.roova-order__panel-title + .roova-order__pay {
+	margin-top: -2px;
+}
+
+.roova-order__pay {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid var(--roova-hairline);
+}
+
+.roova-order__pay .roova-icon {
+	flex: none;
+	color: var(--roova-deep);
+}
+
+.roova-order__pay-name {
+	margin: 0;
+	font-size: .91rem;
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-order__pay-note {
+	margin: 3px 0 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-order__pay-state {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 15px 0 0;
+	font-size: .81rem;
+	color: var(--roova-ok);
+}
+
+.roova-order__pay-state .roova-icon {
+	flex: none;
+}
+
+.roova-order__pay-state--due {
+	color: var(--roova-warn);
+}
+
+/* Cancelled, failed, refunded: a state, not a warning and not a success. */
+.roova-order__pay-state--off {
+	color: var(--roova-muted);
+}
+
+/* --------------------------------------------------------------- Notes */
+
+.roova-order__notes {
+	margin: 0;
+	font-size: .84rem;
+	line-height: 1.7;
+	color: var(--roova-soft);
+	text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------ Movement */
+
+@keyframes roova-order-rise {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes roova-order-pulse {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.06);
+	}
+}
+
+/* ------------------------------------------------------------ Narrower */
+
+@media (max-width: 960px) {
+	.roova-order__grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 26px;
+	}
+}
+
+@media (max-width: 720px) {
+	.roova-order__bar {
+		padding: 16px 20px;
+		gap: 16px;
+	}
+
+	.roova-order {
+		padding: 28px 20px 70px;
+	}
+
+	.roova-order__title {
+		font-size: 2rem;
+	}
+
+	.roova-order__line {
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.roova-order__thumb {
+		width: 100%;
+		height: 180px;
+	}
+
+	.roova-order__line-top {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+
+	.roova-order__facts {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-order__btn {
+		flex: 1 1 100%;
+		justify-content: center;
+	}
+}
+
+/* --------------------------------------------------------------- Print
+ *
+ * What the printer puts on paper is the voucher, so the chrome comes off: the
+ * top bar, the buttons that printed it, and every background the ink would have
+ * to cover. Card edges stay, because they are what make the sheet legible.
+ */
+
+@media print {
+	.roova-order-page {
+		background: #fff;
+	}
+
+	.roova-order__actions,
+	.roova-order__back,
+	.skip-link,
+	.woocommerce-notices-wrapper {
+		display: none !important;
+	}
+
+	/*
+	 * The wordmark stays. A guest hands this sheet across a hotel desk, and a
+	 * voucher with no name on it is a piece of paper — so the bar loses its
+	 * padding and its rule and becomes a letterhead instead.
+	 */
+	.roova-order__bar {
+		padding: 0 0 4px;
+		border-bottom: 0;
+	}
+
+	/*
+	 * print.css appends every link's href after it, which is right for an
+	 * article and wrong for a voucher: the only link left on the sheet is the
+	 * wordmark, and "Roova (https://…)" is not a letterhead.
+	 */
+	.roova-order-page a[href]::after {
+		content: none;
+	}
+
+	.roova-order {
+		max-width: none;
+		padding: 0;
+	}
+
+	.roova-order__head {
+		animation: none;
+	}
+
+	.roova-order__grid {
+		display: block;
+		margin-top: 22px;
+	}
+
+	.roova-order__main,
+	.roova-order__side {
+		animation: none;
+	}
+
+	.roova-order__side {
+		margin-top: 20px;
+	}
+
+	/* A card must not be torn in half by a page break. */
+	.roova-order__card,
+	.roova-order__panel {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	.roova-order__panel + .roova-order__panel {
+		margin-top: 16px;
+	}
+
+	.roova-order__totals,
+	.roova-order__panel--quiet,
+	.roova-order__status {
+		background: transparent;
+	}
+
+	.roova-order__status {
+		border: 1px solid currentColor;
+	}
+
+	.roova-order__status-dot {
+		animation: none;
+	}
+}

@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROOVA_VERSION', '1.6.0' );
+define( 'ROOVA_VERSION', '1.7.0' );
 define( 'ROOVA_DIR', trailingslashit( get_template_directory() ) );
 define( 'ROOVA_URI', trailingslashit( get_template_directory_uri() ) );
 
@@ -70,6 +70,10 @@ if ( roova_has_woocommerce() ) {
 	roova_require( 'inc/account.php' );
 	roova_require( 'inc/reviews.php' );
 	roova_require( 'inc/account-tabs.php' );
+
+	// The single-order page reads the stay status from inc/account.php and the
+	// "may I review this?" rule from inc/reviews.php, so it loads after both.
+	roova_require( 'inc/order.php' );
 
 	if ( is_admin() ) {
 		roova_require( 'inc/admin/metabox-hotel-details.php' );

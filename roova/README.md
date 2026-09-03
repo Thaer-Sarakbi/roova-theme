@@ -319,23 +319,45 @@ fill in.
   the same fields checkout fills itself in from, so a member who corrects a name here does not have
   to correct it again at checkout.
 * **Bookings** — one card per stay, newest first, with a status chip: **Upcoming**, **Completed**,
-  **Cancelled**, or **Payment due** for an order that has not been paid for yet. The button changes
-  with it — View voucher, Book again, See details, or Pay now.
-* **Reviews** — see section 15.
+  **Cancelled**, or **Payment due** for an order that has not been paid for yet. **View voucher**
+  opens the booking in full — see section 15. An order that still needs paying says **Pay now** and
+  goes straight to payment instead.
+* **Reviews** — see section 16.
 * **Likes** — the stays a member has saved with the heart on any hotel card or hotel page. Tapping
   the heart again removes it.
-* **VIP** — see section 16.
-* **Cashback rewards** — see section 17.
+* **VIP** — see section 17.
+* **Cashback rewards** — see section 18.
 
-Everything else under My account — a single order, the address book, lost password — is
-WooCommerce's own screen and is unchanged.
+The address book, lost password and the rest of My account are WooCommerce's own screens and are
+unchanged.
 
 The theme keeps the **My account page** itself in place: if it is missing, unpublished or in the
 trash, it is restored (or created) the next time you open the dashboard. Deleting that page breaks
 the account button, signing in, and the link in the confirmation email — so it is put back rather
 than left broken. Its content is never rewritten, so anything you have added to it stays.
 
-## 15. Guest reviews
+## 15. The booking voucher
+
+**View voucher** on a booking card opens that order on a page of its own: the room and hotel, check-in
+and check-out, nights and guests, what was charged (with any discount and each tax as its own line),
+who booked it, how it was paid, and the note the guest left at checkout. Every figure is read from the
+order itself, so it always matches what WooCommerce shows you in the admin.
+
+The buttons under it change with the booking:
+
+* **Order again** on a finished stay opens that hotel at that room, with the same number of guests, so
+  the member picks new dates and books it in a couple of clicks. It does not put the old dates back in
+  the cart — they are in the past.
+* **Download voucher** prints the page. Every browser can save that as a PDF. The printed sheet drops
+  the menu and the buttons and keeps your wordmark at the top, so it is something a guest can hand
+  across a hotel desk.
+* **Write a review** appears only when the member actually can — a stay they finished, at a hotel they
+  have not reviewed yet — and opens that hotel's page.
+* **Pay now** replaces the lot on an order that has not been paid for.
+
+A member can only ever open their own bookings; anyone else gets WooCommerce's usual "Invalid order".
+
+## 16. Guest reviews
 
 A review is a normal **WooCommerce product review** on the hotel, so it appears under **Comments** in
 the dashboard and is moderated there like any other. What the theme adds is who may write one, and
@@ -352,7 +374,7 @@ what a review carries:
 * Reviews follow WooCommerce's own settings: switch reviews off under **WooCommerce → Settings →
   Products**, or close discussion on one hotel, and the prompt disappears for it.
 
-## 16. RoovaVIP
+## 17. RoovaVIP
 
 Members climb tiers by **completing bookings** — a stay counts once the guest has checked out and the
 order is paid. Nothing else counts: no spend thresholds, no expiry dates.
@@ -393,7 +415,7 @@ benefits written for Gold only. The other four are deliberately empty: their ben
 decide, and a tier with none simply leaves that section off the page rather than showing an empty
 list.
 
-## 17. Cashback rewards
+## 18. Cashback rewards
 
 Members earn cashback by **completing stays**. A stay counts once the guest has checked out and the
 order is paid — the same rule RoovaVIP uses.
@@ -440,7 +462,7 @@ booked" at the top of the account page.
 the theme keeps the figure and shows it, and your front desk honours it, exactly as RoovaVIP benefits
 work. So only offer what you will actually pay out.
 
-## 18. Developer notes
+## 19. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.

@@ -181,6 +181,26 @@ function roova_enqueue_account_assets() {
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_account_assets', 20 );
 
 /**
+ * The single-order page's own stylesheet and script.
+ *
+ * Only WooCommerce's view-order endpoint, which the theme draws itself — every
+ * other endpoint under My account is WooCommerce's own screen and has none of
+ * this markup on it.
+ *
+ * The script does one thing, and the page works without it: everything else on
+ * it is a link.
+ */
+function roova_enqueue_order_assets() {
+	if ( ! function_exists( 'roova_is_view_order' ) || ! roova_is_view_order() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-order', ROOVA_URI . 'assets/css/order.css', array( 'roova-style' ), ROOVA_VERSION );
+	wp_enqueue_script( 'roova-order', ROOVA_URI . 'assets/js/order.js', array(), ROOVA_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_order_assets', 20 );
+
+/**
  * The pinned map libraries, with the hashes their tags are checked against.
  *
  * @return array[] Handle => array( src, integrity ).

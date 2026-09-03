@@ -388,6 +388,15 @@ function roova_account_stay_chips() {
 /**
  * The button on the right of a booking card.
  *
+ * Every card but an unpaid one opens the order page, which is where the stay is
+ * written out in full and where the follow-on actions live — book it again,
+ * print the voucher, write the review. A card is the summary; that page is the
+ * detail, and sending "Book again" straight to the hotel used to be the one
+ * route that skipped past it.
+ *
+ * An order still waiting for payment is the exception: nothing on this page
+ * matters more than paying for it, so the button says so and goes there.
+ *
  * @param array $stay Stay row.
  * @return array label, url.
  */
@@ -396,13 +405,6 @@ function roova_account_stay_action( $stay ) {
 		return array(
 			'label' => __( 'Pay now', 'roova' ),
 			'url'   => $stay['order']->get_checkout_payment_url(),
-		);
-	}
-
-	if ( 'completed' === $stay['status'] && $stay['hotel_url'] ) {
-		return array(
-			'label' => __( 'Book again', 'roova' ),
-			'url'   => $stay['hotel_url'],
 		);
 	}
 
