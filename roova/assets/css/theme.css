@@ -2177,6 +2177,43 @@ p {
 	font-weight: 600;
 }
 
+
+/* ----------------------------------------------------------- Contact */
+
+.roova-contact__label {
+	font-size: .86rem;
+	color: var(--roova-muted);
+	margin: 0 0 6px;
+}
+
+.roova-contact__phone {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-family: var(--roova-font-body);
+	font-size: 1.45rem;
+	font-weight: bold;
+	color: var(--roova-gold);
+	text-decoration: none;
+	word-break: break-word;
+}
+
+.roova-contact__phone svg {
+	flex: none;
+}
+
+a.roova-contact__phone:hover,
+a.roova-contact__phone:focus-visible {
+	color: var(--roova-deep);
+}
+
+.roova-contact__note {
+	font-size: .78rem;
+	color: var(--roova-muted);
+	margin: 10px 0 0;
+}
+
 /* --------------------------------------------------------------- Modal */
 
 .roova-modal {

@@ -190,7 +190,7 @@ function roova_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'roova_booking', array(
 		'title'       => __( 'Booking', 'roova' ),
 		'panel'       => 'roova_panel',
-		'description' => __( 'How long rooms are held for guests who have not paid yet.', 'roova' ),
+		'description' => __( 'A room is held while it sits in a guest\'s cart, and booked once their order is paid for. Placing an order does not take the dates on its own.', 'roova' ),
 	) );
 
 	$wp_customize->add_setting( 'roova_hold_minutes', array(
@@ -210,8 +210,8 @@ function roova_customize_register( $wp_customize ) {
 		'sanitize_callback' => 'absint',
 	) );
 	$wp_customize->add_control( 'roova_pending_minutes', array(
-		'label'       => __( 'Unpaid order hold (minutes)', 'roova' ),
-		'description' => __( 'How long an unpaid order keeps its rooms before the dates are released. Paid and on-hold orders never expire.', 'roova' ),
+		'label'       => __( 'Unpaid order expiry (minutes)', 'roova' ),
+		'description' => __( 'An unpaid order does not keep its rooms — the dates go back on sale the moment it is placed, and are only booked once the order is paid. This is how long the booking waits before it is marked cancelled on the Bookings screen.', 'roova' ),
 		'section'     => 'roova_booking',
 		'type'        => 'number',
 		'input_attrs' => array( 'min' => 0, 'max' => 1440 ),

@@ -952,7 +952,16 @@ function roova_account_panel_vip( $user ) {
 			<?php endif; ?>
 		</div>
 
-		<?php if ( $tier && ! empty( $tier['benefits'] ) ) : ?>
+		<?php
+		/*
+		 * The tier's own discount is drawn as the first benefit rather than left
+		 * to the client to type, so what a member reads here and what their
+		 * checkout takes off cannot drift apart — see roova_vip_tier_benefits().
+		 */
+		$benefits = roova_vip_tier_benefits( $tier );
+		?>
+
+		<?php if ( $tier && $benefits ) : ?>
 			<?php roova_account_heading(
 				sprintf(
 					/* translators: %s: tier name */
@@ -963,7 +972,7 @@ function roova_account_panel_vip( $user ) {
 			); ?>
 
 			<div class="roova-vip__benefits">
-				<?php foreach ( $tier['benefits'] as $benefit ) : ?>
+				<?php foreach ( $benefits as $benefit ) : ?>
 					<div class="roova-vip__benefit">
 						<?php roova_the_icon( $benefit['icon'], 17 ); ?>
 						<span>

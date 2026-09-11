@@ -1,11 +1,11 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
-## Instructions for Claude Code
+## Instructions for Codex
 
 After completing any task, feature, or file change in this project, 
-automatically update this CLAUDE.md file to reflect what was built. 
+automatically update this AGENTS.md file to reflect what was built. 
 Do this without being asked. Never end a session without syncing 
 this file to the current state of the project.
 
@@ -685,7 +685,7 @@ handoff's fourth Activity row has a shape without anything in the theme inventin
 - The validity line repeats the handoff's own gotcha: the icon is `flex: none` and the date sits in
   its own `<span>`, or the anonymous flex item shrinks and the date breaks mid-phrase.
 - `wc_price()` is a nest of spans, so every figure is scoped with `>` (`.amount`) rather than a
-  descendant rule — the trap CLAUDE.md already documents.
+  descendant rule — the trap AGENTS.md already documents.
 
 ### Checkout
 
@@ -908,4 +908,4 @@ two are never loaded together and each page has to stand up alone.
 ## Other agent configs
 
 `~/.codex/config.toml` and `~/.gemini/settings.json` exist on this machine. If you want their MCP
-servers, commands or instructions available in Claude Code, reply `/import` to see what's importable.
+servers, commands or instructions available in Codex, reply `/import` to see what's importable.

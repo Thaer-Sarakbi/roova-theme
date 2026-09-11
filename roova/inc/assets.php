@@ -79,19 +79,13 @@ function roova_enqueue_checkout_assets() {
 		'roova-checkout',
 		'roovaCheckout',
 		array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'roova_ajax' ),
-			'i18n'    => array(
+			'i18n' => array(
 				'firstName'    => __( 'Enter the guest\'s first name.', 'roova' ),
 				'lastName'     => __( 'Enter the guest\'s last name.', 'roova' ),
 				'phone'        => __( 'Enter a valid phone number.', 'roova' ),
 				'email'        => __( 'Enter a valid email address.', 'roova' ),
 				'terms'        => __( 'Please accept the booking terms to continue.', 'roova' ),
 				'holdExpired'  => __( 'Your hold has run out — refresh to check the rooms are still free.', 'roova' ),
-				/* translators: %s: room name */
-				'removed'      => __( '%s removed.', 'roova' ),
-				'undo'         => __( 'Undo', 'roova' ),
-				'removeFailed' => __( 'That did not work. Please reload the page and try again.', 'roova' ),
 			),
 		)
 	);

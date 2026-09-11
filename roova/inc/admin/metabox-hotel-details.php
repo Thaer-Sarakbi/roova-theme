@@ -69,9 +69,12 @@ function roova_hotel_details_panel() {
 			) );
 
 			woocommerce_wp_text_input( array(
-				'id'    => '_roova_phone',
-				'label' => __( 'Reception phone', 'roova' ),
-				'value' => $details['phone'],
+				'id'          => '_roova_phone',
+				'label'       => __( 'Reception phone', 'roova' ),
+				'value'       => $details['phone'],
+				'placeholder' => '+60 3 2782 8888',
+				'desc_tip'    => true,
+				'description' => __( 'The reception number, shown in the Contact section on the hotel page for a guest to tap and call. Leave it empty to leave that section off.', 'roova' ),
 			) );
 			?>
 		</div>

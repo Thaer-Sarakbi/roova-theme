@@ -132,13 +132,17 @@ function roova_query_bookings( $args ) {
 /**
  * Human label for a booking status.
  *
+ * Only "In a cart" and "Confirmed" hold their dates. "Awaiting payment" says
+ * so out loud, because an order placed and not paid for leaves the room on
+ * sale and staff should not read that row as a room taken.
+ *
  * @param string $status Status.
  * @return string
  */
 function roova_booking_status_label( $status ) {
 	$labels = array(
 		'hold'      => __( 'In a cart', 'roova' ),
-		'pending'   => __( 'Awaiting payment', 'roova' ),
+		'pending'   => __( 'Awaiting payment — dates not held', 'roova' ),
 		'confirmed' => __( 'Confirmed', 'roova' ),
 		'cancelled' => __( 'Cancelled', 'roova' ),
 	);

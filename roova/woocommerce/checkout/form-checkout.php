@@ -64,15 +64,6 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 				<div id="order_review" class="woocommerce-checkout-review-order">
 					<?php do_action( 'woocommerce_checkout_order_review' ); ?>
 				</div>
-
-				<?php
-				/*
-				 * Filled in by checkout.js after a room is removed. It sits outside
-				 * #order_review because that whole element is replaced on every
-				 * checkout update, which is exactly when this needs to survive.
-				 */
-				?>
-				<p class="roova-summary__undo" data-roova-undo hidden></p>
 			</div>
 
 			<?php

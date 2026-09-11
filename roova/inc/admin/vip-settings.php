@@ -49,7 +49,15 @@ function roova_vip_settings_render() {
 		</p>
 
 		<p class="description">
-			<?php esc_html_e( 'Benefits are shown to the member; nothing here changes what they are charged. Delete every tier to switch RoovaVIP off.', 'roova' ); ?>
+			<?php esc_html_e( 'Benefits are shown to the member and honoured by your team; nothing in that list changes what a guest is charged. Delete every tier to switch RoovaVIP off.', 'roova' ); ?>
+		</p>
+
+		<p class="description">
+			<?php esc_html_e( 'The checkout discount and the free nights are the exception: they are real money. A member on that tier has them taken off their booking total automatically, each shown in the order summary as a line of its own, with tax charged on the reduced amount. Leave both at 0 for a tier that gets neither.', 'roova' ); ?>
+		</p>
+
+		<p class="description">
+			<?php esc_html_e( 'A free night is worth one room for one night at the rate the guest was quoted, and never more nights than the stay itself has — two free nights against a one-night booking credit one. Both are measured against the same subtotal, and the two together can never come to more than the stay is worth.', 'roova' ); ?>
 		</p>
 
 		<div class="roova-vip-settings__list" data-roova-vip-list>
@@ -65,7 +73,7 @@ function roova_vip_settings_render() {
 		</p>
 
 		<template data-roova-vip-tier-template>
-			<?php roova_vip_settings_tier( '__TIER__', array( 'name' => '', 'min' => 0, 'benefits' => array() ), $icons ); ?>
+			<?php roova_vip_settings_tier( '__TIER__', array( 'name' => '', 'min' => 0, 'discount' => 0, 'free_nights' => 0, 'benefits' => array() ), $icons ); ?>
 		</template>
 
 		<template data-roova-vip-benefit-template>
@@ -107,6 +115,30 @@ function roova_vip_settings_tier( $index, $tier, $icons ) {
 					step="1"
 					name="<?php echo esc_attr( $name . '[min]' ); ?>"
 					value="<?php echo esc_attr( (int) $tier['min'] ); ?>"
+				/>
+			</label>
+
+			<label class="roova-vip-tier__field roova-vip-tier__field--small">
+				<span><?php esc_html_e( 'Checkout discount (%)', 'roova' ); ?></span>
+				<input
+					type="number"
+					min="0"
+					max="100"
+					step="0.01"
+					name="<?php echo esc_attr( $name . '[discount]' ); ?>"
+					value="<?php echo esc_attr( roova_vip_tier_discount( $tier ) ); ?>"
+				/>
+			</label>
+
+			<label class="roova-vip-tier__field roova-vip-tier__field--small">
+				<span><?php esc_html_e( 'Free nights', 'roova' ); ?></span>
+				<input
+					type="number"
+					min="0"
+					max="365"
+					step="1"
+					name="<?php echo esc_attr( $name . '[free_nights]' ); ?>"
+					value="<?php echo esc_attr( roova_vip_tier_free_nights( $tier ) ); ?>"
 				/>
 			</label>
 

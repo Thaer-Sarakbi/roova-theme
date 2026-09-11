@@ -686,79 +686,9 @@ textarea.roova-field__input {
 }
 
 .roova-summary__item {
-	position: relative;
 	display: flex;
 	gap: 16px;
 	align-items: flex-start;
-	padding-right: 28px;
-}
-
-/*
- * Sits in the card's own padding, clear of the line total. Quiet until the row
- * is hovered or it takes focus — deleting a held room should look deliberate.
- */
-.roova-summary__remove {
-	position: absolute;
-	top: -3px;
-	right: -8px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 30px;
-	height: 30px;
-	padding: 0;
-	border: 0;
-	border-radius: 50%;
-	background: none;
-	color: var(--roova-faint);
-	cursor: pointer;
-	opacity: .55;
-	transition: opacity .25s ease, color .25s ease, background .25s ease;
-}
-
-.roova-summary__item:hover .roova-summary__remove,
-.roova-summary__remove:focus-visible {
-	opacity: 1;
-}
-
-.roova-summary__remove:hover,
-.roova-summary__remove:focus-visible {
-	background: rgba(178, 59, 46, .08);
-	color: var(--roova-error);
-	opacity: 1;
-}
-
-/* Never hidden on touch, where there is no hover to reveal it. */
-@media (hover: none) {
-	.roova-summary__remove {
-		opacity: 1;
-	}
-}
-
-.roova-summary__undo {
-	display: flex;
-	align-items: baseline;
-	gap: 6px;
-	flex-wrap: wrap;
-	margin: 0 0 18px;
-	font-size: .78rem;
-	color: var(--roova-faint);
-}
-
-.roova-summary__undo-btn {
-	padding: 0;
-	border: 0;
-	background: none;
-	font-family: var(--roova-font-body);
-	font-size: .78rem;
-	color: var(--roova-deep);
-	text-decoration: underline;
-	text-underline-offset: 2px;
-	cursor: pointer;
-}
-
-.roova-summary__undo-btn:hover {
-	color: var(--roova-gold);
 }
 
 .roova-summary__media {

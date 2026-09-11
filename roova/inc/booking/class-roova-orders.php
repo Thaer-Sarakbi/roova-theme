@@ -32,7 +32,12 @@ class Roova_Orders {
 	}
 
 	/**
-	 * How long an unpaid order keeps its rooms, in minutes.
+	 * How long an unpaid order's booking row survives, in minutes.
+	 *
+	 * This is tidy-up, not inventory: an unpaid order holds no dates at all
+	 * (see Roova_Availability::active_statuses()). It is only how long the row
+	 * waits to be marked cancelled, so the Bookings screen stops listing an
+	 * order nobody ever paid for as though it were still going somewhere.
 	 *
 	 * @return int
 	 */
@@ -92,10 +97,15 @@ class Roova_Orders {
 	}
 
 	/**
-	 * Convert this order's holds into real bookings.
+	 * Attach this order's holds to it, and check the stay can still be honoured.
 	 *
-	 * Each room is committed inside its own named lock, so two guests racing
-	 * for the last unit are serialised and exactly one of them wins.
+	 * Each room is checked inside its own named lock, so two guests racing for
+	 * the last unit are serialised and exactly one of them gets past here.
+	 *
+	 * What this does *not* do is book the room. The rows come out of it as
+	 * 'pending', which holds no dates: the order has been placed and not paid
+	 * for, and until it is the room stays on sale. `on_status_changed()` turns
+	 * these rows into real bookings the moment the order is paid.
 	 *
 	 * @param WC_Order $order Order.
 	 * @throws Exception When a stay can no longer be honoured.
@@ -167,6 +177,8 @@ class Roova_Orders {
 				);
 			}
 
+			// 'pending' is a record of what was ordered, not a claim on the
+			// dates — see Roova_Availability::active_statuses().
 			$row_data = array(
 				'order_id'      => $order->get_id(),
 				'order_item_id' => $item_id,
@@ -247,7 +259,9 @@ class Roova_Orders {
 	}
 
 	/**
-	 * When the unpaid grace period on a new order runs out.
+	 * When an unpaid order's row stops being listed as live.
+	 *
+	 * Nothing about availability depends on this — see pending_minutes().
 	 *
 	 * @return string|null MySQL datetime, or null for no expiry.
 	 */
@@ -282,6 +296,11 @@ class Roova_Orders {
 
 	/**
 	 * Booking status for an order status.
+	 *
+	 * 'confirmed' is the only one of these that takes the room off sale, and
+	 * only WooCommerce's own paid statuses reach it. Everything before payment
+	 * — pending, on-hold, a draft — maps to 'pending', which records the order
+	 * without holding its dates.
 	 *
 	 * @param string $order_status Order status without the wc- prefix.
 	 * @return string
@@ -336,11 +355,17 @@ class Roova_Orders {
 			$data = array( 'status' => $new_status );
 
 			if ( 'confirmed' === $new_status ) {
-				// A paid stay never expires.
+				// Paid: this is the moment the room is actually taken, and a
+				// paid stay never expires.
 				$data['expires_at'] = null;
-			} elseif ( 'pending' === $new_status && 'on-hold' === $to ) {
-				// Awaiting a bank transfer — the room stays held for the guest.
-				$data['expires_at'] = null;
+			} elseif ( 'pending' === $new_status && empty( $row['expires_at'] ) ) {
+				/*
+				 * Back to unpaid — a confirmed order put on hold, say. The dates
+				 * go back on sale either way; the expiry is only so the row stops
+				 * being listed as live. An order awaiting a bank transfer is no
+				 * exception: money not yet received is a room not yet sold.
+				 */
+				$data['expires_at'] = self::pending_expiry();
 			}
 
 			Roova_Holds::update( (int) $row['id'], $data );

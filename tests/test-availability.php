@@ -176,6 +176,20 @@ check(
 	1
 );
 
+/* ------------------------------------------------ statuses that book a room */
+
+/*
+ * A room is taken by a cart hold and by a paid booking, and by nothing else.
+ * 'pending' is an order that was placed and not paid for: it must stay out of
+ * this list, or clicking Place order and walking away would hold the dates.
+ */
+$active = Roova_Availability::active_statuses();
+
+check( 'a cart hold occupies the room', in_array( 'hold', $active, true ), true );
+check( 'a paid booking occupies the room', in_array( 'confirmed', $active, true ), true );
+check( 'an unpaid order does not occupy the room', in_array( 'pending', $active, true ), false );
+check( 'a cancelled booking does not occupy the room', in_array( 'cancelled', $active, true ), false );
+
 /* ------------------------------------------------------------- occupancy */
 
 check( 'a party that fits one room', roova_room_fits( 101, 2, 1, 1 ), true );

@@ -113,13 +113,19 @@ the full list.
 | Amenities | **Hotel Details** tab → Amenities (or the Attributes tab) |
 | Facilities | **Hotel Details** tab → Facilities (or the Attributes tab) |
 | Address, latitude, longitude, map zoom | **Hotel Details** tab |
-| Check-in / check-out times, phone, star rating | **Hotel Details** tab |
+| Check-in / check-out times, star rating | **Hotel Details** tab |
+| Reception phone | **Hotel Details** tab → Reception phone |
 | Guest score and the Cleanliness / Location / Service bars | **Hotel Details** tab |
 | Popular landmarks | **Hotel Details** tab — one per line, `Name \| 20.6 km` |
 | Nearby landmarks | **Hotel Details** tab — one per line, `Name \| 470 m` |
 
 Hotels are never added to the cart; they are the page guests browse. Their price display is "From …",
 taken from the cheapest room.
+
+The **reception phone** is shown in its own **Contact** panel down the side of the hotel page, as a
+number a guest can tap to call. Write it however you want it read — spaces, brackets and dashes
+are all fine, they are stripped out of the number that is actually dialled. Leave the field empty and
+the panel is left off that hotel's page entirely.
 
 ## 7. Add rooms
 
@@ -149,13 +155,22 @@ the guest stays on the hotel page with the reason, and whatever they had in the 
    Another guest cannot take the last unit while it sits in someone's cart.
 2. **The cart is re-checked** every time it or the checkout is viewed, and expired holds are ignored
    immediately — nothing depends on a cron job running on time.
-3. **Checkout commits under a lock.** Each room is committed inside a MySQL named lock, so two guests
-   racing for the last unit are serialised: one order succeeds, the other gets a clear error and no
+3. **Checkout re-checks under a lock.** Each room is checked inside a MySQL named lock, so two guests
+   racing for the last unit are serialised: one order goes through, the other gets a clear error and no
    booking row.
-4. **Order status drives the booking.** Paid or processing → confirmed. Cancelled, refunded or failed →
-   the dates are released. Unpaid orders release their rooms after the "unpaid order hold" period.
-5. If a *paid* order ever ends up overbooked (for example a manual admin change), the booking is kept
-   and a loud order note tells staff to contact the guest — a paid stay is never silently dropped.
+4. **Payment is what books the room.** Placing an order does not take the dates on its own. Until the
+   order is paid it shows as *Awaiting payment — dates not held* on the Bookings screen and the room
+   stays on sale, so an abandoned checkout costs the hotel nothing. Paid or processing → confirmed and
+   the dates are taken. Cancelled, refunded or failed → nothing was ever held. An order waiting on a
+   bank transfer is treated the same way: money not yet received is a room not yet sold.
+5. If a *paid* order ever ends up overbooked — two guests paid for the last room seconds apart, or an
+   admin changed something by hand — the booking is kept and a loud order note tells staff to contact
+   the guest. A paid stay is never silently dropped.
+
+That fourth point is a trade: the hotel is never blocked by orders nobody paid for, and in exchange
+there is a short window, between one guest placing an order and paying for it, in which somebody else
+can pay for the same last room. Point 5 is what catches it. If you would rather unpaid orders held
+their dates for a while, that is a one-line filter — see *Filters* at the end.
 
 Availability maths: for a requested stay, every overlapping booking is added up **per night**, and the
 busiest night decides. A room with 8 units is bookable while fewer than 8 units are taken on each of
@@ -196,10 +211,9 @@ What a guest sees:
   sign-up off.
 * On the right, the **order summary**: every room in the cart with its photo, hotel, dates, nights and
   guests, a coupon box, the totals, and a countdown showing how long the rooms stay held.
-* Each room has a **×** button to take it out of the booking. The dates it was holding go straight
-  back on sale, the totals and the Place order button follow, and an **Undo** link appears in case it
-  was a mistake — undo only works while nobody else has taken those dates in the meantime. Removing
-  the last room sends the guest to the cart.
+* There is no way to delete a room from the summary. The cart holds one booking, so removing it would
+  only empty the checkout — a guest who wants a different room goes back to the hotel page and books
+  it, which replaces what was in the cart.
 
 The banner photo, the eyebrow, the header reassurance and the line under the Place order button are
 all in **Customizer → Roova hotel theme → Checkout**.
@@ -381,11 +395,42 @@ order is paid. Nothing else counts: no spend thresholds, no expiry dates.
 
 Set the tiers up under **WooCommerce → Settings → RoovaVIP**:
 
-* **Add tier** gives you a name and the number of completed bookings it needs. The order you add them
-  in does not matter — tiers are sorted by that number.
+* **Add tier** gives you a name, the number of completed bookings it needs, a **checkout discount** and
+  a number of **free nights**. The order you add them in does not matter — tiers are sorted by that
+  number.
 * **Add benefit** adds a row to a tier: an icon, the benefit, and a note under it. These are shown to
-  the member on the VIP tab; nothing here changes what anyone is charged, so only promise what your
-  front desks will honour.
+  the member on the VIP tab; nothing in that list changes what anyone is charged, so only promise what
+  your front desks will honour.
+
+### The checkout discount and the free nights
+
+These two are the benefits the theme pays out itself, so they are worth being sure about before you
+type a number into either. **Both ship at 0 on every tier, Gold included** — what you give away is your
+decision, not the theme's.
+
+* **Checkout discount** is a percentage off the booking total, taken automatically when a member on
+  that tier reaches checkout.
+* **Free nights** takes whole nights off the same total. One free night is worth **one room for one
+  night** at the rate the guest was quoted: a 3-night stay in a $210 room is $630, and one free night
+  makes it $420 before tax. Two free nights make it $210.
+* **Never more nights than the stay has.** Two free nights against a one-night booking credit one, and
+  the summary says *1 free night* — you will never see a guest told they got two when they got one.
+* **A free night is one room-night, not one per room.** A member booking three rooms for three nights
+  with one free night gets one night of one room, not three.
+* **The member sees exactly what came off.** The order summary gains a line for each — *VIP Gold: 2
+  free nights* and *VIP Gold discount (10%)* — with the amount beside it, and the same lines appear on
+  their booking voucher, on the order in **WooCommerce → Orders**, and in the emails.
+* **Both are measured against the same subtotal**, so each line adds up against the rooms above it
+  rather than against the other line. A member with 1 free night and 10% on a $630 stay sees −$210 and
+  −$63.
+* **Tax follows them both.** A discounted stay is taxed on the reduced amount, so the total the guest
+  pays really is that much less — not a discount on the rooms and full tax on top.
+* **They can never come to more than the stay is worth.** Set a tier generously enough and a booking
+  simply lands at zero; the free nights are honoured first and the percentage takes whatever is left.
+* **They stack with a coupon, safely.** The percentage comes off what is left after the coupon.
+* **Signed-out guests get nothing**, because there is no member to check a tier against. This is one
+  more reason to leave the sign-up invitation on the checkout page switched on.
+* Setting a member's tier by hand (below) sets both with it.
 * **Remove tier**, and the × beside a benefit, delete them. Delete every tier to switch RoovaVIP off
   entirely — the tab disappears from My account and the tier stops showing in the account header. Add
   one back and it returns.
@@ -459,13 +504,18 @@ earned, each row marked *Pending* or *Cleared*. Their available balance also app
 booked" at the top of the account page.
 
 **Cashback is a promise, not a discount.** Nothing here changes what a guest is charged at checkout —
-the theme keeps the figure and shows it, and your front desk honours it, exactly as RoovaVIP benefits
-work. So only offer what you will actually pay out.
+the theme keeps the figure and shows it, and your front desk honours it, exactly as a RoovaVIP tier's
+written benefits work. (A RoovaVIP tier's **checkout discount** and **free nights** are the exception
+to that rule — those really do come off the total.) So only offer what you will actually pay out.
 
 ## 19. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.
+* **Which booking statuses take a room off sale** is `roova_active_booking_statuses`, and it is
+  `hold` (in a cart) and `confirmed` (paid). Adding `pending` back to it makes an unpaid order hold its
+  dates again, for as long as the Customizer's "Unpaid order expiry" allows:
+  `add_filter( 'roova_active_booking_statuses', fn( $s ) => array_merge( $s, array( 'pending' ) ) );`
 * Useful filters: `roova_available_units`, `roova_hold_minutes`, `roova_pending_order_minutes`,
   `roova_max_nights`, `roova_hide_rooms_from_catalog`, `roova_redirect_rooms_to_hotel`,
   `roova_icon_library`, `roova_guarantees`, `roova_popular_searches`, `roova_map_places`,
@@ -493,6 +543,11 @@ work. So only offer what you will actually pay out.
   `roova_vip_tiers` / `roova_vip_enabled` / `roova_vip_benefit_icons` govern the tiers. Actions:
   `roova_account_profile_saved`, `roova_review_submitted`, `roova_like_toggled`.
 * Saved stays live in the `roova_liked_hotels` user meta; VIP tiers in the `roova_vip_tiers` option.
+* **The VIP checkout discount and free nights** are negative cart fees added on
+  `woocommerce_cart_calculate_fees`, taxable in the rooms' own tax class so the tax rows fall with
+  them. `roova_vip_discount_percent` and `roova_vip_free_nights` filter the figures per member,
+  `roova_vip_discount_label` and `roova_vip_free_nights_label` rename the lines, and
+  `roova_vip_discount_enabled` (false) switches both off while leaving the tiers untouched.
 * Confirmation filters: `roova_require_email_verification` (false) goes back to signing new members
   in immediately, `roova_verification_lifetime` changes how long a link lasts,
   `roova_verification_email` rewrites the message, and `roova_verification_url` changes where the link

@@ -430,10 +430,12 @@ function roova_order_total_rows( $order ) {
 	}
 
 	foreach ( $order->get_fees() as $fee ) {
+		// A negative fee — the RoovaVIP tier discount is one — reads as a
+		// discount here too, exactly as it did in the checkout summary.
 		$rows[] = array(
 			'label' => $fee->get_name(),
 			'value' => wc_price( (float) $fee->get_total(), $currency ),
-			'class' => '',
+			'class' => (float) $fee->get_total() < 0 ? 'roova-order__row--discount' : '',
 		);
 	}
 

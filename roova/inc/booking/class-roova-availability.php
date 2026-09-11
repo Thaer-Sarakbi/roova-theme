@@ -19,10 +19,22 @@ class Roova_Availability {
 	/**
 	 * Statuses that occupy inventory.
 	 *
+	 * Two things take a room off sale: a cart hold, which expires on its own,
+	 * and a booking that has been paid for. Not 'pending' — an order placed and
+	 * never paid for is an intention, and letting one hold dates means anybody
+	 * can empty a hotel by walking up to the Place order button and stopping
+	 * there. Payment is what takes the room, and `Roova_Orders::map_status()` is
+	 * where an order's status becomes 'confirmed'.
+	 *
 	 * @return string[]
 	 */
 	public static function active_statuses() {
-		return array( 'hold', 'pending', 'confirmed' );
+		/**
+		 * Filter the booking statuses that count against a room's units.
+		 *
+		 * @param string[] $statuses Booking statuses.
+		 */
+		return (array) apply_filters( 'roova_active_booking_statuses', array( 'hold', 'confirmed' ) );
 	}
 
 	/**

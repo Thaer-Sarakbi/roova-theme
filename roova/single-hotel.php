@@ -226,6 +226,7 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 			<?php roova_review_box( $roova_hotel_id ); ?>
 			<?php roova_booking_box( $roova_hotel_id, $roova_criteria, $roova_lowest['rate'] ); ?>
 			<?php roova_hotel_map( $roova_hotel_id ); ?>
+			<?php roova_hotel_contact( $roova_hotel_id ); ?>
 		</aside>
 	</div>
 </div>

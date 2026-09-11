@@ -485,93 +485,6 @@ function roova_order_review_fragments( $fragments ) {
 add_filter( 'woocommerce_update_order_review_fragments', 'roova_order_review_fragments' );
 
 /* -------------------------------------------------------------------------
- * Removing a room from the summary
- * ---------------------------------------------------------------------- */
-
-/**
- * Take a room out of the cart from the checkout summary.
- *
- * The cart object belongs to this visitor's session, so removing by key can
- * only ever touch their own line — the key itself is shared between guests
- * booking the same room for the same dates. Freeing the hold is not done here:
- * `woocommerce_cart_item_removed` already runs Roova_Holds::on_cart_item_removed(),
- * which is session-scoped for the same reason.
- */
-function roova_ajax_remove_cart_item() {
-	roova_check_ajax_nonce();
-
-	$key = isset( $_POST['cart_item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ) ) : '';
-
-	if ( ! $key || ! WC()->cart ) {
-		wp_send_json_error( array( 'message' => __( 'That room is no longer in your booking.', 'roova' ) ), 400 );
-	}
-
-	$item = WC()->cart->get_cart_item( $key );
-	if ( ! $item ) {
-		wp_send_json_error( array( 'message' => __( 'That room is no longer in your booking.', 'roova' ) ), 404 );
-	}
-
-	$name = $item['data'] ? $item['data']->get_name() : __( 'That room', 'roova' );
-
-	WC()->cart->remove_cart_item( $key );
-	WC()->cart->calculate_totals();
-
-	/*
-	 * No notice on the way out. An empty checkout reloads into the cart, which
-	 * is the Blocks cart — it renders client-side and never prints WooCommerce's
-	 * stored notices, so one added here would sit in the session and surface on
-	 * whatever classic page the guest opened next.
-	 */
-	wp_send_json_success(
-		array(
-			'name'  => $name,
-			'empty' => WC()->cart->is_empty(),
-		)
-	);
-}
-add_action( 'wp_ajax_roova_remove_cart_item', 'roova_ajax_remove_cart_item' );
-add_action( 'wp_ajax_nopriv_roova_remove_cart_item', 'roova_ajax_remove_cart_item' );
-
-/**
- * Put a removed room back.
- *
- * WooCommerce keeps the line in `removed_cart_contents` until the session ends,
- * and restoring it fires `woocommerce_cart_item_restored`, where the theme
- * re-places the hold. That can fail — the dates may have gone to someone else in
- * the meantime — and the failure arrives as a notice rather than a return value,
- * so it is read back out of the notice store and handed to the page.
- */
-function roova_ajax_restore_cart_item() {
-	roova_check_ajax_nonce();
-
-	$key = isset( $_POST['cart_item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ) ) : '';
-
-	if ( ! $key || ! WC()->cart ) {
-		wp_send_json_error( array( 'message' => __( 'That room could not be put back.', 'roova' ) ), 400 );
-	}
-
-	WC()->cart->restore_cart_item( $key );
-
-	if ( wc_notice_count( 'error' ) > 0 ) {
-		$errors = wc_get_notices( 'error' );
-		wc_clear_notices();
-
-		$message = isset( $errors[0]['notice'] ) ? $errors[0]['notice'] : __( 'That room could not be put back.', 'roova' );
-
-		// The restore left a line with no hold behind it; drop it again.
-		WC()->cart->remove_cart_item( $key );
-
-		wp_send_json_error( array( 'message' => wp_strip_all_tags( $message ) ), 409 );
-	}
-
-	WC()->cart->calculate_totals();
-
-	wp_send_json_success();
-}
-add_action( 'wp_ajax_roova_restore_cart_item', 'roova_ajax_restore_cart_item' );
-add_action( 'wp_ajax_nopriv_roova_restore_cart_item', 'roova_ajax_restore_cart_item' );
-
-/* -------------------------------------------------------------------------
  * Payment cards
  * ---------------------------------------------------------------------- */
 
@@ -894,18 +807,8 @@ function roova_checkout_summary_item( $cart_item_key, $cart_item ) {
 
 	$quantity = (int) $cart_item['quantity'];
 	$booking  = ! empty( $cart_item['roova_booking'] ) ? $cart_item['roova_booking'] : array();
-
-	$remove_label = sprintf(
-		/* translators: %s: room name */
-		__( 'Remove %s from your booking', 'roova' ),
-		$product->get_name()
-	);
 	?>
-	<div class="roova-summary__item" data-roova-item="<?php echo esc_attr( $cart_item_key ); ?>">
-		<button type="button" class="roova-summary__remove" data-roova-remove="<?php echo esc_attr( $cart_item_key ); ?>" aria-label="<?php echo esc_attr( $remove_label ); ?>">
-			<?php roova_the_icon( 'close', 14 ); ?>
-		</button>
-
+	<div class="roova-summary__item">
 		<div class="roova-summary__media">
 			<?php echo wp_kses_post( $product->get_image( 'woocommerce_thumbnail' ) ); ?>
 			<span class="roova-summary__qty"><?php echo esc_html( $quantity ); ?></span>
@@ -1026,8 +929,16 @@ function roova_checkout_totals() {
 				</div>
 			<?php endforeach; ?>
 
+			<?php
+			/*
+			 * A negative fee is a discount — the RoovaVIP tier discount is one —
+			 * and reads as one, in the same colour as a coupon. The percentage is
+			 * part of the fee's own name, so the guest can see what was taken off
+			 * and why without a second line explaining it.
+			 */
+			?>
 			<?php foreach ( $cart->get_fees() as $fee ) : ?>
-				<div class="roova-summary__row">
+				<div class="roova-summary__row<?php echo (float) $fee->total < 0 ? ' roova-summary__row--discount' : ''; ?>">
 					<span><?php echo esc_html( $fee->name ); ?></span>
 					<span><?php wc_cart_totals_fee_html( $fee ); ?></span>
 				</div>

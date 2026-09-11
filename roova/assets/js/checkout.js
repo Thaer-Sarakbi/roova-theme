@@ -127,80 +127,6 @@
 		} );
 	}
 
-	/* ------------------------------------------------- Removing a room */
-
-	/**
-	 * Ask the server to change the cart, then let WooCommerce redraw the summary.
-	 *
-	 * @param {string}   action Ajax action.
-	 * @param {string}   key    Cart item key.
-	 * @param {Function} done   Called with the response data on success.
-	 */
-	function cartRequest( action, key, done ) {
-		var $summary = $( '.roova-summary__card' );
-		var cleared = false;
-
-		// The summary is redrawn by WooCommerce's own refresh, so the veil lifts
-		// on `updated_checkout` — with a timeout behind it, because a summary
-		// left greyed out is worse than one that flickers.
-		var clear = function () {
-			if ( cleared ) {
-				return;
-			}
-			cleared = true;
-			$summary.css( 'opacity', '' );
-		};
-
-		$summary.css( 'opacity', .55 );
-		$( document.body ).one( 'updated_checkout', clear );
-		window.setTimeout( clear, 8000 );
-
-		$.post( strings.ajaxUrl, {
-			action: action,
-			nonce: strings.nonce,
-			cart_item_key: key
-		} ).done( function ( res ) {
-			if ( ! res || ! res.success ) {
-				clear();
-				showUndo( ( res && res.data && res.data.message ) || i18n.removeFailed, null );
-				return;
-			}
-
-			done( res.data || {} );
-		} ).fail( function () {
-			clear();
-			showUndo( i18n.removeFailed, null );
-		} );
-	}
-
-	/**
-	 * Put a message above the totals, with an Undo link when there is one.
-	 *
-	 * @param {string}      message What happened.
-	 * @param {string|null} key     Cart item key to restore, or null for no link.
-	 */
-	function showUndo( message, key ) {
-		var $undo = $( '[data-roova-undo]' );
-		if ( ! $undo.length ) {
-			return;
-		}
-
-		$undo.empty().append( $( '<span/>' ).text( message ) );
-
-		if ( key ) {
-			$undo.append( ' ' ).append(
-				$( '<button/>', {
-					type: 'button',
-					'class': 'roova-summary__undo-btn',
-					text: i18n.undo || 'Undo',
-					'data-roova-restore': key
-				} )
-			);
-		}
-
-		$undo.prop( 'hidden', false );
-	}
-
 	/* ----------------------------------------------------------- Rate hold */
 
 	/**
@@ -238,35 +164,6 @@
 
 		$( document.body ).on( 'change', 'input[name="payment_method"]', markChosenPayment );
 		$( document.body ).on( 'updated_checkout', markChosenPayment );
-
-		// Remove a room, and offer it back.
-		$( document.body ).on( 'click', '[data-roova-remove]', function () {
-			var key = $( this ).data( 'roova-remove' );
-
-			cartRequest( 'roova_remove_cart_item', key, function ( data ) {
-				if ( data.empty ) {
-					// An empty checkout is nothing; WooCommerce sends it to the cart.
-					window.location.reload();
-					return;
-				}
-
-				showUndo(
-					( i18n.removed || '%s removed.' ).replace( '%s', data.name || '' ).trim(),
-					key
-				);
-				$( document.body ).trigger( 'update_checkout' );
-			} );
-		} );
-
-		$( document.body ).on( 'click', '[data-roova-restore]', function () {
-			var key = $( this ).data( 'roova-restore' );
-
-			cartRequest( 'roova_restore_cart_item', key, function () {
-				$( '[data-roova-undo]' ).prop( 'hidden', true ).empty();
-				$( document.body ).trigger( 'update_checkout' );
-			} );
-		} );
-
 		if ( ! $form.length ) {
 			return;
 		}

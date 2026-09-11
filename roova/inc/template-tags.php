@@ -932,6 +932,49 @@ function roova_hotel_map( $hotel_id ) {
 }
 
 /**
+ * The hotel's contact card: the reception number a guest can ring.
+ *
+ * Its own section rather than a line under the address, because this is what
+ * someone reaches for when they need a person — a late arrival, a transfer, a
+ * question no page answers. Renders nothing when no number has been entered,
+ * so a hotel without one shows no empty card.
+ *
+ * @param int $hotel_id Hotel product ID.
+ */
+function roova_hotel_contact( $hotel_id ) {
+	$details = roova_get_hotel_details( $hotel_id );
+	$phone   = trim( (string) $details['phone'] );
+	$tel     = roova_tel_href( $phone );
+
+	if ( ! $phone ) {
+		return;
+	}
+	?>
+	<div class="roova-card roova-contact">
+		<span class="roova-eyebrow"><?php esc_html_e( 'Contact', 'roova' ); ?></span>
+
+		<p class="roova-contact__label"><?php esc_html_e( 'Reception', 'roova' ); ?></p>
+
+		<?php if ( $tel ) : ?>
+			<a class="roova-contact__phone" href="<?php echo esc_url( 'tel:' . $tel ); ?>">
+				<?php roova_the_icon( 'phone', 16 ); ?>
+				<span><?php echo esc_html( $phone ); ?></span>
+			</a>
+		<?php else : ?>
+			<p class="roova-contact__phone">
+				<?php roova_the_icon( 'phone', 16 ); ?>
+				<span><?php echo esc_html( $phone ); ?></span>
+			</p>
+		<?php endif; ?>
+
+		<p class="roova-contact__note">
+			<?php esc_html_e( 'Call the hotel directly about an early check-in, an airport transfer or anything else before you arrive.', 'roova' ); ?>
+		</p>
+	</div>
+	<?php
+}
+
+/**
  * The sticky booking box on the hotel page.
  *
  * @param int   $hotel_id Hotel product ID.

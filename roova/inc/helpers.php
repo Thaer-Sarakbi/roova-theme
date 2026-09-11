@@ -508,6 +508,25 @@ function roova_get_hotel_details( $hotel_id ) {
 }
 
 /**
+ * A phone number reduced to something a `tel:` link can dial.
+ *
+ * Keeps the digits and a leading "+" only: everything a client types for
+ * legibility — spaces, brackets, dashes — either does nothing in a dialler or
+ * stops the link working. Returns an empty string when there are no digits at
+ * all, so a caller can use it to decide whether to link the number.
+ *
+ * @param string $phone Phone number as entered.
+ * @return string
+ */
+function roova_tel_href( $phone ) {
+	$phone  = trim( (string) $phone );
+	$plus   = ( 0 === strpos( $phone, '+' ) ) ? '+' : '';
+	$digits = preg_replace( '/\D+/', '', $phone );
+
+	return $digits ? $plus . $digits : '';
+}
+
+/**
  * Parse a landmark textarea into name/distance pairs.
  *
  * One landmark per line, optionally "Name | 1.2 km".
