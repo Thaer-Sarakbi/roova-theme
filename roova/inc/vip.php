@@ -13,8 +13,9 @@
  * they are the only things here that touch money: **free nights** and a
  * **checkout discount**, applied as negative cart fees and each shown by name
  * in the order summary — the free-night line says how many nights were given.
- * Both ship at zero for every tier, because what a hotel gives away is not a
- * number a theme gets to invent.
+ * Free nights ship at zero for every tier, and so does the discount for every
+ * tier but Bronze: 2% is what signing up earns, and the checkout tells a guest
+ * without an account exactly what that would take off their stay.
  *
  * Tiers and benefits live in one option so they can be added and deleted from
  * WooCommerce → Settings → RoovaVIP (see inc/admin/vip-settings.php).
@@ -42,10 +43,11 @@ const ROOVA_VIP_USER_META = 'roova_vip_tier';
  * rest would be figures nobody has agreed to yet, and a tier with no benefits
  * simply leaves that section off the page rather than printing an empty grid.
  *
- * **Every tier ships with a zero discount**, including Gold. The written
- * benefits are promises the client already made in the handoff; a percentage
- * off every booking is money out of their till, and defaulting it to anything
- * but nothing would start charging it the moment the theme was activated.
+ * **Bronze ships at 2% and every other tier at zero**, Gold included. Bronze
+ * is the tier signing up puts a member on, and its 2% is the client's own
+ * figure — the one the checkout quotes to a guest without an account (see
+ * roova_vip_signup_total()). The higher tiers' percentages are money out of the
+ * client's till that nobody has agreed to yet, so they start at nothing.
  *
  * @return array[] Each: name, min, discount, benefits[] (icon, title, note).
  */
@@ -54,7 +56,7 @@ function roova_vip_default_tiers() {
 		array(
 			'name'        => __( 'Bronze', 'roova' ),
 			'min'         => 0,
-			'discount'    => 0,
+			'discount'    => 2,
 			'free_nights' => 0,
 			'benefits'    => array(),
 		),
@@ -842,6 +844,36 @@ function roova_vip_apply_cart_discount( $cart ) {
 		return;
 	}
 
+	$taxable = wc_tax_enabled();
+
+	foreach ( roova_vip_cart_reductions( $cart, $tier['name'], $percent, $free ) as $line ) {
+		$cart->add_fee( $line['name'], -$line['amount'], $taxable, $line['tax_class'] );
+	}
+}
+add_action( 'woocommerce_cart_calculate_fees', 'roova_vip_apply_cart_discount' );
+
+/**
+ * What a tier's free nights and percentage would take off a cart, without
+ * taking it.
+ *
+ * The one place the arithmetic lives. roova_vip_apply_cart_discount() turns
+ * these lines into fees for a member; roova_vip_signup_total() reads them to
+ * tell a guest what signing up would save — so the figure the checkout quotes
+ * is the figure the checkout would then charge.
+ *
+ * @param WC_Cart $cart      Cart.
+ * @param string  $tier_name Tier name, for the labels.
+ * @param float   $percent   Discount percentage.
+ * @param int     $free      Free nights.
+ * @return array[] Each: name, amount (positive), tax_class. Free nights first.
+ */
+function roova_vip_cart_reductions( $cart, $tier_name, $percent, $free ) {
+	$lines = array();
+
+	if ( ! $cart instanceof WC_Cart || ! $cart->get_cart() || ( $percent <= 0 && $free < 1 ) ) {
+		return $lines;
+	}
+
 	/*
 	 * The line totals, not the subtotal: `line_total` is what each room costs
 	 * after any coupon, and it is settled before fees are calculated. Taking the
@@ -860,20 +892,18 @@ function roova_vip_apply_cart_discount( $cart ) {
 	}
 
 	if ( $base <= 0 ) {
-		return;
+		return $lines;
 	}
 
 	$decimals = wc_get_price_decimals();
-	$taxable  = wc_tax_enabled();
 
 	$credit = roova_vip_free_nights_credit( $cart, $free, $base, $decimals );
 
 	if ( $credit['amount'] > 0 ) {
-		$cart->add_fee(
-			roova_vip_free_nights_label( $tier['name'], $credit['nights'] ),
-			-$credit['amount'],
-			$taxable,
-			$tax_class
+		$lines[] = array(
+			'name'      => roova_vip_free_nights_label( $tier_name, $credit['nights'] ),
+			'amount'    => $credit['amount'],
+			'tax_class' => $tax_class,
 		);
 	}
 
@@ -885,15 +915,96 @@ function roova_vip_apply_cart_discount( $cart ) {
 	);
 
 	if ( $amount > 0 ) {
-		$cart->add_fee(
-			roova_vip_discount_label( $tier['name'], $percent ),
-			-$amount,
-			$taxable,
-			$tax_class
+		$lines[] = array(
+			'name'      => roova_vip_discount_label( $tier_name, $percent ),
+			'amount'    => $amount,
+			'tax_class' => $tax_class,
 		);
 	}
+
+	return $lines;
 }
-add_action( 'woocommerce_cart_calculate_fees', 'roova_vip_apply_cart_discount' );
+
+/**
+ * The tier signing up puts a new member on.
+ *
+ * The one a count of no completed stays reaches — which is the lowest tier,
+ * because that is the floor (see roova_vip_current_index()).
+ *
+ * @return array|null Null when there is no programme.
+ */
+function roova_vip_signup_tier() {
+	return roova_vip_tier_for_count( 0 );
+}
+
+/**
+ * What this cart would come to for a guest who signed up now.
+ *
+ * The entry tier's free nights and percentage, worked out by the same
+ * roova_vip_cart_reductions() the member's own checkout uses, then taken off
+ * the grand total **with the tax that falls with them**. WooCommerce splits a
+ * negative fee's tax across the rooms in proportion to what they are taxed, so
+ * the rooms' own effective rate — their tax over their total — is the rate the
+ * saving comes off at. That is what makes a 2% discount take exactly 2% off a
+ * taxed total rather than 2% of the subtotal.
+ *
+ * Null whenever signing up would change nothing: a signed-in member, no
+ * programme, the discount switched off, or an entry tier that gives nothing.
+ * The checkout only makes the claim when there is something to claim.
+ *
+ * @param WC_Cart|null $cart Cart, or null for the current one.
+ * @return float|null
+ */
+function roova_vip_signup_total( $cart = null ) {
+	if ( null === $cart && function_exists( 'WC' ) && WC()->cart ) {
+		$cart = WC()->cart;
+	}
+
+	if ( get_current_user_id() || ! $cart instanceof WC_Cart ) {
+		return null;
+	}
+
+	if ( ! roova_vip_enabled() || ! roova_vip_discount_enabled() ) {
+		return null;
+	}
+
+	$tier = roova_vip_signup_tier();
+	if ( ! $tier ) {
+		return null;
+	}
+
+	$lines = roova_vip_cart_reductions(
+		$cart,
+		$tier['name'],
+		roova_vip_tier_discount( $tier ),
+		roova_vip_tier_free_nights( $tier )
+	);
+
+	if ( ! $lines ) {
+		return null;
+	}
+
+	$decimals = wc_get_price_decimals();
+
+	$items    = (float) $cart->get_cart_contents_total();
+	$tax_rate = ( wc_tax_enabled() && $items > 0 ) ? (float) $cart->get_cart_contents_tax() / $items : 0.0;
+
+	$saving = 0.0;
+	foreach ( $lines as $line ) {
+		$saving += $line['amount'] + round( $line['amount'] * $tax_rate, $decimals );
+	}
+
+	$total = (float) $cart->get_total( 'edit' );
+
+	/**
+	 * Filter the total a guest is told they would pay as a member.
+	 *
+	 * @param float   $signup Total with the entry tier's benefits taken off.
+	 * @param WC_Cart $cart   Cart.
+	 * @param array   $tier   The tier signing up would put them on.
+	 */
+	return (float) apply_filters( 'roova_vip_signup_total', max( 0.0, round( $total - $saving, $decimals ) ), $cart, $tier );
+}
 
 /**
  * A tier's benefits with its discount drawn as the first of them.

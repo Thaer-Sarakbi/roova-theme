@@ -571,7 +571,26 @@ function roova_payment_badge( $gateway ) {
 }
 
 /**
- * A button label with the live total on the end: "Place order — RM120.00".
+ * The submit button says "Book now", not "Place order".
+ *
+ * A stay is booked, not ordered, and "Book now" is what every room on the site
+ * is already booked with — the same words end the journey they start it.
+ * WooCommerce's own filter is the door, so a gateway that insists on its own
+ * wording — "Proceed to PayPal" — still gets it: that text comes from the
+ * gateway, not from here.
+ *
+ * @param string $text WooCommerce's label.
+ * @return string
+ */
+function roova_order_button_text( $text ) {
+	unset( $text );
+
+	return __( 'Book now', 'roova' );
+}
+add_filter( 'woocommerce_order_button_text', 'roova_order_button_text' );
+
+/**
+ * A button label with the live total on the end: "Book now — RM120.00".
  *
  * It has to be a plain string rather than markup. WooCommerce's checkout script
  * rewrites the button with `.text()` every time a payment method is chosen,
@@ -595,7 +614,7 @@ function roova_place_order_label( $text ) {
 	}
 
 	return sprintf(
-		/* translators: 1: button label, e.g. Place order, 2: order total */
+		/* translators: 1: button label, e.g. Book now, 2: order total */
 		__( '%1$s — %2$s', 'roova' ),
 		$text,
 		$total
@@ -975,6 +994,62 @@ function roova_checkout_totals() {
 			<span class="roova-summary__total-label"><?php esc_html_e( 'Total', 'roova' ); ?></span>
 			<span class="roova-summary__total-value"><?php wc_cart_totals_order_total_html(); ?></span>
 		</div>
+
+		<?php roova_checkout_member_price(); ?>
+	</div>
+	<?php
+}
+
+/**
+ * "If you sign up, the total will be RM712.53" — under the total, for a guest
+ * without an account.
+ *
+ * The figure is what the checkout would really charge them as a new member:
+ * roova_vip_signup_total() runs the entry tier's discount through the same
+ * arithmetic the member's own checkout uses. When that tier gives nothing —
+ * or the discount is off, or sign-up is closed — the notice is not drawn at
+ * all, because a promise of a lower total has to be one the checkout keeps.
+ *
+ * It lives inside the totals block, so it is part of the same refresh fragment
+ * and follows a coupon applied a row above without a page load. The summary is
+ * a sibling of `form.checkout`, and the button is a link, so nothing here can
+ * post the order.
+ */
+function roova_checkout_member_price() {
+	if ( is_user_logged_in() || ! function_exists( 'roova_registration_open' ) || ! roova_registration_open() ) {
+		return;
+	}
+
+	if ( ! function_exists( 'roova_vip_signup_total' ) ) {
+		return;
+	}
+
+	$total = roova_vip_signup_total();
+	if ( null === $total ) {
+		return;
+	}
+
+	// Back to checkout afterwards — the cart, and the holds behind it, are the
+	// same session's.
+	$url = roova_signup_url( wc_get_checkout_url() );
+	?>
+	<div class="roova-summary__member">
+		<p class="roova-summary__member-text">
+			<?php roova_the_icon( 'tag', 18 ); ?>
+			<span>
+				<?php
+				printf(
+					/* translators: %s: the order total a new member would pay */
+					esc_html__( 'If you sign up, the total will be %s', 'roova' ),
+					'<strong class="roova-summary__member-total">' . wp_kses_post( wc_price( $total ) ) . '</strong>'
+				);
+				?>
+			</span>
+		</p>
+
+		<a class="roova-summary__member-link" href="<?php echo esc_url( $url ); ?>">
+			<?php esc_html_e( 'Sign up', 'roova' ); ?>
+		</a>
 	</div>
 	<?php
 }
@@ -1062,43 +1137,6 @@ function roova_checkout_tax_html() {
 	}
 
 	return esc_html__( 'Included', 'roova' );
-}
-
-/**
- * The membership invitation under "Payment options", for a guest booking
- * without an account.
- *
- * Nothing here interrupts the booking: it is a link away, not a step, and the
- * "Create an account" tickbox in Guest information is still the one-click way to
- * do the same thing without leaving the page. A member sees none of it — they
- * already have what it is offering.
- */
-function roova_checkout_signup_cta() {
-	if ( is_user_logged_in() || ! function_exists( 'roova_registration_open' ) || ! roova_registration_open() ) {
-		return;
-	}
-
-	/*
-	 * Back to checkout afterwards, so signing up costs the guest nothing but a
-	 * detour — the cart, and the holds behind it, are the same session's.
-	 */
-	$url = roova_signup_url( wc_get_checkout_url() );
-
-	// The default is repeated in inc/customizer.php — see roova_option().
-	$text = roova_option( 'checkout_signup_text', __( 'Sign up, become a member and get rewards', 'roova' ) );
-
-	if ( ! $text ) {
-		return;
-	}
-	?>
-	<section class="roova-checkout__section roova-checkout__signup">
-		<a class="roova-checkout__signup-link" href="<?php echo esc_url( $url ); ?>">
-			<?php roova_the_icon( 'tag', 20 ); ?>
-			<span class="roova-checkout__signup-text"><?php echo esc_html( $text ); ?></span>
-			<?php roova_the_icon( 'arrow-right', 17 ); ?>
-		</a>
-	</section>
-	<?php
 }
 
 /**

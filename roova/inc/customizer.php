@@ -266,14 +266,13 @@ function roova_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'roova_checkout', array(
 		'title'       => __( 'Checkout', 'roova' ),
 		'panel'       => 'roova_panel',
-		'description' => __( 'The banner and the small print on the checkout page. Only promise what the hotels actually honour — the line under the Place order button is the last thing a guest reads before paying.', 'roova' ),
+		'description' => __( 'The banner and the small print on the checkout page. Only promise what the hotels actually honour — the line under the Book now button is the last thing a guest reads before paying.', 'roova' ),
 	) );
 
 	$checkout_fields = array(
 		'checkout_eyebrow'      => array( __( 'Banner eyebrow', 'roova' ), __( 'Secure checkout', 'roova' ) ),
 		'checkout_secure_label' => array( __( 'Header reassurance', 'roova' ), __( 'Secure booking', 'roova' ) ),
-		'checkout_reassurance'  => array( __( 'Under the Place order button', 'roova' ), __( 'Free cancellation until 24 hours before check-in.', 'roova' ) ),
-		'checkout_signup_text'  => array( __( 'Sign-up invitation', 'roova' ), __( 'Sign up, become a member and get rewards', 'roova' ) ),
+		'checkout_reassurance'  => array( __( 'Under the Book now button', 'roova' ), __( 'Free cancellation until 24 hours before check-in.', 'roova' ) ),
 	);
 
 	foreach ( $checkout_fields as $key => $data ) {

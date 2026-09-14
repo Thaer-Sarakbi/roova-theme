@@ -203,19 +203,24 @@ What a guest sees:
 * **Booking terms** — a checkbox the guest has to tick. It links to the terms page set in
   **WooCommerce → Settings → Advanced → Terms and conditions**, or to the link in **Customizer →
   Roova → Checkout** if you have not set one.
-* **Place order**, showing the live total, and the reassurance line underneath (Customizer).
-* Under that, for a guest with no account, an invitation to **sign up and become a member**. It is a
-  link, not a step — it never gets between the guest and the booking, and it brings them back to
-  checkout afterwards with their rooms still held. Members never see it. Its wording is
-  **Customizer → Roova → Checkout → Sign-up invitation**, and it disappears entirely if you switch
-  sign-up off.
+* **Book now**, showing the live total ("Book now — RM724.50"), and the reassurance line
+  underneath (Customizer). A payment method that insists on its own wording — PayPal's "Proceed to
+  PayPal" — still gets it.
 * On the right, the **order summary**: every room in the cart with its photo, hotel, dates, nights and
   guests, a coupon box, the totals, and a countdown showing how long the rooms stay held.
+* Under the total, for a guest with no account, **what the stay would cost as a member** — *"If you
+  sign up, the total will be $710.01"* — with a **Sign up** button beside it. The figure is the
+  discount on your first RoovaVIP tier (Bronze, 2% as shipped), tax included, and it is exactly what
+  a new member is then charged for the same stay. It updates when a coupon is applied. The button is
+  a link, not a step — it never gets between the guest and the booking, and it brings them back to
+  checkout afterwards with their rooms still held. Members never see it. It is only shown when that
+  tier actually gives something: set Bronze's discount to 0 (or switch sign-up off) and it
+  disappears, so it never promises a price the checkout will not honour.
 * There is no way to delete a room from the summary. The cart holds one booking, so removing it would
   only empty the checkout — a guest who wants a different room goes back to the hotel page and books
   it, which replaces what was in the cart.
 
-The banner photo, the eyebrow, the header reassurance and the line under the Place order button are
+The banner photo, the eyebrow, the header reassurance and the line under the Book now button are
 all in **Customizer → Roova hotel theme → Checkout**.
 
 Guests are told about a problem next to the field it belongs to, and the order cannot be placed until
@@ -405,8 +410,15 @@ Set the tiers up under **WooCommerce → Settings → RoovaVIP**:
 ### The checkout discount and the free nights
 
 These two are the benefits the theme pays out itself, so they are worth being sure about before you
-type a number into either. **Both ship at 0 on every tier, Gold included** — what you give away is your
-decision, not the theme's.
+type a number into either. **Bronze ships with a 2% discount; everything else ships at 0**, Gold
+included. Bronze is the tier signing up puts a member on, and its 2% is what the checkout quotes to a
+guest without an account. The higher tiers start at nothing, because what you give away is your
+decision, not the theme's — but a member who climbs from Bronze to a tier left at 0% will stop getting
+the 2%, so give each tier at least Bronze's discount.
+
+**Already set up your tiers before this update?** Your saved settings are kept as they are, so Bronze
+stays at whatever you saved (0% unless you changed it). Set it to 2 under **WooCommerce → Settings →
+RoovaVIP** to switch the discount — and the checkout's sign-up price — on.
 
 * **Checkout discount** is a percentage off the booking total, taken automatically when a member on
   that tier reaches checkout.
@@ -428,8 +440,8 @@ decision, not the theme's.
 * **They can never come to more than the stay is worth.** Set a tier generously enough and a booking
   simply lands at zero; the free nights are honoured first and the percentage takes whatever is left.
 * **They stack with a coupon, safely.** The percentage comes off what is left after the coupon.
-* **Signed-out guests get nothing**, because there is no member to check a tier against. This is one
-  more reason to leave the sign-up invitation on the checkout page switched on.
+* **Signed-out guests get nothing**, because there is no member to check a tier against. They are
+  shown what they would pay as a new member instead, under the total, with a button to sign up.
 * Setting a member's tier by hand (below) sets both with it.
 * **Remove tier**, and the × beside a benefit, delete them. Delete every tier to switch RoovaVIP off
   entirely — the tab disappears from My account and the tier stops showing in the account header. Add
@@ -548,6 +560,9 @@ to that rule — those really do come off the total.) So only offer what you wil
   them. `roova_vip_discount_percent` and `roova_vip_free_nights` filter the figures per member,
   `roova_vip_discount_label` and `roova_vip_free_nights_label` rename the lines, and
   `roova_vip_discount_enabled` (false) switches both off while leaving the tiers untouched.
+  `roova_vip_signup_total` filters the member price quoted to a signed-out guest under the checkout
+  total (worked out by `roova_vip_signup_total()` from the entry tier, through the same
+  `roova_vip_cart_reductions()` the member discount uses).
 * Confirmation filters: `roova_require_email_verification` (false) goes back to signing new members
   in immediately, `roova_verification_lifetime` changes how long a link lasts,
   `roova_verification_email` rewrites the message, and `roova_verification_url` changes where the link

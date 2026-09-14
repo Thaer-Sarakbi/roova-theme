@@ -28,7 +28,7 @@ bin/build.sh                              # lint, then package dist/roova.zip
 bin/lint.sh                               # php -l over every theme file
 php tests/test-availability.php           # booking-logic checks (34 assertions, no WordPress)
 php tests/test-cashback.php               # cashback rules and balances (42 assertions, no WordPress)
-php tests/test-vip.php                    # VIP tiers, free nights and the discount (65 assertions, no WordPress)
+php tests/test-vip.php                    # VIP tiers, free nights and the discount (78 assertions, no WordPress)
 php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
 php bin/makepot.php roova roova/languages/roova.pot      # identical output, for machines without Python
@@ -43,8 +43,9 @@ the ledger's storage and `roova_account_stays()` as well, and gives each case it
 `roova_cashback_sync()` guards itself with a static, so a reused id would silently skip the sync.
 `test-vip.php` stubs `roova_account_completed_count()` so a member's tier can be set by hand,
 `get_current_user_id()` through a global so the signed-out case is reachable, and enough of `WC_Cart`
-— the lines, and a record of the fees it was asked to add — to price a stay and read back what the
-tier took off it.
+— the lines, a record of the fees it was asked to add, and totals taxed at one flat rate — to price a
+stay, read back what the tier took off it, and check the price quoted to a signed-out guest is the one
+a new member is then charged.
 
 `bin/build.sh` refuses to package if the lint fails, if `style.css` has lost its theme header, or if
 `screenshot.png` is missing.
@@ -611,9 +612,17 @@ leaving the tiers and the rail alone. The VIP tab draws both as its **first two 
 by `roova_vip_tier_benefits()` rather than typed, so what a member reads there cannot drift from what
 their checkout takes off.
 
-- **Every tier ships at 0% and 0 nights**, Gold included. The written benefits are promises the handoff
-  already made on the client's behalf; a percentage off every booking, or a night given away, is money
-  out of their till, and any default but zero would start paying it the moment the theme was activated.
+- **Bronze ships at 2%; every other tier at 0% and every tier at 0 nights**, Gold included. The 2% is
+  the client's own figure — asked for directly, as what signing up earns — and it is what the checkout
+  quotes a signed-out guest (see *Checkout*). Everything else is money out of their till that nobody
+  has agreed to, and any default but zero would start paying it the moment the theme was activated.
+  Side effect worth knowing: a member who climbs from Bronze to Silver drops from 2% to 0% unless the
+  client raises Silver. And a site whose tiers were already saved keeps its stored Bronze (0%), so the
+  discount and the checkout quote stay off there until someone sets it in the settings tab.
+- **The arithmetic lives in `roova_vip_cart_reductions()`**, which returns the lines without adding
+  them. `roova_vip_apply_cart_discount()` turns them into fees for a member; `roova_vip_signup_total()`
+  reads them for the entry tier (`roova_vip_signup_tier()`, the floor) to quote a guest. Keep both on
+  that one function, or the quoted price and the charged price can drift.
 - **`roova_vip_tiers()` distinguishes "no option" from "an empty array".** The defaults are returned
   only when the option is absent; an admin who deletes every row means it, and gets the VIP tab
   switched off rather than the defaults handed back on the next page load.
@@ -739,11 +748,22 @@ line is a booking.
 back into a pair on post; no such getter existed, so it rendered empty no matter how much the store
 knew about the guest. Adding a custom key here costs that prefill — take the pair, not a combined box.
 
-**`roova_checkout_signup_cta()` sits under "Payment options" for a signed-out guest**, offering
-membership. It is a **link, not a button**: anything that submits inside `form.checkout` would post the
-order, and a nested `<form>` would be dropped by the browser entirely — the same trap the summary
-avoids. Its copy is `checkout_signup_text` in the Customizer, and it hides itself for a member and
-wherever `roova_registration_open()` is false, so it never offers a door that is locked.
+**`roova_checkout_member_price()` quotes a signed-out guest the member price under the total** —
+"If you sign up, the total will be $710.01" plus a **Sign up** link back to checkout. It is the
+**only** sign-up prompt on the page: the old "Sign up, become a member and get rewards" card under
+Payment options (`roova_checkout_signup_cta()`, its `checkout_signup_text` Customizer setting and the
+`.roova-checkout__signup` CSS) was removed — asked for directly, don't put it back. The button is a
+**link, not a submit**, and sits in the summary, a sibling of `form.checkout`; it hides for a member and
+wherever `roova_registration_open()` is false, so it never offers a door that is locked. The figure is
+`roova_vip_signup_total()`: the entry tier's reductions from `roova_vip_cart_reductions()`, plus the
+tax that falls with them, taken off the grand total. The tax is the rooms' *effective* rate
+(`get_cart_contents_tax() / get_cart_contents_total()`), because WooCommerce splits a negative fee's
+tax across the items in proportion — so it holds for mixed or non-taxable rooms too. Verified live:
+guest quoted $710.01 on a $724.50 stay; a new member booking the same stay is charged $710.01, with a
+"Bronze discount (2%)" line. It returns null — and the notice is not drawn — for a member, with no
+programme, with `roova_vip_discount_enabled` off, or when the entry tier gives nothing: a lower price is
+only quoted when the checkout will honour it. It is drawn **inside `.roova-summary__totals`**, so it
+rides the same refresh fragment and follows a coupon. The figure is navy, not gold (3.39:1 on white).
 
 Four things here are load-bearing and easy to undo by accident:
 
@@ -756,6 +776,9 @@ Four things here are load-bearing and easy to undo by accident:
   handler WooCommerce bound to it once. So `review-order.php` renders **only** the line items — one
   root element — and `roova_checkout_totals()` is registered through
   `woocommerce_update_order_review_fragments`.
+- **The button says "Book now", not "Place order"** — `roova_order_button_text()` on
+  `woocommerce_order_button_text`, the same words every room is booked with. A gateway carrying its
+  own `order_button_text` ("Proceed to PayPal") still wins, because that text comes from the gateway.
 - **The total in the Place order button is part of its label string, not markup inside it.**
   WooCommerce rewrites the button with `.text()` on every payment-method change, reading the gateway's
   `data-order_button_text` or the button's own `data-value` — so `roova_place_order_label()` puts the
@@ -902,6 +925,11 @@ two are never loaded together and each page has to stand up alone.
 - **Releases:** `ROOVA_VERSION` in `functions.php` and `Version:` in `style.css` must match. Bumping it
   also re-runs the once-per-release setup on the next `admin_init` (`roova_setup_version` for the
   checkout page and tax rates, `roova_auth_version` for the two account pages).
+  **Bump it for any CSS or JS change that ships to a live site.** Every asset is enqueued with
+  `?ver=ROOVA_VERSION`, so an unchanged version means an unchanged URL: browsers, host caches and
+  caching plugins keep serving the old file while the new PHP prints markup it does not style. The
+  checkout member-price notice went out that way at 1.7.0 and rendered as bare text and a plain
+  link; 1.7.1 was the fix.
 - **Documentation:** `roova/README.md` ships to the client (setup, how conflict prevention works);
   the root `README.md` is for developers. Keep client-facing behaviour changes in the theme README.
 

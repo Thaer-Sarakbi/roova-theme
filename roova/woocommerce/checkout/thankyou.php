@@ -2,7 +2,7 @@
 /**
  * Order received.
  *
- * Where Place order lands. It wears the same header and banner as checkout —
+ * Where Book now lands. It wears the same header and banner as checkout —
  * see roova_checkout_template(), which routes this view through the theme's
  * own document too.
  *

@@ -1,6 +1,6 @@
 <?php
 /**
- * Payment options, the terms checkbox and the Place order button.
+ * Payment options, the terms checkbox and the Book now button.
  *
  * The cards come from whatever gateways are enabled in WooCommerce → Settings →
  * Payments: their titles, descriptions, icons and order are all the store's own.

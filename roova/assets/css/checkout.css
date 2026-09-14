@@ -200,71 +200,6 @@
 	color: var(--roova-faint);
 }
 
-/* ------------------------------------------------ Membership invitation */
-
-/*
- * Under "Payment options", for a guest with no account. Drawn as an outlined
- * card rather than a filled button on purpose: the only filled button on this
- * page is Place order, and a second solid one beside it would compete with the
- * thing the guest actually came to do.
- */
-.roova-checkout__signup {
-	margin-top: 28px;
-}
-
-.roova-checkout__signup-link {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-	padding: 16px 20px;
-	border: 1px solid var(--roova-card-line);
-	border-radius: 10px;
-	background: var(--roova-sand);
-	color: var(--roova-deep);
-	font-size: .91rem;
-	font-weight: 500;
-	line-height: 1.4;
-	transition: border-color .25s ease, background .25s ease, transform .25s var(--roova-ease);
-}
-
-.roova-checkout__signup-link:hover {
-	border-color: var(--roova-deep);
-	background: #fff;
-	color: var(--roova-deep);
-	transform: translateY(-1px);
-}
-
-.roova-checkout__signup-text {
-	flex: 1;
-	min-width: 0;
-}
-
-.roova-checkout__signup-link .roova-icon:first-child {
-	flex: none;
-	color: var(--roova-gold);
-}
-
-/* The arrow nudges along on hover, the way the other forward links do. */
-.roova-checkout__signup-link .roova-icon:last-child {
-	flex: none;
-	transition: transform .25s var(--roova-ease);
-}
-
-.roova-checkout__signup-link:hover .roova-icon:last-child {
-	transform: translateX(3px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.roova-checkout__signup-link,
-	.roova-checkout__signup-link .roova-icon:last-child {
-		transition: none;
-	}
-
-	.roova-checkout__signup-link:hover {
-		transform: none;
-	}
-}
-
 /* ------------------------------------------------------------------ Fields */
 
 .roova-fields {
@@ -576,7 +511,7 @@ textarea.roova-field__input {
 	font-size: .88rem;
 }
 
-/* ------------------------------------------------------------ Place order */
+/* --------------------------------------------------------------- Book now */
 
 .roova-terms {
 	margin-top: 22px;
@@ -948,6 +883,75 @@ textarea.roova-field__input {
 	text-align: right;
 }
 
+/* ------------------------------------------------------------ Member price */
+
+/*
+ * Under the total, for a guest without an account. The figure is navy, not
+ * gold: gold on this card measures 3.39:1, under AA at this size. The button is
+ * outlined like the coupon's Apply, because Book now is the page's one
+ * filled button and nothing should compete with it.
+ */
+.roova-summary__member {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 16px;
+	padding: 16px 26px;
+	border-top: 1px solid var(--roova-divider);
+	background: var(--roova-sand);
+}
+
+.roova-summary__member-text {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	flex: 1 1 200px;
+	min-width: 0;
+	margin: 0;
+	font-size: .88rem;
+	line-height: 1.45;
+	color: var(--roova-deep);
+}
+
+.roova-summary__member-text .roova-icon {
+	flex: none;
+	margin-top: 1px;
+	color: var(--roova-gold);
+}
+
+.roova-summary__member-total,
+.roova-summary__member-total > .woocommerce-Price-amount {
+	font-weight: 700;
+	color: var(--roova-deep);
+	white-space: nowrap;
+}
+
+.roova-summary__member-link {
+	flex: none;
+	padding: 9px 18px;
+	border: 1px solid var(--roova-deep);
+	border-radius: 6px;
+	background: transparent;
+	color: var(--roova-deep);
+	font-size: .86rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: background .25s ease, color .25s ease;
+}
+
+.roova-summary__member-link:hover,
+.roova-summary__member-link:focus-visible {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.roova-summary__member-link {
+		transition: none;
+	}
+}
+
 /* --------------------------------------------------------------- Rate hold */
 
 .roova-summary__hold {
@@ -1192,6 +1196,7 @@ textarea.roova-field__input {
 	.roova-coupon__form,
 	.roova-summary__rows,
 	.roova-summary__total,
+	.roova-summary__member,
 	.roova-summary__hold {
 		padding-left: 20px;
 		padding-right: 20px;

@@ -88,19 +88,34 @@ function roova_room_rate( $room_id ) {
 }
 
 /**
- * Just enough of WooCommerce's cart to price a stay against: the lines, and a
- * record of the fees the theme asked it to add.
+ * Just enough of WooCommerce's cart to price a stay against: the lines, a
+ * record of the fees the theme asked it to add, and totals taxed at one flat
+ * rate — which is what the seeded Tourism Tax and SST come to on a room.
  */
 class WC_Cart {
-	public $lines = array();
-	public $fees  = array();
+	public $lines    = array();
+	public $fees     = array();
+	public $tax_rate = 0.0;
 
-	public function __construct( $lines = array() ) {
-		$this->lines = $lines;
+	public function __construct( $lines = array(), $tax_rate = 0.0 ) {
+		$this->lines    = $lines;
+		$this->tax_rate = $tax_rate;
 	}
 
 	public function get_cart() {
 		return $this->lines;
+	}
+
+	public function get_cart_contents_total() {
+		return array_sum( array_column( $this->lines, 'line_total' ) );
+	}
+
+	public function get_cart_contents_tax() {
+		return round( $this->get_cart_contents_total() * $this->tax_rate, 2 );
+	}
+
+	public function get_total( $context = 'view' ) {
+		return $this->get_cart_contents_total() + $this->get_cart_contents_tax();
 	}
 
 	public function add_fee( $name, $amount, $taxable = false, $tax_class = '' ) {
@@ -325,6 +340,63 @@ $GLOBALS['roova_current_user'] = 0;
 $guest = new WC_Cart( array( roova_test_line( 81, 3 ) ) );
 roova_vip_apply_cart_discount( $guest );
 check( 'a guest gets no lines at all', $guest->fees, array() );
+
+/* ------------------------------------------ what signing up would save */
+
+/*
+ * The checkout tells a guest without an account what their stay would come to
+ * as a new member. It has to be the figure the checkout would then charge, so
+ * the member half of each case runs the real discount against the same cart.
+ */
+$GLOBALS['roova_options'] = array(); // The shipped tiers.
+
+check( 'Bronze ships at 2%', roova_vip_tier_discount( roova_vip_tiers()[0] ), 2.0 );
+check( 'and every tier above it at nothing', array_map( 'roova_vip_tier_discount', array_slice( roova_vip_tiers(), 1 ) ), array( 0.0, 0.0, 0.0, 0.0 ) );
+check( 'Bronze is the tier signing up puts a member on', roova_vip_signup_tier()['name'], 'Bronze' );
+
+// Three nights at $210, taxed at 15%: $630 + $94.50 = $724.50.
+$GLOBALS['roova_current_user'] = 0;
+$taxed = new WC_Cart( array( roova_test_line( 81, 3 ) ), 0.15 );
+
+check( 'a guest is quoted 2% off the taxed total', roova_vip_signup_total( $taxed ), 710.01 );
+
+$GLOBALS['roova_current_user']    = 41;
+$GLOBALS['roova_completed'][ 41 ] = 0;
+$member = new WC_Cart( array( roova_test_line( 81, 3 ) ), 0.15 );
+roova_vip_apply_cart_discount( $member );
+
+check( 'and a new member is charged it: one Bronze line', array_column( $member->fees, 'name' ), array( 'Bronze discount (2%)' ) );
+check( 'worth 2% of the rooms', $member->fees[0]['amount'], -12.6 );
+check(
+	'which, with the tax that falls with it, is exactly the quoted total',
+	round( $member->get_total() + $member->fees[0]['amount'] * ( 1 + $member->tax_rate ), 2 ),
+	710.01
+);
+
+check( 'a member is not told what signing up would save', roova_vip_signup_total( $taxed ), null );
+
+$GLOBALS['roova_current_user'] = 0;
+
+$untaxed = new WC_Cart( array( roova_test_line( 81, 3 ) ) );
+check( 'with no tax, it is 2% of the rooms', roova_vip_signup_total( $untaxed ), 617.4 );
+
+check( 'an empty cart is quoted nothing', roova_vip_signup_total( new WC_Cart() ), null );
+
+// An entry tier with free nights is quoted those too, by the same arithmetic.
+$GLOBALS['roova_options']['roova_vip_tiers'] = array(
+	array( 'name' => 'Bronze', 'min' => 0, 'discount' => 10, 'free_nights' => 1 ),
+);
+check( 'free nights are part of the quote: 724.50 - (210 + 63) x 1.15', roova_vip_signup_total( $taxed ), 410.55 );
+
+// An entry tier that gives nothing makes no claim at all.
+$GLOBALS['roova_options']['roova_vip_tiers'] = array(
+	array( 'name' => 'Bronze', 'min' => 0, 'discount' => 0 ),
+	array( 'name' => 'VIP Gold', 'min' => 5, 'discount' => 10 ),
+);
+check( 'a Bronze tier at 0% is quoted nothing, whatever Gold gives', roova_vip_signup_total( $taxed ), null );
+
+$GLOBALS['roova_options']['roova_vip_tiers'] = array();
+check( 'no programme, no quote', roova_vip_signup_total( $taxed ), null );
 
 /* ------------------------------------------------------------- the label */
 
