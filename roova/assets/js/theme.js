@@ -820,6 +820,54 @@
 		} ).catch( function () {} );
 	}() );
 
+	/* -------------------------------------------------------- review form */
+
+	/*
+	 * The overall figure above "Write a review": the average of the three
+	 * sub-scores, kept up to date as they are picked. The server computes the
+	 * same number from the posted values — this only spares a guest the
+	 * arithmetic before they submit, so a blocked script costs nothing.
+	 */
+	( function () {
+		var scores = qs( '[data-roova-rform-scores]' );
+		var out = qs( '[data-roova-rform-overall]' );
+
+		if ( ! scores || ! out ) {
+			return;
+		}
+
+		var placeholder = out.textContent;
+		var rows = qsa( '.roova-rform__row', scores );
+
+		scores.addEventListener( 'change', function () {
+			var total = 0;
+			var rated = 0;
+
+			rows.forEach( function ( row ) {
+				var picked = qs( 'input:checked', row );
+				if ( picked ) {
+					total += parseInt( picked.value, 10 ) || 0;
+					rated++;
+				}
+			} );
+
+			/*
+			 * Only a complete set is an overall score. Two of three averaged is
+			 * a number the guest would have to unlearn the moment they pick the
+			 * third, so the dash stays until every row is rated.
+			 */
+			if ( ! rows.length || rated !== rows.length ) {
+				out.textContent = placeholder;
+				return;
+			}
+
+			out.textContent = ( total / rated ).toLocaleString( undefined, {
+				minimumFractionDigits: 1,
+				maximumFractionDigits: 1
+			} );
+		} );
+	}() );
+
 	/* -------------------------------------------------------------- likes */
 
 	/*

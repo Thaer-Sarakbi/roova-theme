@@ -9,6 +9,7 @@
 	--roova-deep: #0d3a52;
 	--roova-ocean: #1d6f96;
 	--roova-gold: #b4823c;
+	--roova-gold-light: #d9a75a;
 	--roova-sand: #f6f1e8;
 	--roova-ink: #16302f;
 	--roova-paper: #ffffff;
@@ -2099,6 +2100,548 @@ p {
 	height: 100%;
 	background: var(--roova-ocean);
 	border-radius: 4px;
+}
+
+/* ------------------------------------------------- Guest reviews section */
+
+.roova-greviews__head {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+}
+
+.roova-greviews__heading .roova-card__title {
+	margin-bottom: 6px;
+}
+
+.roova-greviews__sub {
+	margin: 0;
+	font-size: .86rem;
+	color: var(--roova-muted);
+}
+
+.roova-greviews__summary {
+	display: flex;
+	align-items: center;
+	gap: 26px;
+	flex-wrap: wrap;
+}
+
+.roova-greviews__avg {
+	display: flex;
+	align-items: baseline;
+	gap: 7px;
+	margin: 0;
+}
+
+.roova-greviews__avg span {
+	font-family: var(--roova-font-display);
+	font-size: 2.4rem;
+	line-height: 1;
+	color: var(--roova-deep);
+}
+
+.roova-greviews__avg small {
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-greviews__breakdown {
+	display: flex;
+	gap: 22px;
+	flex-wrap: wrap;
+	margin: 0;
+}
+
+.roova-greviews__breakdown dt {
+	font-size: .68rem;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-greviews__breakdown dd {
+	margin: 4px 0 0;
+	font-size: 1.05rem;
+	color: var(--roova-soft);
+}
+
+/* The confirmation the redirect carries back after a review is posted. */
+.roova-greviews__flash {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 20px 0 0;
+	padding: 13px 16px;
+	border-radius: 10px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	font-size: .88rem;
+}
+
+.roova-greviews__flash .roova-icon {
+	color: var(--roova-gold-light);
+	flex-shrink: 0;
+}
+
+/* Why there is no form: signed out, no completed stay, or already reviewed. */
+.roova-greviews__note {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	flex-wrap: wrap;
+	margin: 20px 0 0;
+	padding: 14px 16px;
+	border: 1px solid var(--roova-line);
+	border-radius: 10px;
+	background: var(--roova-sand);
+	font-size: .88rem;
+	color: var(--roova-soft);
+}
+
+.roova-greviews__note .roova-icon {
+	color: var(--roova-gold);
+	flex-shrink: 0;
+}
+
+.roova-greviews__note a {
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.roova-greviews__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-top: 30px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--roova-line);
+}
+
+.roova-greviews__listing {
+	margin: 0;
+	font-size: 1.15rem;
+}
+
+.roova-greviews__sort {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	font-size: .8rem;
+	color: var(--roova-faint);
+}
+
+.roova-greviews__sort-link {
+	color: var(--roova-muted);
+	padding-bottom: 2px;
+	border-bottom: 1px solid transparent;
+	transition: color .25s ease, border-color .25s ease;
+}
+
+.roova-greviews__sort-link:hover {
+	color: var(--roova-deep);
+}
+
+.roova-greviews__sort-link.is-active {
+	color: var(--roova-deep);
+	font-weight: 600;
+	border-bottom-color: var(--roova-gold);
+}
+
+.roova-greviews__more {
+	margin-top: 22px;
+}
+
+.roova-greviews__mine {
+	margin-top: 26px;
+}
+
+.roova-greviews__mine .roova-greview {
+	border-bottom: 0;
+	padding-bottom: 0;
+}
+
+/*
+ * A review still in moderation, shown to its author alone. Dashed, like the
+ * same card on the account page, so it reads as not-yet-published rather than
+ * as one more review among the others.
+ */
+.roova-greview--pending {
+	margin-top: 12px;
+	padding: 20px;
+	border: 1px dashed var(--roova-hairline-strong);
+	border-radius: 12px;
+	background: var(--roova-cream);
+}
+
+.roova-greview__pending {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	margin: 14px 0 0;
+	font-size: .8rem;
+	color: var(--roova-muted);
+}
+
+.roova-greview__pending .roova-icon {
+	color: var(--roova-gold);
+	flex-shrink: 0;
+}
+
+/* ------------------------------------------------------- A single review */
+
+.roova-greview {
+	padding: 24px 0;
+	border-bottom: 1px solid var(--roova-hairline);
+}
+
+.roova-greview:last-child {
+	border-bottom: 0;
+	padding-bottom: 4px;
+}
+
+.roova-greview__head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 18px;
+	flex-wrap: wrap;
+}
+
+.roova-greview__who {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.roova-greview__avatar {
+	width: 40px;
+	height: 40px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--roova-sand);
+	color: var(--roova-gold);
+	font-family: var(--roova-font-display);
+	font-size: 1.05rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.roova-greview__name {
+	margin: 0;
+	font-size: .95rem;
+	font-weight: 500;
+}
+
+.roova-greview__meta {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin: 3px 0 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-greview__verified {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	color: var(--roova-muted);
+	white-space: nowrap;
+}
+
+.roova-greview__verified .roova-icon {
+	color: var(--roova-gold);
+}
+
+.roova-greview__score {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
+}
+
+/*
+ * roova_review_stars() splits the row into a filled run and an unfilled one.
+ * account.css paints them for the Reviews tab; the hotel page needs its own
+ * copy, or every rating shows five identical stars.
+ */
+.roova-greview__score .roova-review__stars {
+	font-size: 1rem;
+	letter-spacing: 2px;
+	line-height: 1;
+}
+
+.roova-greview__score .roova-review__stars-on {
+	color: var(--roova-gold-light);
+}
+
+.roova-greview__score .roova-review__stars-off {
+	color: #dfe4e6;
+}
+
+.roova-greview__overall {
+	padding: 4px 11px;
+	border-radius: 999px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	font-size: .82rem;
+}
+
+.roova-greview__scores {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-top: 15px;
+}
+
+.roova-greview__pill {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 5px 12px;
+	border: 1px solid var(--roova-hairline);
+	border-radius: 999px;
+	background: var(--roova-cream);
+	font-size: .76rem;
+	color: var(--roova-faint);
+}
+
+.roova-greview__pill strong {
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-greview__body {
+	max-width: 68ch;
+	margin: 14px 0 0;
+	font-size: .93rem;
+	line-height: 1.7;
+	color: var(--roova-soft);
+	white-space: pre-line;
+}
+
+/* -------------------------------------------------- Write a review form */
+
+.roova-rform {
+	margin-top: 22px;
+	border: 1px solid var(--roova-line);
+	border-radius: 12px;
+	padding: 20px 22px 22px;
+}
+
+.roova-rform__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--roova-hairline);
+}
+
+.roova-rform__title {
+	margin: 0;
+	font-size: 1.15rem;
+}
+
+.roova-rform__overall {
+	display: flex;
+	align-items: baseline;
+	gap: 7px;
+	margin: 0;
+}
+
+.roova-rform__overall span {
+	font-family: var(--roova-font-display);
+	font-size: 1.6rem;
+	line-height: 1;
+	color: var(--roova-deep);
+}
+
+.roova-rform__overall small {
+	font-size: .76rem;
+	color: var(--roova-faint);
+}
+
+.roova-rform__error {
+	margin: 14px 0 0;
+	color: #b3261e;
+	font-size: .84rem;
+	font-weight: 600;
+}
+
+.roova-rform__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px 20px;
+	flex-wrap: wrap;
+	margin: 0;
+	padding: 15px 0;
+	border: 0;
+	border-bottom: 1px solid var(--roova-hairline);
+}
+
+.roova-rform__label {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	flex: 1 1 200px;
+	min-width: 0;
+}
+
+.roova-rform__label .roova-icon {
+	color: var(--roova-gold);
+	flex-shrink: 0;
+}
+
+.roova-rform__label strong {
+	display: block;
+	font-size: .95rem;
+	font-weight: 500;
+}
+
+.roova-rform__label small {
+	display: block;
+	margin-top: 2px;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-rform__field {
+	display: block;
+	margin-top: 18px;
+}
+
+.roova-rform__caption {
+	display: block;
+	margin-bottom: 6px;
+	font-size: .74rem;
+	letter-spacing: .02em;
+	color: var(--roova-muted);
+}
+
+.roova-rform__field textarea {
+	display: block;
+	width: 100%;
+	padding: 12px 14px;
+	border: 1px solid var(--roova-hairline-strong);
+	border-radius: 8px;
+	background: #fff;
+	font: inherit;
+	font-size: .93rem;
+	line-height: 1.65;
+	color: var(--roova-ink);
+	resize: vertical;
+	transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.roova-rform__field textarea:focus {
+	outline: none;
+	border-color: var(--roova-deep);
+	box-shadow: 0 0 0 3px rgba(13, 58, 82, .08);
+}
+
+.roova-rform__foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin-top: 18px;
+}
+
+.roova-rform__legal {
+	flex: 1 1 200px;
+	margin: 0;
+	font-size: .78rem;
+	line-height: 1.6;
+	color: var(--roova-faint);
+}
+
+/* ------------------------------------------------------ The star pickers */
+
+.roova-rate__stars {
+	display: flex;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+.roova-rate__star {
+	cursor: pointer;
+	font-size: 1.5rem;
+	line-height: 1;
+	color: #dfe4e6;
+	transition: color .2s ease, transform .2s var(--roova-pop);
+}
+
+.roova-rate__star input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+
+.roova-rate__star:hover {
+	transform: scale(1.1);
+}
+
+/*
+ * A star lights up with everything before it. CSS can only look forwards from a
+ * sibling, so the rule is written the other way round: light a star that has a
+ * *later* sibling which is checked (or hovered). The radios are what the form
+ * posts, so a browser without :has still records the rating — it just does not
+ * paint the run.
+ */
+.roova-rate__star:has(input:checked),
+.roova-rate__star:has(~ .roova-rate__star input:checked) {
+	color: var(--roova-gold-light);
+}
+
+/* Hovering previews a rating, and overrides whatever is currently chosen. */
+.roova-rate__stars:hover .roova-rate__star:hover,
+.roova-rate__stars:hover .roova-rate__star:has(~ .roova-rate__star:hover) {
+	color: var(--roova-gold-light);
+}
+
+.roova-rate__stars:hover .roova-rate__star:not(:hover):not(:has(~ .roova-rate__star:hover)) {
+	color: #dfe4e6;
+}
+
+.roova-rate__star:has(input:focus-visible) {
+	outline: 2px solid var(--roova-deep);
+	outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+	.roova-greviews__summary,
+	.roova-greview__head,
+	.roova-rform__row {
+		align-items: flex-start;
+	}
+
+	.roova-rform__row {
+		flex-direction: column;
+	}
+
+	/*
+	 * flex-basis is a *height* once the row stacks, so the 200px that keeps the
+	 * label beside its stars on a wide screen would otherwise make it a 200px
+	 * tall box with the stars stranded at the bottom of it.
+	 */
+	.roova-rform__label {
+		flex: 0 0 auto;
+	}
 }
 
 /* --------------------------------------------------------- Booking box */

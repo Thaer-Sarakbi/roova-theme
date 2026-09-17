@@ -28,13 +28,18 @@ Upload `dist/roova.zip` under **Appearance → Themes → Add New → Upload The
 
 ```bash
 php tests/test-availability.php    # date maths, per-night occupancy, landmark parsing
+php tests/test-cashback.php        # cashback rules, matching and balances
+php tests/test-vip.php             # VIP tiers, free nights and the checkout discount
+php tests/test-received.php        # confirmation: who may see it, cashback forecast, next steps
+php tests/test-load.php            # loads every file against WP stubs; catches include-time fatals
 bin/lint.sh                        # syntax check every PHP file
 ```
 
-`tests/test-availability.php` stubs the handful of WordPress functions the pure logic touches, so it
-runs anywhere PHP does. It covers the rules that keep bookings honest — most importantly that a stay
-costs inventory on its busiest night, and that a same-day turnaround (one guest out, one guest in) is
-not a conflict.
+Each script stubs the handful of WordPress functions the pure logic touches, so they run anywhere PHP
+does. `test-availability.php` covers the rules that keep bookings honest — most importantly that a
+stay costs inventory on its busiest night, and that a same-day turnaround (one guest out, one guest
+in) is not a conflict. `test-received.php` covers the confirmation page's gate: the order key alone
+must never open a booking to whoever is holding the link.
 
 ## Run it on a real site
 

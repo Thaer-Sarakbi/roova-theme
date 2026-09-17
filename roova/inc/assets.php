@@ -58,6 +58,16 @@ function roova_enqueue_checkout_assets() {
 		return;
 	}
 
+	/*
+	 * is_checkout() is true on the confirmation too, but that page is its own
+	 * document now with its own stylesheet — see roova_enqueue_received_assets().
+	 * Nothing on it wears a checkout class, so checkout.css would be a page's
+	 * worth of rules with nothing to style.
+	 */
+	if ( function_exists( 'roova_is_order_received' ) && roova_is_order_received() ) {
+		return;
+	}
+
 	wp_enqueue_style( 'roova-checkout', ROOVA_URI . 'assets/css/checkout.css', array( 'roova-style' ), ROOVA_VERSION );
 
 	// The order-received page has no form to validate and no countdown to run.
@@ -193,6 +203,29 @@ function roova_enqueue_order_assets() {
 	wp_enqueue_script( 'roova-order', ROOVA_URI . 'assets/js/order.js', array(), ROOVA_VERSION, true );
 }
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_order_assets', 20 );
+
+/**
+ * The confirmation's own stylesheet.
+ *
+ * Only the order-received view, and only while the theme is drawing it in its
+ * own document — filter `roova_use_order_received_template` off and the page
+ * goes back to checkout.php, where checkout.css is the right stylesheet and
+ * this one has no markup to style.
+ *
+ * assets/js/order.js is shared with the order page rather than copied: both
+ * pages print a voucher, and the script's whole job is the one button that does
+ * it. Registering it under the same handle means it loads once, whichever page
+ * the guest is on.
+ */
+function roova_enqueue_received_assets() {
+	if ( ! function_exists( 'roova_is_order_received' ) || ! roova_is_order_received() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-received', ROOVA_URI . 'assets/css/received.css', array( 'roova-style' ), ROOVA_VERSION );
+	wp_enqueue_script( 'roova-order', ROOVA_URI . 'assets/js/order.js', array(), ROOVA_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_received_assets', 20 );
 
 /**
  * The pinned map libraries, with the hashes their tags are checked against.

@@ -1,0 +1,993 @@
+/**
+ * Order received.
+ *
+ * Loaded only on the confirmation (see roova_enqueue_received_assets), on top
+ * of theme.css — every colour here is one of its tokens.
+ *
+ * Its own token header rather than a shared block with order.css: each page in
+ * this theme that prints its own document ships its own stylesheet — checkout,
+ * auth, account and view-order all do — and this one has to stand up when none
+ * of the others is loaded. The repetition is the convention, not an oversight.
+ *
+ * The print rules at the foot are load-bearing, not decoration: "Download
+ * voucher" is a print, so what the printer puts on paper *is* the voucher.
+ */
+
+.roova-received-page {
+	--roova-divider: rgba(13, 58, 82, .1);
+	--roova-card-line: rgba(13, 58, 82, .14);
+	--roova-ok: #2f7d5f;
+	--roova-warn: #b4823c;
+	--roova-stop: #b23b2e;
+
+	background: #fff;
+	text-rendering: optimizeLegibility;
+}
+
+/* ------------------------------------------------------------- Top bar */
+
+.roova-rec__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	padding: 18px 48px;
+	border-bottom: 1px solid var(--roova-hairline);
+	background: #fff;
+}
+
+.roova-rec__logo {
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.015em;
+	color: var(--roova-deep);
+}
+
+.roova-rec__logo em {
+	font-style: normal;
+	color: var(--roova-gold);
+}
+
+.roova-rec__nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: .81rem;
+	color: var(--roova-muted);
+	transition: color .25s var(--roova-ease);
+}
+
+.roova-rec__nav:hover {
+	color: var(--roova-deep);
+}
+
+.roova-rec__nav .roova-icon {
+	flex: none;
+}
+
+/* --------------------------------------------------------------- Shell */
+
+.roova-rec {
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 40px 32px 80px;
+}
+
+.roova-rec .woocommerce-notices-wrapper {
+	margin-bottom: 24px;
+}
+
+/* ---------------------------------------------------------------- Hero */
+
+.roova-rec__hero {
+	display: flex;
+	gap: 22px;
+	align-items: flex-start;
+	padding: 30px 34px 32px;
+	border-radius: 14px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	animation: roova-rec-rise .7s var(--roova-ease) both;
+}
+
+/* A failure is not a darker success: the abyss, and no ring around the seal. */
+.roova-rec__hero--failed {
+	background: var(--roova-abyss);
+}
+
+.roova-rec__seal {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	background: rgba(217, 167, 90, .16);
+	color: #d9a75a;
+}
+
+/*
+ * The ring is the page's one bit of celebration, so only a confirmed booking
+ * gets it. An unpaid or failed order is waiting on something.
+ */
+.roova-rec__hero--ok .roova-rec__seal {
+	animation: roova-rec-ring 2.6s ease-out infinite;
+}
+
+.roova-rec__hero--failed .roova-rec__seal {
+	background: rgba(178, 59, 46, .18);
+	color: #e0897c;
+}
+
+.roova-rec__hero-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-rec__title {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 2rem;
+	line-height: 1.1;
+	letter-spacing: -.015em;
+	color: var(--roova-cream);
+}
+
+.roova-rec__sub {
+	margin: 10px 0 0;
+	font-size: .91rem;
+	line-height: 1.65;
+	color: rgba(251, 248, 243, .78);
+	/* An email address has no spaces to break at. */
+	overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------- Buttons */
+
+.roova-rec__actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 20px;
+	flex-wrap: wrap;
+}
+
+.roova-rec__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 13px 22px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	font-family: var(--roova-font-body);
+	font-size: .88rem;
+	font-weight: 500;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		background .3s var(--roova-ease),
+		color .25s var(--roova-ease),
+		border-color .25s var(--roova-ease),
+		transform .3s var(--roova-ease),
+		box-shadow .3s var(--roova-ease);
+}
+
+.roova-rec__btn .roova-icon {
+	flex: none;
+}
+
+/* Cream on navy: the panel is the dark surface, so the button is the light one. */
+.roova-rec__btn--light {
+	background: var(--roova-cream);
+	color: var(--roova-deep);
+}
+
+.roova-rec__btn--light:hover {
+	background: #fff;
+	color: var(--roova-deep);
+	transform: translateY(-2px);
+	box-shadow: 0 14px 26px -16px rgba(0, 0, 0, .5);
+}
+
+.roova-rec__btn--light:active {
+	transform: translateY(0);
+}
+
+.roova-rec__btn--outline {
+	border-color: rgba(251, 248, 243, .32);
+	color: var(--roova-cream);
+}
+
+.roova-rec__btn--outline:hover {
+	border-color: rgba(251, 248, 243, .6);
+	background: rgba(251, 248, 243, .08);
+	color: var(--roova-cream);
+}
+
+/* --------------------------------------------------------------- Facts */
+
+.roova-rec__facts {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1px;
+	margin: 26px 0 0;
+	padding: 0;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	overflow: hidden;
+	list-style: none;
+
+	/* The hairlines between tiles are the grid gap showing through. */
+	background: var(--roova-divider);
+	animation: roova-rec-rise .75s var(--roova-ease) .06s both;
+}
+
+.roova-rec__fact {
+	padding: 20px 22px 22px;
+	background: #fff;
+}
+
+.roova-rec__fact-label {
+	display: block;
+	font-size: .69rem;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-rec__fact-value {
+	display: block;
+	margin-top: 8px;
+	font-family: var(--roova-font-display);
+	font-size: 1.44rem;
+	font-weight: 400;
+	line-height: 1.2;
+	letter-spacing: -.01em;
+	color: var(--roova-ink);
+}
+
+/*
+ * Direct child only. wc_price() is a nest of spans and a descendant rule here
+ * would land on the currency symbol and put it on a line of its own — the trap
+ * CLAUDE.md documents.
+ */
+.roova-rec__fact-value > .amount,
+.roova-rec__line-total > .amount,
+.roova-rec__total-value > .amount {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	color: inherit;
+}
+
+/* The status tile is the only one that carries a colour. */
+.roova-rec__fact--upcoming .roova-rec__fact-value {
+	color: var(--roova-ocean);
+}
+
+.roova-rec__fact--completed .roova-rec__fact-value {
+	color: var(--roova-ok);
+}
+
+.roova-rec__fact--payment .roova-rec__fact-value {
+	color: var(--roova-warn);
+}
+
+.roova-rec__fact--cancelled .roova-rec__fact-value {
+	color: var(--roova-stop);
+}
+
+/* ---------------------------------------------------------------- Grid */
+
+.roova-rec__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
+	gap: 36px;
+	align-items: start;
+	margin-top: 38px;
+}
+
+.roova-rec__main {
+	min-width: 0;
+	animation: roova-rec-rise .85s var(--roova-ease) .12s both;
+}
+
+.roova-rec__side {
+	display: grid;
+	gap: 20px;
+	animation: roova-rec-rise .95s var(--roova-ease) .18s both;
+}
+
+.roova-rec__heading {
+	margin: 0 0 16px;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.63rem;
+	line-height: 1.2;
+	letter-spacing: -.01em;
+	color: var(--roova-ink);
+}
+
+.roova-rec__card + .roova-rec__heading,
+.roova-rec__steps + .roova-rec__heading {
+	margin-top: 34px;
+}
+
+/* ----------------------------------------------------------- Stay card */
+
+.roova-rec__card {
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	overflow: hidden;
+	background: #fff;
+}
+
+.roova-rec__line {
+	display: flex;
+	gap: 20px;
+	padding: 22px;
+}
+
+.roova-rec__line + .roova-rec__line {
+	border-top: 1px solid var(--roova-hairline);
+}
+
+.roova-rec__thumb {
+	flex: none;
+	width: 118px;
+	height: 118px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--roova-line);
+}
+
+.roova-rec__thumb img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.roova-rec__line-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.roova-rec__line-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.roova-rec__room {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.44rem;
+	line-height: 1.2;
+	letter-spacing: -.01em;
+	color: var(--roova-deep);
+}
+
+.roova-rec__room-meta {
+	margin: 4px 0 0;
+	font-size: .81rem;
+	color: var(--roova-faint);
+}
+
+.roova-rec__line-total {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-size: 1.38rem;
+	color: var(--roova-ink);
+	white-space: nowrap;
+}
+
+/* --------------------------------------------------------- Stay facts */
+
+.roova-rec__stay-facts {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 13px 22px;
+	margin-top: 16px;
+	padding-top: 15px;
+	border-top: 1px solid var(--roova-hairline);
+}
+
+.roova-rec__stay-fact {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.roova-rec__stay-fact .roova-icon {
+	flex: none;
+	margin-top: 3px;
+	color: var(--roova-gold);
+}
+
+.roova-rec__stay-label,
+.roova-rec__stay-value {
+	display: block;
+}
+
+.roova-rec__stay-label {
+	font-size: .72rem;
+	letter-spacing: .02em;
+	color: var(--roova-faint);
+}
+
+.roova-rec__stay-value {
+	margin-top: 2px;
+	font-size: .84rem;
+	color: var(--roova-ink);
+}
+
+/* -------------------------------------------------------------- Totals */
+
+.roova-rec__totals {
+	display: grid;
+	gap: 11px;
+	padding: 18px 22px;
+	border-top: 1px solid var(--roova-divider);
+	background: rgba(13, 58, 82, .02);
+	font-size: .88rem;
+	color: var(--roova-soft);
+}
+
+.roova-rec__row {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.roova-rec__row > span:last-child {
+	color: var(--roova-ink);
+	white-space: nowrap;
+}
+
+.roova-rec__row--discount,
+.roova-rec__row--discount > span:last-child {
+	color: var(--roova-gold);
+}
+
+.roova-rec__total {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 19px 22px 22px;
+	border-top: 1px solid var(--roova-divider);
+}
+
+.roova-rec__total-label {
+	font-family: var(--roova-font-display);
+	font-size: 1.5rem;
+	color: var(--roova-ink);
+}
+
+.roova-rec__total-value {
+	font-family: var(--roova-font-display);
+	font-size: 1.69rem;
+	color: var(--roova-deep);
+	white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- Steps */
+
+.roova-rec__steps {
+	display: grid;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: none;
+}
+
+.roova-rec__step {
+	display: flex;
+	gap: 15px;
+	align-items: flex-start;
+	padding: 15px 0;
+	border-bottom: 1px solid var(--roova-hairline);
+}
+
+.roova-rec__step:first-child {
+	padding-top: 0;
+}
+
+.roova-rec__step-num {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	margin-top: 1px;
+	border-radius: 50%;
+	background: rgba(13, 58, 82, .06);
+	font-size: .78rem;
+	font-weight: 500;
+	color: var(--roova-deep);
+}
+
+.roova-rec__step-body {
+	min-width: 0;
+}
+
+.roova-rec__step-title {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0;
+	font-size: .91rem;
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-rec__step-title .roova-icon {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+.roova-rec__step-note {
+	margin: 4px 0 0;
+	padding-left: 24px;
+	font-size: .81rem;
+	line-height: 1.6;
+	color: var(--roova-faint);
+	text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- Gateway
+ *
+ * Whatever the payment gateway prints — bank transfer puts its account details
+ * here. Its markup is not ours, so this only gives it a surface and tames the
+ * headings and tables it is most likely to bring.
+ */
+
+.roova-rec__gateway {
+	margin-top: 28px;
+	padding: 22px 24px 24px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	background: rgba(13, 58, 82, .02);
+	font-size: .88rem;
+	color: var(--roova-soft);
+}
+
+.roova-rec__gateway > :first-child {
+	margin-top: 0;
+}
+
+.roova-rec__gateway > :last-child {
+	margin-bottom: 0;
+}
+
+.roova-rec__gateway h2,
+.roova-rec__gateway h3 {
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.31rem;
+	color: var(--roova-ink);
+}
+
+.roova-rec__gateway ul,
+.roova-rec__gateway ol {
+	margin: 0;
+	padding-left: 18px;
+}
+
+.roova-rec__gateway li + li {
+	margin-top: 6px;
+}
+
+/* -------------------------------------------------------------- Panels */
+
+.roova-rec__panel {
+	padding: 22px 24px 24px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 12px;
+	background: #fff;
+}
+
+.roova-rec__panel--quiet {
+	background: rgba(13, 58, 82, .02);
+}
+
+.roova-rec__panel--gold {
+	border-color: rgba(180, 130, 60, .35);
+	background: rgba(180, 130, 60, .05);
+}
+
+.roova-rec__panel-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 14px;
+	margin-bottom: 18px;
+}
+
+.roova-rec__panel-title {
+	margin: 0 0 18px;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.38rem;
+	line-height: 1.25;
+	color: var(--roova-ink);
+}
+
+.roova-rec__panel-head .roova-rec__panel-title {
+	margin: 0;
+}
+
+.roova-rec__panel-link {
+	flex: none;
+	font-size: .78rem;
+	font-weight: 500;
+	color: var(--roova-gold);
+}
+
+.roova-rec__panel-note {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 20px 0 0;
+	padding-top: 17px;
+	border-top: 1px solid var(--roova-hairline);
+	font-size: .78rem;
+	line-height: 1.6;
+	color: var(--roova-faint);
+}
+
+.roova-rec__panel-note .roova-icon {
+	flex: none;
+	margin-top: 2px;
+}
+
+.roova-rec__panel-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 18px;
+	font-size: .81rem;
+	font-weight: 500;
+	color: var(--roova-deep);
+}
+
+.roova-rec__panel-cta .roova-icon {
+	flex: none;
+	transition: transform .25s var(--roova-ease);
+}
+
+.roova-rec__panel-cta:hover .roova-icon {
+	transform: translateX(3px);
+}
+
+/* ------------------------------------------------------------- Details */
+
+.roova-rec__details {
+	display: grid;
+	gap: 16px;
+}
+
+.roova-rec__detail-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: .72rem;
+	letter-spacing: .02em;
+	color: var(--roova-faint);
+}
+
+.roova-rec__detail-label .roova-icon {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+.roova-rec__detail-value {
+	margin: 4px 0 0;
+	font-size: .91rem;
+	color: var(--roova-ink);
+}
+
+/*
+ * An email address has no spaces to break at, so it is the one value allowed to
+ * break mid-word — without this a long address widens the whole sidebar.
+ */
+.roova-rec__detail-value--wrap,
+.roova-rec__contact-value--wrap {
+	overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------- Contact */
+
+.roova-rec__contact {
+	display: grid;
+	gap: 13px;
+}
+
+.roova-rec__contact-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 11px;
+}
+
+/*
+ * flex: none on the icon, and the value in its own element — the handoff's own
+ * gotcha: without it the anonymous flex item shrinks and an address breaks
+ * mid-phrase.
+ */
+.roova-rec__contact-row .roova-icon {
+	flex: none;
+	margin-top: 3px;
+	color: var(--roova-gold);
+}
+
+.roova-rec__contact-value {
+	font-size: .84rem;
+	line-height: 1.6;
+	color: var(--roova-soft);
+}
+
+a.roova-rec__contact-value:hover {
+	color: var(--roova-deep);
+}
+
+/* --------------------------------------------------------------- Notes */
+
+.roova-rec__notes {
+	margin: 0;
+	font-size: .84rem;
+	line-height: 1.7;
+	color: var(--roova-soft);
+	text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- Footer */
+
+.roova-rec__foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 22px 32px 40px;
+	border-top: 1px solid var(--roova-hairline);
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-rec__foot p {
+	margin: 0;
+}
+
+.roova-rec__foot-menu {
+	display: flex;
+	gap: 20px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.roova-rec__foot-menu a {
+	color: var(--roova-soft);
+}
+
+/* ------------------------------------------------------------ Movement */
+
+@keyframes roova-rec-rise {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes roova-rec-ring {
+	from {
+		box-shadow: 0 0 0 0 rgba(217, 167, 90, .5);
+	}
+
+	to {
+		box-shadow: 0 0 0 18px rgba(217, 167, 90, 0);
+	}
+}
+
+/* ------------------------------------------------------------ Narrower */
+
+@media (max-width: 960px) {
+	.roova-rec__grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 26px;
+	}
+
+	.roova-rec__facts {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 720px) {
+	.roova-rec__bar {
+		padding: 16px 20px;
+		gap: 16px;
+	}
+
+	.roova-rec {
+		padding: 28px 20px 60px;
+	}
+
+	.roova-rec__hero {
+		flex-direction: column;
+		gap: 18px;
+		padding: 26px 22px 28px;
+	}
+
+	.roova-rec__title {
+		font-size: 1.69rem;
+	}
+
+	.roova-rec__facts {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-rec__btn {
+		flex: 1 1 100%;
+		justify-content: center;
+	}
+
+	.roova-rec__line {
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.roova-rec__thumb {
+		width: 100%;
+		height: 180px;
+	}
+
+	.roova-rec__line-top {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+
+	.roova-rec__stay-facts {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-rec__foot {
+		padding: 20px 20px 32px;
+	}
+}
+
+/* --------------------------------------------------------------- Print
+ *
+ * What the printer puts on paper is the voucher, so the chrome comes off: the
+ * nav, the buttons that printed it, the footer, and every background the ink
+ * would have to cover. Card edges stay, because they are what make the sheet
+ * legible.
+ */
+
+@media print {
+	.roova-received-page {
+		background: #fff;
+	}
+
+	.roova-rec__actions,
+	.roova-rec__nav,
+	.roova-rec__panel-link,
+	.roova-rec__panel-cta,
+	.roova-rec__foot,
+	.skip-link,
+	.woocommerce-notices-wrapper {
+		display: none !important;
+	}
+
+	/*
+	 * The wordmark stays. A guest hands this sheet across a hotel desk, and a
+	 * voucher with no name on it is a piece of paper — so the bar loses its
+	 * padding and its rule and becomes a letterhead instead.
+	 */
+	.roova-rec__bar {
+		padding: 0 0 4px;
+		border-bottom: 0;
+	}
+
+	/*
+	 * print.css appends every link's href after it, which is right for an
+	 * article and wrong for a voucher: "Roova (https://…)" is not a letterhead,
+	 * and a phone number followed by "(tel:+60…)" is noise.
+	 */
+	.roova-received-page a[href]::after {
+		content: none;
+	}
+
+	.roova-rec {
+		max-width: none;
+		padding: 0;
+	}
+
+	/*
+	 * Ink on paper: the hero inverts, and nothing animates. The top margin is
+	 * what the navy panel's own padding used to provide — without it the
+	 * wordmark letterhead and the heading sit on top of each other.
+	 */
+	.roova-rec__hero {
+		gap: 14px;
+		margin-top: 20px;
+		padding: 0 0 16px;
+		border-bottom: 1px solid var(--roova-card-line);
+		border-radius: 0;
+		background: transparent;
+		color: var(--roova-ink);
+		animation: none;
+	}
+
+	.roova-rec__title {
+		color: var(--roova-deep);
+	}
+
+	.roova-rec__sub {
+		color: var(--roova-soft);
+	}
+
+	.roova-rec__seal {
+		width: auto;
+		height: auto;
+		background: transparent;
+		color: var(--roova-gold);
+		animation: none;
+	}
+
+	.roova-rec__facts,
+	.roova-rec__main,
+	.roova-rec__side {
+		animation: none;
+	}
+
+	.roova-rec__grid {
+		display: block;
+		margin-top: 22px;
+	}
+
+	.roova-rec__side {
+		margin-top: 20px;
+	}
+
+	/* A card must not be torn in half by a page break. */
+	.roova-rec__card,
+	.roova-rec__panel,
+	.roova-rec__facts,
+	.roova-rec__step,
+	.roova-rec__gateway {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	.roova-rec__panel + .roova-rec__panel {
+		margin-top: 16px;
+	}
+
+	.roova-rec__totals,
+	.roova-rec__panel--quiet,
+	.roova-rec__panel--gold,
+	.roova-rec__gateway,
+	.roova-rec__step-num {
+		background: transparent;
+	}
+
+	.roova-rec__step-num {
+		border: 1px solid var(--roova-card-line);
+	}
+}

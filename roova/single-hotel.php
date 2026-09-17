@@ -220,6 +220,8 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 					<?php roova_landmarks( $roova_hotel_id ); ?>
 				</section>
 			<?php endif; ?>
+
+			<?php roova_hotel_reviews_section( $roova_hotel_id ); ?>
 		</div>
 
 		<aside class="roova-layout__side">

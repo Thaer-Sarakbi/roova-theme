@@ -22,11 +22,11 @@ msgstr ""
 msgid "Back to the homepage"
 msgstr ""
 
-#: account.php:34 checkout.php:44 header.php:27 template-signin.php:30 template-signup.php:33 view-order.php:45
+#: account.php:34 checkout.php:44 header.php:27 order-received.php:85 template-signin.php:30 template-signup.php:33 view-order.php:45
 msgid "Skip to content"
 msgstr ""
 
-#: checkout.php:23 woocommerce/checkout/thankyou.php:40 woocommerce/checkout/thankyou.php:85
+#: checkout.php:23 order-received.php:58 woocommerce/checkout/thankyou.php:40 woocommerce/checkout/thankyou.php:85
 msgid "Booking confirmed"
 msgstr ""
 
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: checkout.php:68 footer.php:106
+#: checkout.php:68 footer.php:106 order-received.php:398
 msgid "© %1$s %2$s"
 msgstr ""
 
@@ -98,15 +98,15 @@ msgstr ""
 msgid "Explore our destinations"
 msgstr ""
 
-#: functions.php:106
+#: functions.php:110
 msgid "Roova needs WooCommerce."
 msgstr ""
 
-#: functions.php:109
+#: functions.php:113
 msgid "Hotels, rooms, bookings and checkout all run on WooCommerce. %s to finish setting up the theme."
 msgstr ""
 
-#: functions.php:110
+#: functions.php:114
 msgid "Install WooCommerce"
 msgstr ""
 
@@ -136,6 +136,78 @@ msgstr ""
 
 #: index.php:66
 msgid "Nothing found."
+msgstr ""
+
+#: order-received.php:44 woocommerce/checkout/thankyou.php:23
+msgid "Payment did not go through"
+msgstr ""
+
+#: order-received.php:45 woocommerce/checkout/thankyou.php:24
+msgid "Your rooms are still being held. Try paying again, or use another method."
+msgstr ""
+
+#: order-received.php:49
+msgid "Booking received"
+msgstr ""
+
+#: order-received.php:52
+msgid "Order %s — your rooms are held while we wait for the payment to clear."
+msgstr ""
+
+#: order-received.php:63
+msgid "Order %1$s — your voucher and the hotel's details are on their way to %2$s."
+msgstr ""
+
+#: order-received.php:69
+msgid "Order %s — your voucher is below."
+msgstr ""
+
+#: order-received.php:95 woocommerce/checkout/thankyou.php:29
+msgid "My bookings"
+msgstr ""
+
+#: order-received.php:100
+msgid "Find another room"
+msgstr ""
+
+#: order-received.php:163
+msgid "Your stay"
+msgstr ""
+
+#: order-received.php:196 view-order.php:122
+msgid "Qty %s"
+msgstr ""
+
+#: order-received.php:243
+msgid "What happens next"
+msgstr ""
+
+#: order-received.php:284 view-order.php:195
+msgid "Customer details"
+msgstr ""
+
+#: order-received.php:288
+msgid "Edit"
+msgstr ""
+
+#: order-received.php:310
+msgid "The hotel may ring this number to arrange your arrival — keep it reachable."
+msgstr ""
+
+#: order-received.php:318 view-order.php:216 woocommerce/checkout/thankyou.php:69
+msgid "Payment"
+msgstr ""
+
+#: order-received.php:349
+msgid "Hotel contact"
+msgstr ""
+
+#: order-received.php:376
+msgid "View the hotel"
+msgstr ""
+
+#: order-received.php:385 view-order.php:242 woocommerce/checkout/form-shipping.php:52
+msgid "Order notes"
 msgstr ""
 
 #: single-hotel.php:93
@@ -256,7 +328,7 @@ msgstr ""
 msgid "Welcome back"
 msgstr ""
 
-#: template-signin.php:43 template-signin.php:104 template-signup.php:89 template-signup.php:202 inc/auth.php:36 inc/auth.php:890
+#: template-signin.php:43 template-signin.php:104 template-signup.php:89 template-signup.php:202 inc/auth.php:36 inc/auth.php:890 inc/reviews.php:1146
 msgid "Sign in"
 msgstr ""
 
@@ -396,22 +468,6 @@ msgstr ""
 msgid "Order details"
 msgstr ""
 
-#: view-order.php:122
-msgid "Qty %s"
-msgstr ""
-
-#: view-order.php:195
-msgid "Customer details"
-msgstr ""
-
-#: view-order.php:216 woocommerce/checkout/thankyou.php:69
-msgid "Payment"
-msgstr ""
-
-#: view-order.php:242 woocommerce/checkout/form-shipping.php:52
-msgid "Order notes"
-msgstr ""
-
 #: inc/account-tabs.php:42 inc/icons.php:120
 msgid "Sign out"
 msgstr ""
@@ -504,7 +560,7 @@ msgstr ""
 msgid "Payment due"
 msgstr ""
 
-#: inc/account-tabs.php:406 inc/order.php:676
+#: inc/account-tabs.php:406 inc/order.php:676 inc/received.php:359
 msgid "Pay now"
 msgstr ""
 
@@ -580,7 +636,7 @@ msgstr[1] ""
 msgid "Not rated"
 msgstr ""
 
-#: inc/account-tabs.php:697
+#: inc/account-tabs.php:697 inc/reviews.php:985 inc/reviews.php:1228
 msgid "Your review"
 msgstr ""
 
@@ -764,23 +820,23 @@ msgstr ""
 msgid "Last changed %s ago."
 msgstr ""
 
-#: inc/account.php:700 inc/account.php:803 inc/auth.php:519 inc/auth.php:591 inc/verification.php:446
+#: inc/account.php:700 inc/account.php:803 inc/auth.php:519 inc/auth.php:591 inc/reviews.php:743 inc/verification.php:446
 msgid "That form had expired. Please try again."
 msgstr ""
 
-#: inc/account.php:715 inc/assets.php:116 inc/assets.php:163 inc/auth.php:619
+#: inc/account.php:715 inc/assets.php:126 inc/assets.php:173 inc/auth.php:619
 msgid "Enter your first name."
 msgstr ""
 
-#: inc/account.php:719 inc/assets.php:117 inc/assets.php:164 inc/auth.php:623
+#: inc/account.php:719 inc/assets.php:127 inc/assets.php:174 inc/auth.php:623
 msgid "Enter your last name."
 msgstr ""
 
-#: inc/account.php:725 inc/assets.php:85 inc/assets.php:119 inc/assets.php:165 inc/auth.php:633
+#: inc/account.php:725 inc/assets.php:95 inc/assets.php:129 inc/assets.php:175 inc/auth.php:633
 msgid "Enter a valid phone number."
 msgstr ""
 
-#: inc/account.php:739 inc/assets.php:166
+#: inc/account.php:739 inc/assets.php:176
 msgid "Enter your current password."
 msgstr ""
 
@@ -788,11 +844,11 @@ msgstr ""
 msgid "That is not your current password."
 msgstr ""
 
-#: inc/account.php:745 inc/assets.php:167
+#: inc/account.php:745 inc/assets.php:177
 msgid "New password needs 8+ characters with a letter and a number."
 msgstr ""
 
-#: inc/account.php:749 inc/assets.php:168
+#: inc/account.php:749 inc/assets.php:178
 msgid "New passwords don't match."
 msgstr ""
 
@@ -806,123 +862,123 @@ msgid_plural "Max %d adults"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/assets.php:83
+#: inc/assets.php:93
 msgid "Enter the guest's first name."
 msgstr ""
 
-#: inc/assets.php:84
+#: inc/assets.php:94
 msgid "Enter the guest's last name."
 msgstr ""
 
-#: inc/assets.php:86 inc/assets.php:118 inc/auth.php:531 inc/auth.php:627
+#: inc/assets.php:96 inc/assets.php:128 inc/auth.php:531 inc/auth.php:627
 msgid "Enter a valid email address."
 msgstr ""
 
-#: inc/assets.php:87 inc/checkout.php:458
+#: inc/assets.php:97 inc/checkout.php:458
 msgid "Please accept the booking terms to continue."
 msgstr ""
 
-#: inc/assets.php:88
+#: inc/assets.php:98
 msgid "Your hold has run out — refresh to check the rooms are still free."
 msgstr ""
 
-#: inc/assets.php:120 inc/auth.php:637
+#: inc/assets.php:130 inc/auth.php:637
 msgid "Use at least 8 characters, with a letter and a number."
 msgstr ""
 
-#: inc/assets.php:121 inc/auth.php:535
+#: inc/assets.php:131 inc/auth.php:535
 msgid "Enter your password."
 msgstr ""
 
-#: inc/assets.php:122 inc/auth.php:641
+#: inc/assets.php:132 inc/auth.php:641
 msgid "Passwords do not match."
 msgstr ""
 
-#: inc/assets.php:123 inc/auth.php:645
+#: inc/assets.php:133 inc/auth.php:645
 msgid "Please accept the terms to create your account."
 msgstr ""
 
-#: inc/assets.php:124 inc/assets.php:161 inc/auth.php:983 inc/icons.php:136
+#: inc/assets.php:134 inc/assets.php:171 inc/auth.php:983 inc/icons.php:136
 msgid "Show password"
 msgstr ""
 
-#: inc/assets.php:125 inc/assets.php:162 inc/icons.php:137
+#: inc/assets.php:135 inc/assets.php:172 inc/icons.php:137
 msgid "Hide password"
 msgstr ""
 
-#: inc/assets.php:126 inc/auth.php:1015
+#: inc/assets.php:136 inc/auth.php:1015
 msgid "Password strength"
 msgstr ""
 
-#: inc/assets.php:127
+#: inc/assets.php:137
 msgid "Weak"
 msgstr ""
 
-#: inc/assets.php:128
+#: inc/assets.php:138
 msgid "Fair"
 msgstr ""
 
-#: inc/assets.php:129
+#: inc/assets.php:139
 msgid "Good"
 msgstr ""
 
-#: inc/assets.php:130
+#: inc/assets.php:140
 msgid "Strong"
 msgstr ""
 
-#: inc/assets.php:160
+#: inc/assets.php:170
 msgid "Saved"
 msgstr ""
 
-#: inc/assets.php:169 inc/reviews.php:374
+#: inc/assets.php:179 inc/reviews.php:417
 msgid "Choose a rating from 1 to 5 stars."
 msgstr ""
 
-#: inc/assets.php:170 inc/reviews.php:379
+#: inc/assets.php:180 inc/reviews.php:422
 msgid "Tell other guests a little more — at least a sentence."
 msgstr ""
 
-#: inc/assets.php:297
+#: inc/assets.php:330
 msgid "room"
 msgstr ""
 
-#: inc/assets.php:298
+#: inc/assets.php:331
 msgid "rooms"
 msgstr ""
 
-#: inc/assets.php:299
+#: inc/assets.php:332
 msgid "guest"
 msgstr ""
 
-#: inc/assets.php:300
+#: inc/assets.php:333
 msgid "guests"
 msgstr ""
 
-#: inc/assets.php:301
+#: inc/assets.php:334
 msgid "night"
 msgstr ""
 
-#: inc/assets.php:302
+#: inc/assets.php:335
 msgid "nights"
 msgstr ""
 
-#: inc/assets.php:303
+#: inc/assets.php:336
 msgid "Select dates"
 msgstr ""
 
-#: inc/assets.php:304
+#: inc/assets.php:337
 msgid "Nothing matched that search."
 msgstr ""
 
-#: inc/assets.php:305
+#: inc/assets.php:338
 msgid "Loading…"
 msgstr ""
 
-#: inc/assets.php:306
+#: inc/assets.php:339
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:307 inc/icons.php:110 inc/template-tags.php:1030
+#: inc/assets.php:340 inc/icons.php:110 inc/template-tags.php:1030
 msgid "Close"
 msgstr ""
 
@@ -1452,7 +1508,7 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: inc/customizer.php:417 inc/admin/metabox-hotel-details.php:102
+#: inc/customizer.php:417 inc/received.php:444 inc/admin/metabox-hotel-details.php:102
 msgid "Address"
 msgstr ""
 
@@ -1812,7 +1868,7 @@ msgstr ""
 msgid "Saved stay"
 msgstr ""
 
-#: inc/icons.php:132 inc/order.php:722
+#: inc/icons.php:132 inc/order.php:722 inc/reviews.php:1165
 msgid "Write a review"
 msgstr ""
 
@@ -1988,8 +2044,68 @@ msgstr ""
 msgid "Order again"
 msgstr ""
 
-#: inc/order.php:710
+#: inc/order.php:710 inc/received.php:367
 msgid "Download voucher"
+msgstr ""
+
+#: inc/received.php:304 woocommerce/checkout/thankyou.php:56
+msgid "Order number"
+msgstr ""
+
+#: inc/received.php:309 woocommerce/checkout/thankyou.php:60
+msgid "Date"
+msgstr ""
+
+#: inc/received.php:319 inc/admin/bookings-page.php:240 inc/admin/order-metabox.php:56
+msgid "Status"
+msgstr ""
+
+#: inc/received.php:377
+msgid "View order details"
+msgstr ""
+
+#: inc/received.php:457 inc/template-tags.php:956
+msgid "Reception"
+msgstr ""
+
+#: inc/received.php:482
+msgid "Front desk"
+msgstr ""
+
+#: inc/received.php:485 inc/template-tags.php:1012
+msgid "Check in from %1$s · check out by %2$s"
+msgstr ""
+
+#: inc/received.php:622
+msgid "%s confirms directly"
+msgstr ""
+
+#: inc/received.php:625
+msgid "The hotel has your booking and the number you gave us. They get in touch if anything about your arrival needs arranging."
+msgstr ""
+
+#: inc/received.php:631
+msgid "Two emails from us"
+msgstr ""
+
+#: inc/received.php:638
+msgid "The first is on its way now with this booking on it. A second follows as soon as your payment clears."
+msgstr ""
+
+#: inc/received.php:639
+msgid "The first is on its way now with this booking on it. A second follows once the hotel marks your stay complete."
+msgstr ""
+
+#: inc/received.php:652
+msgid "%s cashback after checkout"
+msgstr ""
+
+#: inc/received.php:658
+msgid "Your %1$s-night stay qualifies. It clears into your Roova balance on %2$s."
+msgstr ""
+
+#: inc/received.php:664
+msgid "Your %s-night stay qualifies. It clears into your Roova balance the day you check out."
 msgstr ""
 
 #: inc/reviews.php:42 inc/template-tags.php:842
@@ -2000,20 +2116,130 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: inc/reviews.php:362
+#: inc/reviews.php:405
 msgid "Sign in to write a review."
 msgstr ""
 
-#: inc/reviews.php:368
+#: inc/reviews.php:411
 msgid "Reviews are for stays you have completed, and one per hotel."
 msgstr ""
 
-#: inc/reviews.php:401
+#: inc/reviews.php:444
 msgid "That review could not be saved. Please try again."
 msgstr ""
 
-#: inc/reviews.php:459
+#: inc/reviews.php:513
 msgid "%s out of 5"
+msgstr ""
+
+#: inc/reviews.php:750
+msgid "That hotel could not be found."
+msgstr ""
+
+#: inc/reviews.php:777
+msgid "Rate all three — cleanliness, location and service."
+msgstr ""
+
+#: inc/reviews.php:833
+msgid "Room, bathroom, linens"
+msgstr ""
+
+#: inc/reviews.php:837
+msgid "Getting around, what's nearby"
+msgstr ""
+
+#: inc/reviews.php:841
+msgid "Staff, check-in, responsiveness"
+msgstr ""
+
+#: inc/reviews.php:933
+msgid "Guest reviews"
+msgstr ""
+
+#: inc/reviews.php:939
+msgid "%s review from a verified stay"
+msgid_plural "%s reviews from verified stays"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/reviews.php:944
+msgid "Nothing published yet — yours is the first."
+msgstr ""
+
+#: inc/reviews.php:946
+msgid "No reviews yet — yours would be the first."
+msgstr ""
+
+#: inc/reviews.php:955 inc/reviews.php:1168
+msgid "/ 5 overall"
+msgstr ""
+
+#: inc/reviews.php:975
+msgid "Thank you — your review has been sent, and appears once it is approved."
+msgstr ""
+
+#: inc/reviews.php:992
+msgid "What travellers say"
+msgstr ""
+
+#: inc/reviews.php:996
+msgid "Sort"
+msgstr ""
+
+#: inc/reviews.php:999
+msgid "Most recent"
+msgstr ""
+
+#: inc/reviews.php:1000
+msgid "Highest rated"
+msgstr ""
+
+#: inc/reviews.php:1001
+msgid "Lowest rated"
+msgstr ""
+
+#: inc/reviews.php:1043
+msgid "Show more reviews"
+msgstr ""
+
+#: inc/reviews.php:1060 inc/admin/bookings-page.php:234
+msgid "Guest"
+msgstr ""
+
+#: inc/reviews.php:1074
+msgid "Verified stay"
+msgstr ""
+
+#: inc/reviews.php:1103
+msgid "Waiting to be published. Only you can see this."
+msgstr ""
+
+#: inc/reviews.php:1131
+msgid "Reviews are written by guests who have stayed here. Sign in to see whether you can add yours."
+msgstr ""
+
+#: inc/reviews.php:1132
+msgid "Reviews are written by guests who have completed a stay here. Yours will open once you check out."
+msgstr ""
+
+#: inc/reviews.php:1133
+msgid "Thanks — you have already reviewed this hotel."
+msgstr ""
+
+#: inc/reviews.php:1210
+msgid "%1$s: %2$s out of 5"
+msgstr ""
+
+#: inc/reviews.php:1232
+msgid "What stood out? Tell other travellers about the room, the staff and the neighbourhood…"
+msgstr ""
+
+#: inc/reviews.php:1242
+msgid "Published under your name and checked against your booking."
+msgstr ""
+
+#: inc/reviews.php:1245
+msgid "Submit review"
 msgstr ""
 
 #: inc/setup.php:44
@@ -2166,20 +2392,12 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: inc/template-tags.php:956
-msgid "Reception"
-msgstr ""
-
 #: inc/template-tags.php:971
 msgid "Call the hotel directly about an early check-in, an airport transfer or anything else before you arrive."
 msgstr ""
 
 #: inc/template-tags.php:999
 msgid "View your booking"
-msgstr ""
-
-#: inc/template-tags.php:1012
-msgid "Check in from %1$s · check out by %2$s"
 msgstr ""
 
 #: inc/verification.php:252
@@ -2450,16 +2668,8 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: inc/admin/bookings-page.php:234
-msgid "Guest"
-msgstr ""
-
 #: inc/admin/bookings-page.php:235
 msgid "Hotel / room"
-msgstr ""
-
-#: inc/admin/bookings-page.php:240 inc/admin/order-metabox.php:56
-msgid "Status"
 msgstr ""
 
 #: inc/admin/bookings-page.php:241
@@ -3090,30 +3300,10 @@ msgstr ""
 msgid "I have read and agree to the %s, cancellation policy and privacy notice."
 msgstr ""
 
-#: woocommerce/checkout/thankyou.php:23
-msgid "Payment did not go through"
-msgstr ""
-
-#: woocommerce/checkout/thankyou.php:24
-msgid "Your rooms are still being held. Try paying again, or use another method."
-msgstr ""
-
 #: woocommerce/checkout/thankyou.php:27
 msgid "Try again"
 msgstr ""
 
-#: woocommerce/checkout/thankyou.php:29
-msgid "My bookings"
-msgstr ""
-
 #: woocommerce/checkout/thankyou.php:45
 msgid "Order %1$s — a confirmation has been sent to %2$s."
-msgstr ""
-
-#: woocommerce/checkout/thankyou.php:56
-msgid "Order number"
-msgstr ""
-
-#: woocommerce/checkout/thankyou.php:60
-msgid "Date"
 msgstr ""

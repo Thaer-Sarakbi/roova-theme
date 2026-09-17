@@ -231,6 +231,34 @@ beside the form already lists every room. It still appears on hotel pages, where
 confirmation that the room went in, and anything that actually needs the guest's attention (a room
 that has sold out, a payment problem) is still shown here.
 
+### After they pay: the confirmation page
+
+The page a guest lands on once the booking is made. Everything on it is read from the order itself,
+so there is nothing to keep up to date:
+
+* **The booking** — room, hotel, check-in and check-out, nights, guests, and the price broken down
+  the same way the checkout summary breaks it down.
+* **The order** — number, date, total and status, across the top.
+* **Their details** — the name, phone number and email they gave you. Signed-in members get an
+  *Edit* link through to their account.
+* **Your hotel's contact details** — the address (linked to the map) and the reception number from
+  the hotel's **Hotel Details** tab, plus the check-in and check-out times. Fill the phone number in
+  and it appears here, tappable on a phone. Leave it blank and the row simply is not shown.
+* **What happens next** — your hotel confirms directly (by name), the two emails they will get, and
+  the cashback the stay will earn, if any. See section 18.
+
+Two things worth knowing:
+
+* **The cashback line only appears when it is true.** It is shown to a signed-in member whose stay
+  actually matches one of your offers — the right hotel, and at least as many nights as the offer
+  asks for. If no offer matches, or the guest checked out without an account, the line is left off
+  rather than promising something vague. It shows the amount and the date it will clear.
+* **A booking still waiting for payment says so.** Bank transfer and any unpaid order read "Booking
+  received" and say the rooms are being held until the payment clears, not "Booking confirmed". A
+  failed payment says that plainly and leads with a **Pay now** button.
+
+**Download voucher** prints the page — see section 15, which works the same way.
+
 ## 10. Taxes
 
 A fresh install starts with two rates, added on top of the room rate and shown as their own lines in
@@ -383,15 +411,43 @@ the dashboard and is moderated there like any other. What the theme adds is who 
 what a review carries:
 
 * Only a guest who has **completed a stay at that hotel** can review it, and only **once per hotel**.
-  Their account offers it on the Reviews tab as a gold "Rate your stay at ..." prompt.
-* A review carries a star rating and three sub-scores — **Cleanliness, Location and Service**.
-* Until you approve it, the member sees their own review marked *Waiting to be published*. Nobody
-  else sees it.
-* Once there is at least one approved review, the **score box on the hotel page is calculated from
-  real reviews** — the score, the review count and the three bars. The numbers on the Hotel Details
-  tab are the stand-in until then, so a brand-new hotel still shows something.
+* A review carries three sub-scores — **Cleanliness, Location and Service** — and an **overall**,
+  which is simply the average of the three.
+* **A review is published only once you approve it.** Until then the member sees their own review
+  marked *Waiting to be published* — on the hotel page and on their account — and nobody else sees
+  it at all. It is not counted in the hotel score either.
 * Reviews follow WooCommerce's own settings: switch reviews off under **WooCommerce → Settings →
-  Products**, or close discussion on one hotel, and the prompt disappears for it.
+  Products**, or close discussion on one hotel, and the form disappears for it.
+
+> **If a review does not appear, check Comments.** WordPress holds a comment from anyone who has
+> never had one approved before, so a guest's *first* review always waits for you under
+> **Comments → Pending**. That is WordPress's **Settings → Discussion → "Comment author must have a
+> previously approved comment"** setting — untick it to publish reviews straight away, or leave it
+> on and approve them as they come in. **Settings → Discussion → "Comment must be manually
+> approved"** holds every review, first or not.
+
+### On the hotel page
+
+Every hotel page ends with a **Guest reviews** section: the hotel's overall score and its three
+averages, then the form, then what other guests wrote. Each review shows the guest's name, the month
+they stayed, a *Verified stay* badge, its three sub-scores and its overall.
+
+* **Write a review** is only there for a guest who has finished a stay at that hotel and has not
+  reviewed it yet. Everyone else is told why instead: a signed-out visitor gets a **Sign in** link, a
+  member with a booking that has not been completed is told the form opens after they check out, and
+  someone who has already written one is thanked.
+* Guests can re-order the list by **Most recent**, **Highest rated** or **Lowest rated**, and **Show
+  more reviews** lengthens it. Both are ordinary links, so they keep working if a guest's browser
+  blocks scripts, and a longer or re-sorted list can be linked to or bookmarked.
+* A hotel with no reviews that the visitor cannot review either shows no section at all, so a
+  brand-new site is not covered in empty panels.
+* The score box in the sidebar, the stars on the hotel cards and the section all quote the **same
+  number**. Until a hotel has its first approved review, that number comes from the Hotel Details
+  tab, so a new hotel still shows something.
+
+The **Reviews** tab in My account is the second way in — it lists a member's own reviews and offers a
+gold "Rate your stay at ..." prompt for any stay still waiting for one, which is useful for a guest
+who never reopens the hotel page.
 
 ## 17. RoovaVIP
 

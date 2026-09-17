@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROOVA_VERSION', '1.7.1' );
+define( 'ROOVA_VERSION', '1.9.1' );
 define( 'ROOVA_DIR', trailingslashit( get_template_directory() ) );
 define( 'ROOVA_URI', trailingslashit( get_template_directory_uri() ) );
 
@@ -74,6 +74,10 @@ if ( roova_has_woocommerce() ) {
 	// The single-order page reads the stay status from inc/account.php and the
 	// "may I review this?" rule from inc/reviews.php, so it loads after both.
 	roova_require( 'inc/order.php' );
+
+	// The confirmation reads the stay off inc/order.php and forecasts the
+	// cashback a stay will earn from inc/cashback.php, so it loads after both.
+	roova_require( 'inc/received.php' );
 
 	if ( is_admin() ) {
 		roova_require( 'inc/admin/metabox-hotel-details.php' );

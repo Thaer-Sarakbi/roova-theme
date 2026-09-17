@@ -29,13 +29,14 @@ bin/lint.sh                               # php -l over every theme file
 php tests/test-availability.php           # booking-logic checks (34 assertions, no WordPress)
 php tests/test-cashback.php               # cashback rules and balances (42 assertions, no WordPress)
 php tests/test-vip.php                    # VIP tiers, free nights and the discount (78 assertions, no WordPress)
+php tests/test-received.php               # confirmation: who may see it, cashback forecast, next steps (52 assertions)
 php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
 php bin/makepot.php roova roova/languages/roova.pot      # identical output, for machines without Python
 bin/testenv.sh                            # build a throwaway WP+WooCommerce site with the theme installed
 ```
 
-`test-availability.php`, `test-cashback.php` and `test-vip.php` are single flat scripts with a
+`test-availability.php`, `test-cashback.php`, `test-vip.php` and `test-received.php` are single flat scripts with a
 `check( $label, $actual, $expected )` helper — there is no test runner and no per-test filtering. Add
 assertions by calling `check()`; they exit non-zero on any failure. Each stubs the handful of
 WordPress functions the pure logic touches, so they run anywhere PHP does. `test-cashback.php` stubs
@@ -46,14 +47,18 @@ the ledger's storage and `roova_account_stays()` as well, and gives each case it
 — the lines, a record of the fees it was asked to add, and totals taxed at one flat rate — to price a
 stay, read back what the tier took off it, and check the price quoted to a signed-out guest is the one
 a new member is then charged.
+`test-received.php` stubs an order as the five methods the confirmation actually asks it, the booking
+line as the keys the cashback matcher reads, and `WC()->session` as the one address the guest gate
+compares — so it covers **who may see a confirmation** without a database. That gate is the reason
+the file exists; see *Order received*.
 
 `bin/build.sh` refuses to package if the lint fails, if `style.css` has lost its theme header, or if
 `screenshot.png` is missing.
 
 ## Verifying real behaviour
 
-Lint and the four test scripts cover syntax, include-time fatals, the pure booking maths, the
-cashback rules and what a VIP tier takes off a cart. Anything
+Lint and the five test scripts cover syntax, include-time fatals, the pure booking maths, the
+cashback rules, what a VIP tier takes off a cart, and who may see a confirmation. Anything
 touching hooks, the database or templates needs a real site: run `bin/testenv.sh`, serve it with
 `php -S 127.0.0.1:8099 -t .testenv/site`, and drive it with curl (a cookie jar per "guest" is enough
 to simulate several visitors competing for the same room).
@@ -96,7 +101,9 @@ plain function files, so they need only the `roova_require()` line, but their or
 `inc/reviews.php` reads `roova_account_stays()`, `inc/vip.php` reads
 `roova_account_completed_count()`, and `inc/cashback.php` reads `roova_account_stays()` too. Each of
 those reaches into `inc/account.php` only through a function call, never at include time, which is
-what lets them load before it.
+what lets them load before it. `inc/order.php` then `inc/received.php` load last of the group: the
+order page reads the stay status and the review rule, and the confirmation reads the order page's
+booking line and the cashback rules.
 
 `inc/auth.php` is in the unconditional group on purpose: `header.php` calls `roova_account_control()`
 on every page, and signing in has to keep working on a site whose WooCommerce is switched off. Its
@@ -304,6 +311,10 @@ for the same reason. See *Accounts*.
 `view-order.php` is the fifth, routed the same way from WooCommerce's **view-order** endpoint — the
 one endpoint under My account the theme draws itself. See *View order*. Every other endpoint
 (edit-address, payment-methods, lost-password, customer-logout) still goes through `woocommerce.php`.
+
+`order-received.php` is the sixth, routed from the confirmation at `template_include` **priority 110**
+— above `roova_checkout_template()`'s 100, because `is_checkout()` is true there too and checkout
+would otherwise claim it first. See *Order received*.
 
 `header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
@@ -527,6 +538,62 @@ guessed order ID and a signed-out visitor both get WooCommerce's gate, not this 
 - `roova_payment_icon()` accepts a bare gateway ID as well as a gateway object, because an order
   remembers only which gateway took it and that plugin may since have been uninstalled.
 
+### Order received
+
+Where "Book now" finally lands. `inc/received.php` routes it to `order-received.php`, which prints
+its own document — it used to be drawn inside `checkout.php`, under the reception photograph, beneath
+a banner reading "Booking confirmed" while the panel below it said the same thing again.
+`roova_use_order_received_template` turns the takeover off, which is why `checkout.php`'s received
+branch and `woocommerce/checkout/thankyou.php` are both still here.
+
+Everything on it is read off the order: the number, date and total from the order; the stay from each
+line's `_roova_booking` meta; the customer from the billing fields; the payment from the gateway; the
+hotel's address and reception number from the hotel product. The status chip is decided by
+`roova_account_stay_status()` — the same function the Bookings tab and the order page use.
+
+Four things here are load-bearing:
+
+- **The order key is not the gate.** `roova_received_visitor_may_view()` re-runs the two checks
+  WooCommerce puts in front of its own confirmation, because this page carries a guest's name, phone
+  number and email and the key *travels* — browser history, a forwarded email, a pasted link. A
+  non-guest order opens only to that customer signed in (honouring
+  `woocommerce_order_received_verify_known_shoppers`); a guest order may need its address confirmed
+  first, which is `Users::should_user_verify_order_email()`'s decision, called where that class
+  exists and re-derived from public API — grace period dropped, so stricter, never looser — where it
+  does not. Failing the gate denies nobody anything: the takeover simply stops and WooCommerce draws
+  its own login or email-confirmation form. Getting this wrong is the one mistake on this page that
+  is not cosmetic, so `tests/test-received.php` covers it directly.
+- **`woocommerce_order_details_table` is unhooked from `woocommerce_thankyou`.** It prints the line
+  items, the totals *and* the customer details, all three of which the template draws itself — left
+  alone, the whole booking appears twice. Only that one callback is removed: the hook still fires for
+  plugins, and `woocommerce_thankyou_{gateway}` (where bank transfer prints its account details) is
+  untouched and lands in `.roova-rec__gateway`.
+- **The template does not run `[woocommerce_checkout]`, so WooCommerce's housekeeping must be done
+  by hand** — `roova_received_housekeeping()` empties the cart and clears `order_awaiting_payment`,
+  exactly as `WC_Shortcode_Checkout::order_received()` would. This is not tidiness: a paid booking
+  left sitting in the cart still has a hold behind it, and `Roova_Holds` releases a hold when its
+  cart line is removed, so that line must not be in a position to release a hold now attached to a
+  paid order.
+- **The cashback step is a forecast, and nothing is written.** `roova_received_cashback_forecast()`
+  runs the real rule against the real stay through `roova_cashback_best_reward()` — the nights booked
+  against the offer's minimum, the hotel, the window the offer runs in — and is fenced to the
+  signed-in member who placed the order, on a stay that can still complete. **No matching offer means
+  no step**; nothing generic replaces it, because "you may earn cashback" is not a fact about a
+  booking. The ledger entry is still only written when the stay completes, frozen at that moment, by
+  `roova_cashback_sync()` — so editing an offer before checkout changes what gets paid, and editing it
+  after does not.
+
+"What happens next" is `roova_received_next_steps()`: the hotel by name, the two emails (which second
+one is promised depends on where the money is), then the forecast. A step with no data behind it drops
+out and the template renumbers, so a booking at a deleted hotel never prints "confirms directly" with
+a blank in front of it. Three honest headings up top rather than one — a failed payment is not dressed
+as a confirmation, and an order still waiting for the money says its rooms are *held*, not booked.
+
+"Download voucher" is a print, the same as the order page's, and it shares `assets/js/order.js`
+rather than copying it. `received.css` carries its own token header for the reason `order.css` does,
+and `roova_enqueue_checkout_assets()` returns early here so checkout.css is not loaded with nothing
+to style.
+
 ### Reviews
 
 A review is a **WooCommerce product review** — a comment on the hotel product with a `rating` meta —
@@ -536,18 +603,69 @@ three sub-scores (`roova_score_cleanliness` / `_location` / `_service` comment m
 about who may write: `roova_can_review()` allows a hotel only to a member with a **completed stay
 there** and no review of it yet.
 
+There are two places to write one — the hotel page's own section and the Reviews tab in My account —
+and both post through `roova_submit_review()`, so that rule lives in one function rather than two.
+
 - **The rating field is named `rating`, not `roova_rating`.** That is the exact key WooCommerce's own
   `preprocess_comment` check and its rating-meta handler read; renaming it makes WooCommerce refuse
   the comment.
 - **`verified` is set by hand**, and truthfully: WooCommerce's own check looks for a purchase of
   *this* product, which never happens — a guest buys a room, and the review is on its hotel.
+- **`roova_submit_review()` asks WooCommerce to recount afterwards** (`WC_Comments::clear_transients()`).
+  WooCommerce recounts a product's score when the comment is *inserted*, which is before the rating
+  meta is written — so without that call a hotel's first review leaves it on a score of zero, and its
+  score box and card star disappear the moment it is published.
+- **Overall is (cleanliness + location + service) / 3**, and every surface says the same number.
+  `roova_review_overall()` computes it per review; `roova_hotel_review_summary()['score']` is the mean
+  of those, **not** WooCommerce's `get_average_rating()`. That one aggregates whole stars, so a single
+  5/4/5 review is a 5 to WooCommerce and a 4.7 on its own card — two numbers on one page. WooCommerce's
+  average stays the fallback for a review carrying no sub-scores, and `count` is still its own.
 - **The hotel page's score comes from real reviews as soon as there is one.** `roova_review_box()`
   prefers `roova_hotel_review_summary()` and falls back to the Hotel Details numbers only when the
   count is zero, so the metabox fields are a stand-in rather than a second source of truth.
   `roova_hotel_rating()` (used on the saved-stays cards) halves a fallback score typed on a ten-point
   scale, so the star beside it never promises "★ 8.9".
 - An unapproved review is still shown to **its own author**, marked *Waiting to be published* — a
-  review that vanished on submit reads as one that failed to save.
+  review that vanished on submit reads as one that failed to save. This holds on the hotel page as
+  well as the account tab (`roova_hotel_pending_review()`), and it is not decoration: WordPress's
+  `comment_previously_approved` is **on by default**, so a guest's *first* review anywhere on the
+  site is held, and without the pending card the page answers a submission with "you have already
+  reviewed this hotel" and an empty list. A pending review is kept out of the count, the averages
+  and everybody else's page — it is not public yet.
+
+#### The hotel page section
+
+`roova_hotel_reviews_section()` draws it at the foot of `single-hotel.php`'s main column: the score and
+its breakdown, then the form, then the list. It draws **nothing at all** when a hotel has no reviews
+*and* this visitor cannot write one — an empty "no reviews yet" panel on every page of a new site is
+noise, not information.
+
+- **The form is gated on a completed stay, and says why when it isn't there.**
+  `roova_hotel_review_gate()` returns `ok | closed | signed-out | no-stay | reviewed`, because "sign
+  in" and "reviews are for stays you have completed" are different sentences. An upcoming booking, one
+  still waiting for payment and a cancelled one are all `no-stay` — see `roova_account_stay_status()`.
+- **All three sub-scores are required**, and the star rating stored on the comment is their average
+  rounded. WooCommerce aggregates whole stars, so the number it keeps has to mean the same thing as
+  the figure the cards print.
+- **Sorting happens in PHP, not SQL.** The list is ordered by the same overall the cards show, and that
+  is an average of comment meta no single `orderby` reproduces. The cost is that only the most recent
+  `roova_hotel_reviews_max` reviews (300, filterable) are considered.
+- **Sort and "show more" are links, not script** (`roova_review_sort` / `roova_reviews_shown` on the
+  URL), so the list works with JavaScript blocked and a longer page of it can be linked to.
+  `roova_reviews_shown` is clamped at 200 — an invented number in the address bar should not turn the
+  page into a full table scan.
+- **The section draws for a pending review too**, even on a hotel with nothing else on it — that is
+  the one case where returning early would leave the author staring at a page with no trace of what
+  they just wrote. The "already reviewed" note is dropped while the pending card is up; the card
+  says it better.
+- **A success ends in a redirect** to `?roova_reviewed=1#reviews`; errors and typed values go into
+  `roova_auth_state()`, the same static the auth and account forms use. A reload must never repost a
+  review.
+- The star picker is the account page's, **duplicated into `theme.css`** — `.roova-rate__*` and the
+  `.roova-review__stars-on/off` colours live in `account.css` and that stylesheet never loads here.
+  Without the second copy every rating paints five identical stars.
+- `theme.js` keeps the overall figure above the form up to date as the stars are picked. It is a
+  preview only — the server computes the same number from the posted values.
 
 ### Saved stays
 
@@ -726,6 +844,12 @@ templated in PHP. Rather than rewrite the client's page content, `roova_checkout
 every `is_checkout()` view — checkout, order-pay and order-received alike — to `checkout.php`, which
 prints its own document and runs `[woocommerce_checkout]`. That means the classic checkout, and so the
 overrides in `roova/woocommerce/checkout/`. `roova_use_checkout_template` turns the whole thing off.
+
+**Order-received is the exception, and only since 1.8.0**: `inc/received.php` claims it back at
+priority 110 and draws it in its own document, with no banner. Checkout and order-pay still come
+through here, and so does the confirmation whenever that takeover is off or its gate refuses the
+visitor — which is what keeps `checkout.php`'s received branch and `thankyou.php` alive. See
+*Order received*.
 
 Everything on the page is read from WooCommerce at render time: the summary from the cart, the payment
 cards from `$available_gateways`, the totals from the cart's own totals. Nothing is transcribed from
@@ -906,7 +1030,7 @@ Prefer a token over a literal; the handful of literals left are the multi-stop s
 `rgba(13,58,82,…)` hairlines.
 
 Each page that prints its own document also carries its own stylesheet with its own token header —
-`checkout.css`, `auth.css`, `account.css`, `order.css`. The repetition is the convention here, not an
+`checkout.css`, `auth.css`, `account.css`, `order.css`, `received.css`. The repetition is the convention here, not an
 oversight: the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the
 two are never loaded together and each page has to stand up alone.
 
