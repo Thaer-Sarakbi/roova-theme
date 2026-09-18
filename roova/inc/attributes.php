@@ -1,6 +1,6 @@
 <?php
 /**
- * The global product attributes the theme runs on: Destination, Amenity and Facilities.
+ * The global product attributes the theme runs on: Destination, Amenity, Facilities and Badge.
  *
  * They are real WooCommerce attributes so the site owner can add new terms from
  * Products > Attributes without touching code.
@@ -38,6 +38,15 @@ function roova_facility_taxonomy() {
 }
 
 /**
+ * Taxonomy name for the badges pinned to a hotel's search-result card.
+ *
+ * @return string
+ */
+function roova_badge_taxonomy() {
+	return 'pa_badge';
+}
+
+/**
  * The attributes the theme needs: slug => label.
  *
  * @return array
@@ -47,6 +56,7 @@ function roova_required_attributes() {
 		'destination' => __( 'Destination', 'roova' ),
 		'amenity'     => __( 'Amenity', 'roova' ),
 		'facilities'  => __( 'Facilities', 'roova' ),
+		'badge'       => __( 'Badge', 'roova' ),
 	);
 }
 
@@ -63,7 +73,7 @@ function roova_ensure_attributes() {
 	}
 
 	$existing = wp_list_pluck( wc_get_attribute_taxonomies(), 'attribute_name' );
-	$created  = false;
+	$created  = array();
 
 	foreach ( roova_required_attributes() as $slug => $label ) {
 		if ( in_array( $slug, $existing, true ) ) {
@@ -79,7 +89,7 @@ function roova_ensure_attributes() {
 		) );
 
 		if ( ! is_wp_error( $result ) ) {
-			$created = true;
+			$created[] = $slug;
 		}
 	}
 
@@ -106,6 +116,15 @@ function roova_ensure_attributes() {
 					)
 				);
 			}
+		}
+
+		/*
+		 * Seed the badges only for an attribute this run just created. A site
+		 * that has deleted a badge on purpose should not get it back on the
+		 * next release.
+		 */
+		if ( in_array( 'badge', $created, true ) ) {
+			roova_seed_badge_terms();
 		}
 
 		update_option( 'roova_attributes_created', ROOVA_VERSION );
@@ -410,4 +429,112 @@ function roova_set_product_attribute_terms( $product, $taxonomy, $term_ids ) {
 function roova_get_facilities( $product_id ) {
 	$terms = get_the_terms( absint( $product_id ), roova_facility_taxonomy() );
 	return is_array( $terms ) ? $terms : array();
+}
+
+/**
+ * The badges shipped with a new install: slug => label.
+ *
+ * Seeded once, when the Badge attribute is first created — after that the list
+ * belongs to the site, editable under Products → Attributes → Badge like every
+ * other attribute the theme uses.
+ *
+ * @return array
+ */
+function roova_default_badges() {
+	/**
+	 * Filter the badges a new install starts with.
+	 *
+	 * @param array $badges slug => label.
+	 */
+	return apply_filters( 'roova_default_badges', array(
+		'popular'    => __( 'Popular', 'roova' ),
+		'best-sale'  => __( 'Best sale', 'roova' ),
+		'best-value' => __( 'Best value', 'roova' ),
+		'top-rated'  => __( 'Top rated', 'roova' ),
+		'new'        => __( 'New', 'roova' ),
+	) );
+}
+
+/**
+ * Put the default badges in the Badge attribute.
+ *
+ * Only ever called for an attribute that has just been created, so it cannot
+ * resurrect a badge the site deleted.
+ *
+ * @return void
+ */
+function roova_seed_badge_terms() {
+	$taxonomy = roova_badge_taxonomy();
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		return;
+	}
+
+	$order = 0;
+	foreach ( roova_default_badges() as $slug => $label ) {
+		$order++;
+
+		if ( term_exists( $slug, $taxonomy ) ) {
+			continue;
+		}
+
+		$term = wp_insert_term( $label, $taxonomy, array( 'slug' => $slug ) );
+		if ( is_wp_error( $term ) ) {
+			continue;
+		}
+
+		// menu_order is what the attribute is sorted by, and the first badge on
+		// a card is the one drawn in gold — so the order here is the order the
+		// site owner sees and can rearrange.
+		update_term_meta( $term['term_id'], 'order_' . $taxonomy, $order );
+	}
+}
+
+/**
+ * Badge terms attached to a hotel, in the attribute's own order.
+ *
+ * Sorted here rather than left to WooCommerce: wc_get_product_terms() is a thin
+ * wrapper around wp_get_post_terms() and does nothing with an attribute's
+ * ordering, so the badge drawn in gold would otherwise be whichever one sorted
+ * first by chance. `order_{$taxonomy}` is the meta WooCommerce's own "Configure
+ * terms" screen writes when the list is dragged into order, so ordering the
+ * badges there is what decides which one leads on the card.
+ *
+ * @param int $product_id Product ID.
+ * @return WP_Term[]
+ */
+function roova_get_badges( $product_id ) {
+	$product_id = absint( $product_id );
+	$taxonomy   = roova_badge_taxonomy();
+
+	if ( ! $product_id || ! taxonomy_exists( $taxonomy ) ) {
+		return array();
+	}
+
+	$terms = get_the_terms( $product_id, $taxonomy );
+	if ( ! is_array( $terms ) || ! $terms ) {
+		return array();
+	}
+
+	usort( $terms, function ( $a, $b ) use ( $taxonomy ) {
+		$left  = get_term_meta( $a->term_id, 'order_' . $taxonomy, true );
+		$right = get_term_meta( $b->term_id, 'order_' . $taxonomy, true );
+
+		// A badge nobody has placed in the order goes after the ones that have.
+		if ( '' === $left && '' === $right ) {
+			return strcmp( $a->name, $b->name );
+		}
+		if ( '' === $left ) {
+			return 1;
+		}
+		if ( '' === $right ) {
+			return -1;
+		}
+		if ( (int) $left === (int) $right ) {
+			return strcmp( $a->name, $b->name );
+		}
+
+		return ( (int) $left < (int) $right ) ? -1 : 1;
+	} );
+
+	return $terms;
 }

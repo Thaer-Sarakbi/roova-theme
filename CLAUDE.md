@@ -30,13 +30,15 @@ php tests/test-availability.php           # booking-logic checks (34 assertions,
 php tests/test-cashback.php               # cashback rules and balances (42 assertions, no WordPress)
 php tests/test-vip.php                    # VIP tiers, free nights and the discount (78 assertions, no WordPress)
 php tests/test-received.php               # confirmation: who may see it, cashback forecast, next steps (52 assertions)
+php tests/test-search.php                 # results page: the featured landmark and the sort order (21 assertions)
 php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
 php bin/makepot.php roova roova/languages/roova.pot      # identical output, for machines without Python
 bin/testenv.sh                            # build a throwaway WP+WooCommerce site with the theme installed
 ```
 
-`test-availability.php`, `test-cashback.php`, `test-vip.php` and `test-received.php` are single flat scripts with a
+`test-availability.php`, `test-cashback.php`, `test-vip.php`, `test-received.php` and `test-search.php`
+are single flat scripts with a
 `check( $label, $actual, $expected )` helper — there is no test runner and no per-test filtering. Add
 assertions by calling `check()`; they exit non-zero on any failure. Each stubs the handful of
 WordPress functions the pure logic touches, so they run anywhere PHP does. `test-cashback.php` stubs
@@ -51,14 +53,18 @@ a new member is then charged.
 line as the keys the cashback matcher reads, and `WC()->session` as the one address the guest gate
 compares — so it covers **who may see a confirmation** without a database. That gate is the reason
 the file exists; see *Order received*.
+`test-search.php` stubs hotel meta and `roova_hotel_rating()`, so it covers the two pieces of the
+results page that are pure decisions: which popular landmark a card features — and that the same
+hotel features the same one every time — and the order the list is put in. See *Search results*.
 
 `bin/build.sh` refuses to package if the lint fails, if `style.css` has lost its theme header, or if
 `screenshot.png` is missing.
 
 ## Verifying real behaviour
 
-Lint and the five test scripts cover syntax, include-time fatals, the pure booking maths, the
-cashback rules, what a VIP tier takes off a cart, and who may see a confirmation. Anything
+Lint and the six test scripts cover syntax, include-time fatals, the pure booking maths, the
+cashback rules, what a VIP tier takes off a cart, who may see a confirmation, and how the results
+page picks a landmark and orders its list. Anything
 touching hooks, the database or templates needs a real site: run `bin/testenv.sh`, serve it with
 `php -S 127.0.0.1:8099 -t .testenv/site`, and drive it with curl (a cookie jar per "guest" is enough
 to simulate several visitors competing for the same room).
@@ -170,7 +176,7 @@ the order is paid, so the last layer, the status mapping, is the one that books 
 ends up overbooked is never silently dropped: it stays booked and `flag_overbooking()` adds a loud order
 note for the front desk to resolve.
 
-### Three traps this code has already fallen into
+### Four traps this code has already fallen into
 
 **A CSS rule matching a descendant, not a child, will find WooCommerce's price markup.** A formatted
 price is a nest of `<span>`s; `.some-list span { display: block }` puts the currency symbol on a line
@@ -179,6 +185,16 @@ of its own. Scope label rules with `>`.
 **Overriding a WooCommerce product method with the wrong signature is a site-wide fatal.** Check the
 parent in `includes/abstracts/abstract-wc-product.php` before overriding — `get_price_html()` takes a
 legacy `$deprecated = ''` argument, and dropping it takes the whole site down at theme load.
+
+**`overflow: hidden` to round a corner turns that element into a scroll container.** The search form
+carries three panels — destination, calendar, guests — absolutely positioned *below* their field and
+so outside the form's box. Clipping the form does not merely hide them: focusing the panel's own
+search box makes the browser scroll the nearest scrollable ancestor to reveal it, and the fields
+slide up out of sight. The bar goes blank the instant a guest clicks "Where are you going?". That
+shipped on the results page at 1.10.0 and was fixed in 1.10.2 — corners belong to the elements that
+own them (`.roova-search__field:first-child` on the left, `.roova-search__submit` on the right), which
+is how `theme.css` has always drawn the homepage's bar. The same goes for any new wrapper put around
+a search form.
 
 **A cart item key is not unique to a visitor.** WooCommerce hashes the product plus its cart item
 data, so two guests booking the same room for the same dates get the *identical* key. Every lookup or
@@ -242,9 +258,61 @@ WooCommerce session → defaults, then clamped by `roova_normalise_criteria()`. 
 page, the hotel page and add-to-cart all read it, which is why a stay survives navigation. Don't read
 `$_GET['checkin']` directly anywhere else.
 
+### Search results
+
+The "Find a room" page, `template-search.php`. It prints its own document — the seventh page that
+does — because the design gives it its own header: a navy band carrying the wordmark, the **Primary
+menu**, the account button and the search bar the results answer to.
+`roova_is_search_page()` matches the page **template**, not the stored page ID, so a page the client
+rebuilt by hand and assigned the template still counts — the same rule `roova_is_auth_page()` follows.
+
+**The bar carries the Primary menu**, drawn from the same `primary` location `header.php` uses, with
+the same `.roova-menu` class and the same `[data-roova-nav-toggle]` hamburger. A page that prints its
+own document is still a page of this site, and the results page is the one a search engine is most
+likely to land a stranger on — a header with no way out of it is a dead end. Three things follow:
+
+- **`theme.js`'s toggle resolves its scope with
+  `button.closest( '.roova-nav__inner, .roova-sp__bar-inner' )`.** One handler, two bars; adding a
+  third page with its own header means adding its inner to that selector, not copying the handler.
+- **Every colour in the menu is restated for navy** in `search.css`, the job `.roova-nav--over` does
+  over the hero — `theme.css` paints `.roova-menu` for a cream header, and its hamburger bars are
+  `--roova-deep`, invisible here.
+- **The nav and the toggle are both gated on `has_nav_menu( 'primary' )`**, so a site with no menu
+  assigned gets neither an empty `<nav>` nor a button that opens nothing.
+- The collapsed panel is absolutely positioned against `.roova-sp__bar-inner`'s *padding box*, so its
+  `left`/`right` are that bar's own side padding and have to come down to 20px with it at 760px.
+
+One hotel is one `roova_search_result_card()`, in `inc/template-tags.php`. Everything on it is the
+hotel's own — the name, its destination, one popular landmark, five amenities, three facilities and
+three more landmarks, its badges, its score and its cheapest room for these dates. The one fixed
+line is **Front desk [24 hours]**: every hotel roova lists is staffed around the clock, so it is a
+promise the site makes rather than a field to fill in.
+
+- **The featured landmark is random, but seeded from the hotel ID.** `roova_hotel_feature_landmark()`
+  hashes `roova-landmark-{id}` and indexes with that, so the same hotel shows the same landmark on
+  every refresh, in every cache, and beside every copy of the card. A card that reshuffled on each
+  load would read as a page that cannot make up its mind. Only landmarks that carry a distance are
+  candidates — the whole point of the line is "how far is it from something you have heard of" — and
+  a hotel with none simply prints its destination.
+- **The three landmarks under the amenities skip the featured one**, and print no distances: the
+  distance already has its place, and the same name twice on one card says nothing the second time.
+- **Sorting is a query argument, not a script.** `roova_search_sort()` whitelists
+  `recommended | price-low | price-high | rating`; `roova_sort_search_results()` applies it. The
+  select posts the page back to itself and `theme.js` hides the submit button once it has wired the
+  change event, so sorting works with JavaScript blocked and a sorted list can be linked to.
+- **A hotel with nothing free stays last whatever the sort.** A price list that opens with a room
+  nobody can book is not a price list.
+- **The sort form re-sends the criteria *and* the action's own query string.** A GET form submits
+  its own fields and nothing else — the browser throws the action's query away — so on a site with
+  plain permalinks the form would land on the home page without `roova_query_fields()`. The search
+  bar itself now carries the same fields, for the same reason.
+- `roova_search_result_card()` reads the guest score through `roova_hotel_rating()`, the 0–5 figure
+  every other surface prints. The handoff draws a ten-point score; two numbers for one thing on one
+  site is worse than a number that does not match a mockup.
+
 ### Taxonomies
 
-`pa_destination`, `pa_amenity` and `pa_facilities` are real WooCommerce global attributes, created
+`pa_destination`, `pa_amenity`, `pa_facilities` and `pa_badge` are real WooCommerce global attributes, created
 programmatically by `roova_ensure_attributes()` so the client can add terms in the UI without code.
 Term meta carries the amenity icon (`roova_icon`, or `roova_icon_image` for a custom upload) and the
 destination tile image / colour plus its map coordinates (`roova_lat` / `roova_lng`). Icons come from
@@ -259,7 +327,19 @@ would put confident, wrong pictures next to amenities.
 Facilities are deliberately icon-less: they are the flat "what this hotel has" checklist rendered with
 a tick above "Select your room", so a new term needs no admin work beyond adding it.
 
-Amenities and facilities are also editable from the Hotel Details tab (`roova_attribute_picker()`), as
+Badges are the pills in the corner of a hotel's photo in the search results, and a hotel may wear
+several. An attribute rather than a fixed list in code, so the client can add "Best sale" or retire
+"New" without a developer. Five ship with a fresh install — `roova_default_badges()` — and they are
+seeded **only** for a Badge attribute `roova_ensure_attributes()` has just created: a site that
+deleted a badge on purpose should not get it back on the next release.
+
+The first badge on a card is drawn in gold and the rest in navy, so a hotel carrying three still has
+one thing the eye lands on. Which one is first comes from the term order on Products → Attributes →
+Badge, and `roova_get_badges()` sorts by that `order_{taxonomy}` meta **itself** — modern
+`wc_get_product_terms()` is a thin wrapper around `wp_get_post_terms()` and does nothing with an
+attribute's ordering, so leaving it to WooCommerce would gild whichever badge happened to sort first.
+
+Amenities, facilities and badges are also editable from the Hotel Details tab (`roova_attribute_picker()`), as
 type-to-search multi-selects handed to WooCommerce's own select2 via the `wc-enhanced-select` class —
 which is why `roova-admin-product` depends on that handle. Their selection must be written back
 through `roova_set_product_attribute_terms()`, which puts them
@@ -293,8 +373,8 @@ a long time and shown nowhere — the card is what made it mean anything.
 ### Templates
 
 `single-hotel.php` is routed by `template_include` (not a WooCommerce template override).
-`template-search.php` is a page template; the "Find a room" page is created on activation and its ID
-stored in the `roova_search_page_id` option. `woocommerce.php` wraps cart/checkout/account pages —
+`template-search.php` is a page template that prints its own document; the "Find a room" page is
+created on activation and its ID stored in the `roova_search_page_id` option. See *Search results*. `woocommerce.php` wraps cart/checkout/account pages —
 its 1180px column is the `.roova-woocommerce` rule, because WooCommerce's own wrapper hooks (and so
 `.roova-wc-page`) do not fire on every one of those pages.
 Reusable markup lives in `inc/template-tags.php` as `roova_*` functions, not in template partials.
@@ -315,6 +395,9 @@ one endpoint under My account the theme draws itself. See *View order*. Every ot
 `order-received.php` is the sixth, routed from the confirmation at `template_include` **priority 110**
 — above `roova_checkout_template()`'s 100, because `is_checkout()` is true there too and checkout
 would otherwise claim it first. See *Order received*.
+
+`template-search.php` is the seventh — a page template again, like the two auth pages. See
+*Search results*.
 
 `header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
@@ -1030,7 +1113,7 @@ Prefer a token over a literal; the handful of literals left are the multi-stop s
 `rgba(13,58,82,…)` hairlines.
 
 Each page that prints its own document also carries its own stylesheet with its own token header —
-`checkout.css`, `auth.css`, `account.css`, `order.css`, `received.css`. The repetition is the convention here, not an
+`checkout.css`, `auth.css`, `account.css`, `order.css`, `received.css`, `search.css`. The repetition is the convention here, not an
 oversight: the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the
 two are never loaded together and each page has to stand up alone.
 

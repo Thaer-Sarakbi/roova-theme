@@ -561,6 +561,63 @@ function roova_parse_landmarks( $raw ) {
 }
 
 /**
+ * A hotel's popular landmarks, parsed.
+ *
+ * @param int $hotel_id Hotel product ID.
+ * @return array[] Each item: array( 'name' => string, 'distance' => string ).
+ */
+function roova_hotel_popular_landmarks( $hotel_id ) {
+	$details = roova_get_hotel_details( $hotel_id );
+
+	return roova_parse_landmarks( $details['landmarks_popular'] );
+}
+
+/**
+ * One popular landmark to print beside the hotel's location, with its distance.
+ *
+ * Picked at random, but seeded from the hotel ID rather than the clock: a card
+ * that reshuffled on every refresh would read as a page that cannot make up its
+ * mind, and would differ between a cached copy and a fresh one. Same hotel,
+ * same landmark, every time — until the site owner edits the list.
+ *
+ * Only landmarks that carry a distance are considered; the whole point of the
+ * line is "how far is it from something you have heard of".
+ *
+ * @param int $hotel_id Hotel product ID.
+ * @return array|null array( 'name', 'distance' ), or null when there is none.
+ */
+function roova_hotel_feature_landmark( $hotel_id ) {
+	$hotel_id = absint( $hotel_id );
+
+	$landmarks = array();
+	foreach ( roova_hotel_popular_landmarks( $hotel_id ) as $landmark ) {
+		if ( '' !== $landmark['distance'] ) {
+			$landmarks[] = $landmark;
+		}
+	}
+
+	if ( ! $landmarks ) {
+		return null;
+	}
+
+	/*
+	 * hexdec() over six hex digits of the hash, so the seed is a positive
+	 * integer well inside range on a 32-bit build — crc32() is not.
+	 */
+	$seed  = hexdec( substr( md5( 'roova-landmark-' . $hotel_id ), 0, 6 ) );
+	$index = (int) ( $seed % count( $landmarks ) );
+
+	/**
+	 * Filter the landmark shown beside a hotel's location.
+	 *
+	 * @param array $landmark  array( 'name', 'distance' ).
+	 * @param int   $hotel_id  Hotel product ID.
+	 * @param array $landmarks Every popular landmark that carries a distance.
+	 */
+	return apply_filters( 'roova_hotel_feature_landmark', $landmarks[ $index ], $hotel_id, $landmarks );
+}
+
+/**
  * All published hotel products.
  *
  * @param array $args Extra WP_Query args.

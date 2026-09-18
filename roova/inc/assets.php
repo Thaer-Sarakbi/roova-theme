@@ -47,6 +47,22 @@ function roova_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_assets' );
 
 /**
+ * The search results page's own stylesheet.
+ *
+ * Loaded only there. Like checkout, the account dashboard and the single order,
+ * the page prints its own document, so it carries the page's worth of rules
+ * nothing else on the site uses.
+ */
+function roova_enqueue_search_assets() {
+	if ( ! function_exists( 'roova_is_search_page' ) || ! roova_is_search_page() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-search', ROOVA_URI . 'assets/css/search.css', array( 'roova-style' ), ROOVA_VERSION );
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_search_assets', 20 );
+
+/**
  * Checkout's own stylesheet and script.
  *
  * Both are loaded only on the checkout, order-pay and order-received views —

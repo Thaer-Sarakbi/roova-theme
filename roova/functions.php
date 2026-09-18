@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROOVA_VERSION', '1.9.1' );
+define( 'ROOVA_VERSION', '1.10.2' );
 define( 'ROOVA_DIR', trailingslashit( get_template_directory() ) );
 define( 'ROOVA_URI', trailingslashit( get_template_directory_uri() ) );
 

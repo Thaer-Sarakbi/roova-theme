@@ -279,6 +279,9 @@ function roova_search_form( $args = array() ) {
 		action="<?php echo esc_url( $action ); ?>"
 		data-roova-search>
 
+		<?php /* A GET form drops the query string on its action, so page_id and friends are re-sent by hand. */ ?>
+		<?php roova_query_fields( $action ); ?>
+
 		<?php if ( $args['hotel_id'] && $action === roova_search_url() ) : ?>
 			<input type="hidden" name="roova_hotel" value="<?php echo esc_attr( $args['hotel_id'] ); ?>" />
 		<?php endif; ?>
@@ -1039,5 +1042,413 @@ function roova_room_modal() {
 			</div>
 		</div>
 	</div>
+	<?php
+}
+
+/* -------------------------------------------------------------------------
+ * Search results page
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Hidden fields for everything already in a URL's query string.
+ *
+ * A GET form submits its own fields and nothing else — the query string on its
+ * action is thrown away by the browser. On a site with plain permalinks the
+ * search page is "?page_id=12", so without these the form would land on the
+ * home page instead.
+ *
+ * @param string $url URL the form posts to.
+ */
+function roova_query_fields( $url ) {
+	$query = wp_parse_url( $url, PHP_URL_QUERY );
+	if ( ! $query ) {
+		return;
+	}
+
+	$args = array();
+	parse_str( $query, $args );
+
+	foreach ( $args as $key => $value ) {
+		if ( is_array( $value ) ) {
+			continue;
+		}
+		printf(
+			'<input type="hidden" name="%s" value="%s" />',
+			esc_attr( $key ),
+			esc_attr( $value )
+		);
+	}
+}
+
+/**
+ * Hidden fields carrying the visitor's stay through a form.
+ *
+ * @param array|null $criteria Criteria, or null for the current ones.
+ */
+function roova_criteria_fields( $criteria = null ) {
+	$criteria = $criteria ? $criteria : roova_get_criteria();
+
+	$fields = array(
+		'checkin'  => $criteria['check_in'],
+		'checkout' => $criteria['check_out'],
+		'rooms'    => $criteria['rooms'],
+		'adults'   => $criteria['adults'],
+		'children' => $criteria['children'],
+	);
+
+	if ( $criteria['destination'] ) {
+		$fields['roova_dest'] = $criteria['destination'];
+	}
+	if ( ! empty( $criteria['hotel_id'] ) ) {
+		$fields['roova_hotel'] = $criteria['hotel_id'];
+	}
+
+	foreach ( $fields as $key => $value ) {
+		printf(
+			'<input type="hidden" name="%s" value="%s" />',
+			esc_attr( $key ),
+			esc_attr( $value )
+		);
+	}
+}
+
+/**
+ * The search page's own header: wordmark, account button and the search bar.
+ *
+ * The page prints its own document, so this is its whole header — see
+ * template-search.php.
+ */
+function roova_search_page_header() {
+	$tagline = roova_option( 'search_tagline', __( 'Global hotel booking', 'roova' ) );
+	?>
+	<header class="roova-sp__bar">
+		<div class="roova-sp__bar-inner">
+			<a class="roova-sp__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+				<?php echo roova_wordmark(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside. ?>
+				<?php if ( $tagline ) : ?>
+					<span class="roova-sp__tagline"><?php echo esc_html( $tagline ); ?></span>
+				<?php endif; ?>
+			</a>
+
+			<?php if ( has_nav_menu( 'primary' ) ) : ?>
+				<nav class="roova-sp__menu" aria-label="<?php esc_attr_e( 'Primary menu', 'roova' ); ?>">
+					<?php
+					wp_nav_menu(
+						array(
+							'theme_location' => 'primary',
+							'container'      => false,
+							'menu_class'     => 'roova-menu',
+							'depth'          => 2,
+							'fallback_cb'    => false,
+						)
+					);
+					?>
+				</nav>
+			<?php endif; ?>
+
+			<div class="roova-sp__actions">
+				<?php roova_account_control(); ?>
+
+				<?php if ( has_nav_menu( 'primary' ) ) : ?>
+					<button class="roova-nav__toggle roova-sp__toggle" type="button" data-roova-nav-toggle aria-expanded="false">
+						<span class="screen-reader-text"><?php esc_html_e( 'Menu', 'roova' ); ?></span>
+						<span aria-hidden="true"></span>
+					</button>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<?php if ( roova_has_woocommerce() ) : ?>
+			<div class="roova-sp__search"><?php roova_search_form(); ?></div>
+		<?php endif; ?>
+	</header>
+	<?php
+}
+
+/**
+ * The results count and the sort control.
+ *
+ * A real form posting back to this page rather than a script: sorting works
+ * with JavaScript blocked, and a sorted list can be linked to. theme.js hides
+ * the submit button once it has wired the select to submit on change, so a
+ * visitor running the script never sees a redundant button.
+ *
+ * @param int $count How many hotels matched.
+ */
+function roova_search_sort_form( $count ) {
+	$action = roova_search_url();
+	$sort   = roova_search_sort();
+	?>
+	<form class="roova-sp__sort" method="get" action="<?php echo esc_url( $action ); ?>">
+		<?php
+		roova_query_fields( $action );
+		roova_criteria_fields();
+		?>
+
+		<span class="roova-sp__count">
+			<?php
+			printf(
+				/* translators: %s: number of hotels */
+				esc_html( _n( '%s hotel', '%s hotels', $count, 'roova' ) ),
+				esc_html( number_format_i18n( $count ) )
+			);
+			?>
+		</span>
+
+		<label class="roova-sp__sort-label" for="roova-sort"><?php esc_html_e( 'Sort', 'roova' ); ?></label>
+
+		<select id="roova-sort" name="roova_sort" data-roova-autosubmit>
+			<?php foreach ( roova_search_sort_options() as $key => $label ) : ?>
+				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $sort, $key ); ?>>
+					<?php echo esc_html( $label ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+
+		<button type="submit" class="roova-sp__sort-go" data-roova-autosubmit-go>
+			<?php esc_html_e( 'Apply', 'roova' ); ?>
+		</button>
+	</form>
+	<?php
+}
+
+/**
+ * The badges a hotel wears on its card.
+ *
+ * The first badge is drawn in gold and the rest in navy, so a hotel carrying
+ * three of them still has one thing the eye lands on. Which badge comes first
+ * is the order set under Products → Attributes → Badge.
+ *
+ * @param int $hotel_id Hotel product ID.
+ */
+function roova_result_badges( $hotel_id ) {
+	if ( ! function_exists( 'roova_get_badges' ) ) {
+		return;
+	}
+
+	$badges = roova_get_badges( $hotel_id );
+	if ( ! $badges ) {
+		return;
+	}
+
+	/**
+	 * Filter how many badges one card may show.
+	 *
+	 * @param int $limit    Maximum badges, 0 for no limit.
+	 * @param int $hotel_id Hotel product ID.
+	 */
+	$limit = (int) apply_filters( 'roova_result_badge_limit', 3, $hotel_id );
+	if ( $limit > 0 ) {
+		$badges = array_slice( $badges, 0, $limit );
+	}
+	?>
+	<span class="roova-result__badges">
+		<?php foreach ( array_values( $badges ) as $index => $badge ) : ?>
+			<span class="roova-result__badge <?php echo 0 === $index ? 'roova-result__badge--lead' : ''; ?>">
+				<?php echo esc_html( $badge->name ); ?>
+			</span>
+		<?php endforeach; ?>
+	</span>
+	<?php
+}
+
+/**
+ * One hotel in the search results.
+ *
+ * Everything on it is the hotel's own: the name, its destination, one of its
+ * popular landmarks, five of its amenities, three facilities and three more
+ * landmarks, its badges, its score and its cheapest room for these dates. The
+ * one fixed line is the front desk — every hotel roova lists is staffed around
+ * the clock, so it is a promise the site makes rather than a field to fill in.
+ *
+ * @param array      $result   One row from roova_search_hotels().
+ * @param array|null $criteria Search criteria, or null for the current ones.
+ */
+function roova_search_result_card( $result, $criteria = null ) {
+	$hotel_id = absint( $result['hotel_id'] );
+	if ( ! $hotel_id ) {
+		return;
+	}
+
+	$criteria = $criteria ? $criteria : roova_get_criteria();
+	$details  = roova_get_hotel_details( $hotel_id );
+	$url      = roova_criteria_url( get_permalink( $hotel_id ) );
+	$nights   = roova_nights( $criteria['check_in'], $criteria['check_out'] );
+
+	$landmark  = roova_hotel_feature_landmark( $hotel_id );
+	$amenities = array_slice( roova_get_amenities( $hotel_id ), 0, 5 );
+
+	// Three facilities, then three landmarks with the distance left off — the
+	// distance already has its place, beside the location. The landmark already
+	// printed up there is skipped: the same name twice on one card is a line
+	// that says nothing the second time.
+	$facilities = array_slice( roova_get_facilities( $hotel_id ), 0, 3 );
+
+	$nearby = array();
+	foreach ( roova_hotel_popular_landmarks( $hotel_id ) as $place ) {
+		if ( $landmark && $place['name'] === $landmark['name'] ) {
+			continue;
+		}
+
+		$nearby[] = $place;
+
+		if ( count( $nearby ) >= 3 ) {
+			break;
+		}
+	}
+
+	$summary = function_exists( 'roova_hotel_review_summary' )
+		? roova_hotel_review_summary( $hotel_id )
+		: array( 'count' => 0 );
+
+	$score   = function_exists( 'roova_hotel_rating' ) ? roova_hotel_rating( $hotel_id ) : 0.0;
+	$reviews = $summary['count'] > 0 ? (int) $summary['count'] : (int) $details['review_count'];
+	?>
+	<article class="roova-result <?php echo $result['has_availability'] ? '' : 'roova-result--unavailable'; ?>">
+		<div class="roova-result__media">
+			<a class="roova-result__photo" href="<?php echo esc_url( $url ); ?>" tabindex="-1" aria-hidden="true">
+				<?php
+				if ( has_post_thumbnail( $hotel_id ) ) {
+					echo get_the_post_thumbnail( $hotel_id, 'roova-hotel-card', array( 'loading' => 'lazy' ) );
+				} else {
+					echo '<span class="roova-hotel-card__placeholder"></span>';
+				}
+				?>
+			</a>
+			<?php roova_result_badges( $hotel_id ); ?>
+		</div>
+
+		<div class="roova-result__body">
+			<div class="roova-result__title">
+				<h2><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( get_the_title( $hotel_id ) ); ?></a></h2>
+				<?php if ( (int) $details['stars'] ) : ?>
+					<span class="roova-result__stars"><?php echo roova_stars( (int) $details['stars'], 13 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+				<?php endif; ?>
+			</div>
+
+			<p class="roova-result__loc">
+				<span class="roova-result__place">
+					<?php roova_the_icon( 'pin', 14 ); ?>
+					<?php echo esc_html( roova_hotel_location_label( $hotel_id ) ); ?>
+				</span>
+				<?php if ( $landmark ) : ?>
+					<span class="roova-result__landmark">
+						<?php
+						printf(
+							/* translators: 1: distance, for example 400 m; 2: landmark name */
+							esc_html__( '%1$s to %2$s', 'roova' ),
+							esc_html( $landmark['distance'] ),
+							esc_html( $landmark['name'] )
+						);
+						?>
+					</span>
+				<?php endif; ?>
+			</p>
+
+			<?php if ( $amenities ) : ?>
+				<div class="roova-result__amenities">
+					<?php foreach ( $amenities as $amenity ) : ?>
+						<span>
+							<?php echo roova_amenity_icon( $amenity, 13 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							<?php echo esc_html( $amenity->name ); ?>
+						</span>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( $facilities || $nearby ) : ?>
+				<p class="roova-result__highlights">
+					<?php foreach ( $facilities as $facility ) : ?>
+						<span class="roova-result__highlight">
+							<?php roova_the_icon( 'check', 13 ); ?>
+							<?php echo esc_html( $facility->name ); ?>
+						</span>
+					<?php endforeach; ?>
+
+					<?php foreach ( $nearby as $place ) : ?>
+						<span class="roova-result__highlight roova-result__highlight--near">
+							<?php roova_the_icon( 'pin', 13 ); ?>
+							<?php echo esc_html( $place['name'] ); ?>
+						</span>
+					<?php endforeach; ?>
+				</p>
+			<?php endif; ?>
+
+			<p class="roova-result__desk">
+				<?php roova_the_icon( 'reception', 14 ); ?>
+				<?php esc_html_e( 'Front desk [24 hours]', 'roova' ); ?>
+			</p>
+		</div>
+
+		<div class="roova-result__aside">
+			<?php if ( $score > 0 ) : ?>
+				<div class="roova-result__rating">
+					<span class="roova-result__rating-text">
+						<?php if ( $details['score_label'] ) : ?>
+							<strong><?php echo esc_html( $details['score_label'] ); ?></strong>
+						<?php endif; ?>
+						<?php if ( $reviews ) : ?>
+							<span>
+								<?php
+								printf(
+									/* translators: %s: number of reviews */
+									esc_html( _n( '%s review', '%s reviews', $reviews, 'roova' ) ),
+									esc_html( number_format_i18n( $reviews ) )
+								);
+								?>
+							</span>
+						<?php endif; ?>
+					</span>
+					<span class="roova-result__score"><?php echo esc_html( number_format_i18n( $score, 1 ) ); ?></span>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( $result['has_availability'] ) : ?>
+				<div class="roova-result__buy">
+					<?php if ( $result['rooms_left'] > 0 && $result['rooms_left'] <= 3 ) : ?>
+						<span class="roova-room__scarcity">
+							<?php
+							printf(
+								/* translators: %d: rooms left */
+								esc_html( _n( 'Only %d room left', 'Only %d rooms left', $result['rooms_left'], 'roova' ) ),
+								(int) $result['rooms_left']
+							);
+							?>
+						</span>
+					<?php endif; ?>
+
+					<span class="roova-result__from"><?php esc_html_e( 'From', 'roova' ); ?></span>
+
+					<p class="roova-result__price">
+						<strong><?php echo wp_kses_post( wc_price( $result['rate'] ) ); ?></strong>
+						<span><?php esc_html_e( '/ night', 'roova' ); ?></span>
+					</p>
+
+					<p class="roova-result__total">
+						<?php
+						printf(
+							/* translators: 1: total price, 2: nights phrase */
+							esc_html__( '%1$s for %2$s', 'roova' ),
+							wp_kses_post( wc_price( $result['rate'] * $nights ) ),
+							esc_html( sprintf( /* translators: %d: nights */ _n( '%d night', '%d nights', $nights, 'roova' ), $nights ) )
+						);
+						?>
+					</p>
+
+					<a class="roova-btn roova-result__cta" href="<?php echo esc_url( $url ); ?>#rooms">
+						<?php esc_html_e( 'See rooms', 'roova' ); ?>
+						<?php roova_the_icon( 'arrow-right', 15 ); ?>
+					</a>
+				</div>
+			<?php else : ?>
+				<div class="roova-result__buy">
+					<p class="roova-unavailable"><?php esc_html_e( 'No rooms free for these dates', 'roova' ); ?></p>
+					<a class="roova-btn roova-btn--ghost roova-result__cta" href="<?php echo esc_url( get_permalink( $hotel_id ) ); ?>">
+						<?php esc_html_e( 'View hotel', 'roova' ); ?>
+					</a>
+				</div>
+			<?php endif; ?>
+		</div>
+	</article>
 	<?php
 }

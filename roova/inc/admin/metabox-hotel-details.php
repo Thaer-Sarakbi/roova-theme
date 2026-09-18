@@ -80,6 +80,24 @@ function roova_hotel_details_panel() {
 		</div>
 
 		<div class="options_group">
+			<h4 class="roova-panel-heading"><?php esc_html_e( 'Badges', 'roova' ); ?></h4>
+
+			<?php
+			roova_attribute_picker(
+				roova_badge_taxonomy(),
+				wp_get_object_terms( $post->ID, roova_badge_taxonomy(), array( 'fields' => 'ids' ) ),
+				'roova_badges',
+				__( 'Badges', 'roova' ),
+				__( 'Type to search badges…', 'roova' )
+			);
+			?>
+
+			<p class="roova-panel-note">
+				<?php esc_html_e( 'Pinned to the corner of this hotel\'s photo in the search results. Pick as many as apply — the first one is drawn in gold, the rest in navy, and a card shows at most three. Add, rename or reorder them under Products → Attributes → Badge.', 'roova' ); ?>
+			</p>
+		</div>
+
+		<div class="options_group">
 			<h4 class="roova-panel-heading"><?php esc_html_e( 'Location', 'roova' ); ?></h4>
 
 			<?php
@@ -305,12 +323,13 @@ function roova_save_hotel_details( $product ) {
 	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	/*
-	 * Destination, amenities and facilities are set as real product attributes,
+	 * Destination, amenities, facilities and badges are set as real product attributes,
 	 * so the Attributes tab and this panel always agree — and so WooCommerce
 	 * does not drop the terms again while saving.
 	 */
 	roova_set_product_attribute_terms( $product, roova_destination_taxonomy(), roova_posted_attribute_terms( 'roova_destinations' ) );
 	roova_set_product_attribute_terms( $product, roova_amenity_taxonomy(), roova_posted_attribute_terms( 'roova_amenities' ) );
 	roova_set_product_attribute_terms( $product, roova_facility_taxonomy(), roova_posted_attribute_terms( 'roova_facilities' ) );
+	roova_set_product_attribute_terms( $product, roova_badge_taxonomy(), roova_posted_attribute_terms( 'roova_badges' ) );
 }
 add_action( 'woocommerce_admin_process_product_object', 'roova_save_hotel_details' );

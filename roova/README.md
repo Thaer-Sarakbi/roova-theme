@@ -15,11 +15,11 @@ through the normal WooCommerce cart, checkout and orders.
 2. Install and activate **WooCommerce** if it is not active yet (the theme shows a notice with a link).
 3. On activation the theme creates:
    * the bookings database table,
-   * the **Destination**, **Amenity** and **Facilities** product attributes,
+   * the **Destination**, **Amenity**, **Facilities** and **Badge** product attributes,
    * a **Find a room** page using the *Hotel search results* template,
    * a **Checkout** page, if WooCommerce has not already made one,
    * two tax rates — **Tourism Tax** 5% and **SST** 10% — but only on a store that has no tax rates
-     of its own. See section 10.
+     of its own. See section 11.
 4. **Settings → Reading →** set your homepage to a static page so the hotel homepage template is used.
 5. **Appearance → Customize → Roova hotel theme →** brand colours, hero text, Google Maps key, hold times.
 
@@ -101,7 +101,60 @@ every one is listed with a tick — so adding the term is all it takes. Choose t
 Amenities and facilities overlap on purpose: amenities are the illustrated highlights, facilities are
 the full list.
 
-## 6. Add a hotel
+## 6. Badges and the search results page
+
+**Products → Attributes → Badge → Configure terms.**
+
+Badges are the small pills in the corner of a hotel's photo on the **Find a room** results page —
+*Popular*, *Best sale*, *Best value*, *Top rated*, *New*. Those five are created for you; add,
+rename or delete them like any other attribute.
+
+Give a hotel its badges from **Product data → Hotel Details → Badges**. A hotel can wear more than
+one: pick as many as apply. A card shows up to three, the first in gold and the rest in navy, so
+there is always one the eye lands on first.
+
+**Which badge comes first** is the order of the terms on *Products → Attributes → Badge → Configure
+terms* — drag them into the order you want and the gold one follows.
+
+### What a results card shows
+
+Everything on a card comes from the hotel itself:
+
+| On the card | Comes from |
+|---|---|
+| Name and star rating | The product title and **Hotel Details → Star rating** |
+| Location | The hotel's first **Destination** |
+| The distance beside it | One of the hotel's **Popular landmarks** — see below |
+| The five pills | The hotel's **Amenities**, with their icons |
+| The row under them | Three **Facilities**, then three **Popular landmarks** (no distances) |
+| Score and review count | Guest reviews, or the **Hotel Details** figures until there are any |
+| Price | The cheapest room that can take the guest's dates and party |
+| Badges | **Hotel Details → Badges** |
+
+**Front desk [24 hours]** is on every card and is not a setting — it is a promise the site makes for
+every hotel it lists.
+
+The landmark beside the location ("400 m to Plaza Damas") is picked from the hotel's **Popular
+landmarks** box, and only from the lines that have a distance after the `|`. The same hotel always
+shows the same one, so the card does not change under a guest between page loads. If you would
+rather feature a different landmark, give it a distance and take the distance off the others — or
+reorder the box so the ones you do not want to feature have no distance.
+
+A hotel with no landmarks simply shows its destination, and one with no badges shows no pills.
+
+### The bar at the top
+
+The results page has its own navy header rather than the site's cream one, and it carries the same
+**Primary** menu (see section 13), the wordmark, the Sign in / Manage account button and the search
+bar the results answer to. The page a guest is looking at is underlined in gold.
+
+### Sorting
+
+Guests can reorder the list with the **Sort** control: *Recommended*, *Price · low to high*,
+*Price · high to low* and *Guest rating*. Hotels with no rooms free for the chosen dates stay at the
+bottom whichever order is chosen.
+
+## 7. Add a hotel
 
 **Products → Add New**, then set **Product data → Hotel**.
 
@@ -112,6 +165,7 @@ the full list.
 | Destination | **Hotel Details** tab → Destination (or the Attributes tab) |
 | Amenities | **Hotel Details** tab → Amenities (or the Attributes tab) |
 | Facilities | **Hotel Details** tab → Facilities (or the Attributes tab) |
+| Badges | **Hotel Details** tab → Badges (or the Attributes tab) |
 | Address, latitude, longitude, map zoom | **Hotel Details** tab |
 | Check-in / check-out times, star rating | **Hotel Details** tab |
 | Reception phone | **Hotel Details** tab → Reception phone |
@@ -127,7 +181,7 @@ number a guest can tap to call. Write it however you want it read — spaces, br
 are all fine, they are stripped out of the number that is actually dialled. Leave the field empty and
 the panel is left off that hotel's page entirely.
 
-## 7. Add rooms
+## 8. Add rooms
 
 **Products → Add New**, then set **Product data → Room (bookable)**.
 
@@ -140,7 +194,7 @@ the panel is left off that hotel's page entirely.
 * Room photos come from the product image and gallery, shown in the "Room photos and details" modal.
 * Rooms do not appear in the shop catalogue — they are booked from their hotel page.
 
-## 8. How the booking system prevents conflicts
+## 9. How the booking system prevents conflicts
 
 **One booking at a time.** The cart holds a single room type: booking a room empties the cart first, so
 what a guest pays for is always the stay they just chose, and the dates their old cart was holding go
@@ -177,7 +231,7 @@ busiest night decides. A room with 8 units is bookable while fewer than 8 units 
 those nights. Same-day turnarounds do not collide: a guest checking out on the 5th frees that night
 for a guest checking in on the 5th.
 
-## 9. The checkout page
+## 10. The checkout page
 
 The theme replaces WooCommerce's checkout with one built for room bookings. You do not have to set it
 up — it takes over the checkout page whatever that page contains, including the block checkout that
@@ -245,7 +299,7 @@ so there is nothing to keep up to date:
   the hotel's **Hotel Details** tab, plus the check-in and check-out times. Fill the phone number in
   and it appears here, tappable on a phone. Leave it blank and the row simply is not shown.
 * **What happens next** — your hotel confirms directly (by name), the two emails they will get, and
-  the cashback the stay will earn, if any. See section 18.
+  the cashback the stay will earn, if any. See section 19.
 
 Two things worth knowing:
 
@@ -257,9 +311,9 @@ Two things worth knowing:
   received" and say the rooms are being held until the payment clears, not "Booking confirmed". A
   failed payment says that plainly and leads with a **Pay now** button.
 
-**Download voucher** prints the page — see section 15, which works the same way.
+**Download voucher** prints the page — see section 16, which works the same way.
 
-## 10. Taxes
+## 11. Taxes
 
 A fresh install starts with two rates, added on top of the room rate and shown as their own lines in
 the order summary:
@@ -289,7 +343,7 @@ Under **Settings → Tax** you can also switch *Display tax totals* to "As a sin
 combined line, or turn tax off entirely under **Settings → General**, in which case the summary shows
 "Taxes & fees — Included".
 
-## 11. Managing bookings
+## 12. Managing bookings
 
 **WooCommerce → Bookings**
 
@@ -299,9 +353,12 @@ combined line, or turn tax off entirely under **Settings → General**, in which
 
 Each order also has a **Bookings** panel on its edit screen.
 
-## 12. Menus and pages
+## 13. Menus and pages
 
 * Create a menu and assign it to **Primary**; a good set is Hotels, Destinations, Why book direct.
+  It is drawn in the site header on every page, and in the navy bar at the top of the **Find a room**
+  results page. On a narrow screen both collapse behind the ☰ button. Assign no menu and neither
+  header shows one.
 * The footer has three link columns, each its own menu location — **Footer column 1 / 2 / 3**. The
   design fills them with Stay (Our hotels, Destinations, Long stays), Guests (Manage booking, Contact
   us, FAQ) and Company (About, Careers, Privacy). A column with no menu assigned is left out, and the
@@ -309,7 +366,7 @@ Each order also has a **Bookings** panel on its edit screen.
 * The top right of the header is the **account control**: one button, reading "Sign in" for a visitor
   and "Manage account" — linking to **My account** — once they are signed in. See the next section.
 
-## 13. Sign in and sign up
+## 14. Sign in and sign up
 
 Activating the theme creates two pages — **Sign in** (`/sign-in/`) and **Sign up** (`/sign-up/`) — and
 gives them the matching page templates. They are ordinary pages, so you can rename them or move them
@@ -353,7 +410,7 @@ in a menu; keep the template assigned and everything keeps working.
   If you change a photo, check the white text over it is still easy to read — a picture that is bright
   along its bottom edge is the one to watch.
 
-## 14. My account
+## 15. My account
 
 **My account** is WooCommerce's page, laid out to the Roova design. It has six tabs — Profile,
 Bookings, Reviews, Likes, VIP and Cashback rewards — and everything on it is read from your site as
@@ -367,13 +424,13 @@ fill in.
   to correct it again at checkout.
 * **Bookings** — one card per stay, newest first, with a status chip: **Upcoming**, **Completed**,
   **Cancelled**, or **Payment due** for an order that has not been paid for yet. **View voucher**
-  opens the booking in full — see section 15. An order that still needs paying says **Pay now** and
+  opens the booking in full — see section 16. An order that still needs paying says **Pay now** and
   goes straight to payment instead.
-* **Reviews** — see section 16.
+* **Reviews** — see section 17.
 * **Likes** — the stays a member has saved with the heart on any hotel card or hotel page. Tapping
   the heart again removes it.
-* **VIP** — see section 17.
-* **Cashback rewards** — see section 18.
+* **VIP** — see section 18.
+* **Cashback rewards** — see section 19.
 
 The address book, lost password and the rest of My account are WooCommerce's own screens and are
 unchanged.
@@ -383,7 +440,7 @@ trash, it is restored (or created) the next time you open the dashboard. Deletin
 the account button, signing in, and the link in the confirmation email — so it is put back rather
 than left broken. Its content is never rewritten, so anything you have added to it stays.
 
-## 15. The booking voucher
+## 16. The booking voucher
 
 **View voucher** on a booking card opens that order on a page of its own: the room and hotel, check-in
 and check-out, nights and guests, what was charged (with any discount and each tax as its own line),
@@ -404,7 +461,7 @@ The buttons under it change with the booking:
 
 A member can only ever open their own bookings; anyone else gets WooCommerce's usual "Invalid order".
 
-## 16. Guest reviews
+## 17. Guest reviews
 
 A review is a normal **WooCommerce product review** on the hotel, so it appears under **Comments** in
 the dashboard and is moderated there like any other. What the theme adds is who may write one, and
@@ -449,7 +506,7 @@ The **Reviews** tab in My account is the second way in — it lists a member's o
 gold "Rate your stay at ..." prompt for any stay still waiting for one, which is useful for a guest
 who never reopens the hotel page.
 
-## 17. RoovaVIP
+## 18. RoovaVIP
 
 Members climb tiers by **completing bookings** — a stay counts once the guest has checked out and the
 order is paid. Nothing else counts: no spend thresholds, no expiry dates.
@@ -528,7 +585,7 @@ benefits written for Gold only. The other four are deliberately empty: their ben
 decide, and a tier with none simply leaves that section off the page rather than showing an empty
 list.
 
-## 18. Cashback rewards
+## 19. Cashback rewards
 
 Members earn cashback by **completing stays**. A stay counts once the guest has checked out and the
 order is paid — the same rule RoovaVIP uses.
@@ -576,7 +633,7 @@ the theme keeps the figure and shows it, and your front desk honours it, exactly
 written benefits work. (A RoovaVIP tier's **checkout discount** and **free nights** are the exception
 to that rule — those really do come off the total.) So only offer what you will actually pay out.
 
-## 19. Developer notes
+## 20. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.
@@ -588,6 +645,12 @@ to that rule — those really do come off the total.) So only offer what you wil
   `roova_max_nights`, `roova_hide_rooms_from_catalog`, `roova_redirect_rooms_to_hotel`,
   `roova_icon_library`, `roova_guarantees`, `roova_popular_searches`, `roova_map_places`,
   `roova_destination_gazetteer`, `roova_atlas_url`, `roova_atlas_views`.
+* Search results filters: `roova_default_badges` seeds the badge list on a fresh install,
+  `roova_result_badge_limit` changes how many badges a card prints (three), and
+  `roova_hotel_feature_landmark` replaces the landmark chosen beside a hotel's location — it is picked
+  at random but seeded from the hotel's ID, so a hotel always features the same one. Sorting is the
+  `roova_sort` query argument (`recommended`, `price-low`, `price-high`, `rating`) and needs no
+  JavaScript.
 * Cashback offers live in the `roova_cashback_rewards` option; each member's ledger is the
   `roova_cashback_ledger` user meta, keyed by stay so earning is idempotent. Whether an amount has
   cleared is read off the calendar rather than a stored flag, so no cron has to fire for a balance to

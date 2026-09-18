@@ -262,6 +262,24 @@ function roova_customize_register( $wp_customize ) {
 		'type'    => 'text',
 	) );
 
+	/* ---------------------------------------------------- Search results */
+	$wp_customize->add_section( 'roova_search', array(
+		'title'       => __( 'Search results', 'roova' ),
+		'panel'       => 'roova_panel',
+		'description' => __( 'The "Find a room" page. It prints its own header — a navy band with the wordmark, the account button and the search bar.', 'roova' ),
+	) );
+
+	$wp_customize->add_setting( 'roova_search_tagline', array(
+		'default'           => __( 'Global hotel booking', 'roova' ),
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'roova_search_tagline', array(
+		'label'       => __( 'Line beside the wordmark', 'roova' ),
+		'description' => __( 'Leave empty to show the wordmark on its own.', 'roova' ),
+		'section'     => 'roova_search',
+		'type'        => 'text',
+	) );
+
 	/* ----------------------------------------------------------- Checkout */
 	$wp_customize->add_section( 'roova_checkout', array(
 		'title'       => __( 'Checkout', 'roova' ),

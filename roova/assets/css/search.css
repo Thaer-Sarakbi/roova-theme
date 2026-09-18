@@ -1,0 +1,807 @@
+/**
+ * Hotel search results.
+ *
+ * Loaded only on the "Find a room" page (see roova_enqueue_search_assets), on
+ * top of theme.css — every colour here is one of its tokens.
+ *
+ * Its own token header rather than a shared block, like checkout.css, auth.css,
+ * account.css, order.css and received.css: each page in this theme that prints
+ * its own document ships its own stylesheet, and this one has to stand up when
+ * none of the others is loaded.
+ */
+
+.roova-search-page {
+	--roova-card-line: rgba(13, 58, 82, .1);
+	--roova-card-line-hover: rgba(13, 58, 82, .2);
+	--roova-ok: #0d6b4f;
+
+	background: #fff;
+}
+
+/* ------------------------------------------------------------- Top band */
+
+/*
+ * The header is the page's own — the wordmark, the Primary menu, the account
+ * button and the search bar the results answer to, on navy. It is the site
+ * header's content in the page's own colours, so a guest who lands here from a
+ * search engine can still reach the rest of the site.
+ */
+.roova-sp__bar {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+.roova-sp__bar-inner {
+	max-width: 1280px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	padding: 20px 40px;
+
+	/* The collapsed menu hangs off this. */
+	position: relative;
+}
+
+.roova-sp__logo {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	color: var(--roova-cream);
+	font-family: var(--roova-font-display);
+	font-size: 1.81rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.02em;
+}
+
+.roova-sp__logo:hover {
+	color: var(--roova-cream);
+}
+
+.roova-sp__logo em {
+	font-style: normal;
+	color: var(--roova-gold-light);
+}
+
+.roova-sp__tagline {
+	font-family: var(--roova-font-body);
+	font-size: 9.5px;
+	font-weight: 400;
+	letter-spacing: .22em;
+	text-transform: uppercase;
+	color: rgba(251, 248, 243, .5);
+}
+
+/*
+ * theme.css paints .roova-menu for a cream header, so every colour in it is
+ * restated here for navy — the same job .roova-nav--over does over the hero.
+ */
+.roova-sp__menu .roova-menu {
+	display: flex;
+	align-items: center;
+	gap: 30px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-family: var(--roova-font-body);
+	font-size: 14px;
+	letter-spacing: .01em;
+}
+
+.roova-sp__menu .roova-menu a {
+	display: inline-block;
+	color: rgba(251, 248, 243, .78);
+	padding-bottom: 3px;
+	border-bottom: 1px solid transparent;
+	transition: color .3s var(--roova-ease), border-color .3s var(--roova-ease);
+}
+
+.roova-sp__menu .roova-menu a:hover,
+.roova-sp__menu .roova-menu .current-menu-item > a {
+	color: var(--roova-cream);
+	border-color: var(--roova-gold-light);
+}
+
+.roova-sp__actions {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+/*
+ * The hamburger is theme.css's, so only what navy changes is restated: its
+ * bars are painted --roova-deep there and would be invisible on this bar.
+ */
+.roova-sp__toggle {
+	border-color: rgba(251, 248, 243, .32);
+}
+
+.roova-sp__toggle span[aria-hidden] {
+	background: var(--roova-cream);
+	box-shadow: 0 -6px 0 var(--roova-cream), 0 6px 0 var(--roova-cream);
+}
+
+/* The account button reads on navy here the way it does over the hero. */
+.roova-sp__bar .roova-btn--nav {
+	background: rgba(251, 248, 243, .12);
+	border-color: rgba(251, 248, 243, .32);
+	color: var(--roova-cream);
+}
+
+.roova-sp__bar .roova-btn--nav:hover {
+	background: var(--roova-cream);
+	border-color: var(--roova-cream);
+	color: var(--roova-deep);
+}
+
+.roova-sp__search {
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 0 40px 26px;
+}
+
+/*
+ * The bar is tighter here than the homepage's 18px, and every corner is cut by
+ * the element that owns it — NEVER by `overflow: hidden` on the form.
+ *
+ * That rule looks harmless and breaks the form outright: the destination, date
+ * and guest panels hang below their field, so clipping them makes the form a
+ * scroll container, and focusing the panel's own search box then scrolls the
+ * fields up out of sight. What a guest sees is the bar going blank the instant
+ * they click "Where are you going?".
+ */
+.roova-sp__search .roova-search {
+	border-radius: 14px;
+	box-shadow: 0 24px 50px -30px rgba(4, 22, 32, .7);
+}
+
+.roova-sp__search .roova-search__field:first-child {
+	border-radius: 14px 0 0 14px;
+}
+
+/*
+ * The Search button fills the end of the bar rather than floating inside it,
+ * and carries the bar's radius on its own outer corners rather than leaning on
+ * the bar's overflow to clip them off.
+ */
+.roova-sp__search .roova-search__submit {
+	margin: 0;
+	border-radius: 0 14px 14px 0;
+	padding: 19px 30px;
+}
+
+/* ---------------------------------------------------------------- Head */
+
+.roova-sp__inner {
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 34px 40px 88px;
+}
+
+.roova-sp__head {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+}
+
+.roova-sp__head .roova-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	margin-bottom: 0;
+	letter-spacing: .14em;
+	color: var(--roova-faint);
+}
+
+.roova-sp__rule {
+	width: 26px;
+	height: 1px;
+	flex: none;
+	background: var(--roova-gold);
+}
+
+.roova-sp__head h1 {
+	margin: 12px 0 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 2.5rem;
+	line-height: 1.05;
+	letter-spacing: -.02em;
+	color: var(--roova-deep);
+}
+
+/* ---------------------------------------------------------------- Sort */
+
+.roova-sp__sort {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-sp__count,
+.roova-sp__sort-label {
+	white-space: nowrap;
+}
+
+.roova-sp__sort select {
+	padding: 10px 13px;
+	border: 1px solid var(--roova-hairline-strong);
+	border-radius: 8px;
+	background: #fff;
+	font-family: var(--roova-font-body);
+	font-size: .84rem;
+	color: var(--roova-ink);
+	cursor: pointer;
+	outline: none;
+	transition: border-color .25s var(--roova-ease);
+}
+
+.roova-sp__sort select:hover,
+.roova-sp__sort select:focus-visible {
+	border-color: var(--roova-deep);
+}
+
+/*
+ * Only ever seen with the script blocked — theme.js hides it once the select
+ * submits on its own.
+ */
+.roova-sp__sort-go {
+	padding: 10px 16px;
+	border: 1px solid var(--roova-deep);
+	border-radius: 8px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	font: inherit;
+	font-size: .84rem;
+	cursor: pointer;
+}
+
+/* --------------------------------------------------------------- Cards */
+
+.roova-results {
+	display: grid;
+	gap: 16px;
+	margin-top: 28px;
+}
+
+.roova-result {
+	display: grid;
+	grid-template-columns: 280px minmax(0, 1fr) 232px;
+	background: #fff;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow: var(--roova-shadow-card);
+	transition: box-shadow .3s ease, transform .3s var(--roova-ease), border-color .3s ease;
+}
+
+.roova-result:hover {
+	transform: translateY(-2px);
+	border-color: var(--roova-card-line-hover);
+	box-shadow: 0 26px 50px -32px rgba(8, 38, 53, .5);
+}
+
+.roova-result--unavailable {
+	opacity: .78;
+}
+
+/* Media */
+
+.roova-result__media {
+	position: relative;
+	min-height: 236px;
+	background: var(--roova-deep);
+}
+
+.roova-result__photo,
+.roova-result__photo img,
+.roova-result__media .roova-hotel-card__placeholder {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.roova-result__photo {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+}
+
+/*
+ * Badges are siblings of the photo link, never children of it: a browser drops
+ * interactive markup nested inside an <a>, and this corner is one thing the eye
+ * lands on, so it has to survive the DOM.
+ */
+.roova-result__badges {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.roova-result__badge {
+	padding: 6px 13px;
+	border-radius: 999px;
+	font-size: 11px;
+	line-height: 1.3;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	background: rgba(4, 22, 32, .78);
+	color: var(--roova-cream);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
+.roova-result__badge--lead {
+	background: var(--roova-gold-light);
+	color: var(--roova-ink);
+}
+
+/* Body */
+
+.roova-result__body {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 24px 26px;
+}
+
+.roova-result__title {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.roova-result__title h2 {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 500;
+	font-size: 1.5rem;
+	line-height: 1.15;
+	letter-spacing: -.015em;
+}
+
+.roova-result__title h2 a {
+	color: var(--roova-deep);
+}
+
+.roova-result__title h2 a:hover {
+	color: var(--roova-gold);
+}
+
+.roova-result__stars {
+	display: inline-flex;
+	gap: 2px;
+	color: var(--roova-gold);
+}
+
+.roova-result__loc {
+	display: flex;
+	align-items: center;
+	gap: 6px 14px;
+	margin: -6px 0 0;
+	flex-wrap: wrap;
+	font-size: .81rem;
+	color: var(--roova-muted);
+}
+
+.roova-result__place {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	white-space: nowrap;
+}
+
+.roova-result__place .roova-icon {
+	flex: none;
+	color: var(--roova-faint);
+}
+
+.roova-result__landmark {
+	white-space: nowrap;
+}
+
+.roova-result__amenities {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.roova-result__amenities span {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 6px 12px;
+	border-radius: 999px;
+	background: var(--roova-cream);
+	font-size: .78rem;
+	color: var(--roova-soft);
+	white-space: nowrap;
+}
+
+.roova-result__amenities .roova-icon {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+/* Three facilities, then three landmarks — what the hotel has, then what it is near. */
+.roova-result__highlights {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+	margin: 0;
+	font-size: .84rem;
+	color: var(--roova-muted);
+}
+
+.roova-result__highlight {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.roova-result__highlight .roova-icon {
+	flex: none;
+	color: var(--roova-ok);
+}
+
+.roova-result__highlight--near .roova-icon {
+	color: var(--roova-faint);
+}
+
+.roova-result__desk {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: auto 0 0;
+	font-size: .78rem;
+	color: var(--roova-soft);
+	white-space: nowrap;
+}
+
+.roova-result__desk .roova-icon {
+	flex: none;
+	color: var(--roova-ok);
+}
+
+/* Aside */
+
+.roova-result__aside {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 18px;
+	padding: 24px 26px;
+	border-left: 1px solid var(--roova-hairline);
+	background: #fdfcfa;
+	text-align: right;
+}
+
+.roova-result__rating {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.roova-result__rating-text strong {
+	display: block;
+	font-size: .84rem;
+	font-weight: 500;
+	color: var(--roova-ink);
+}
+
+.roova-result__rating-text > span {
+	display: block;
+	font-size: .72rem;
+	color: var(--roova-faint);
+	white-space: nowrap;
+}
+
+.roova-result__score {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 40px;
+	flex: none;
+	border-radius: 9px;
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+	font-family: var(--roova-font-display);
+	font-size: 1.06rem;
+}
+
+.roova-result__buy {
+	width: 100%;
+}
+
+.roova-result__from {
+	display: block;
+	font-size: 11px;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-result__price {
+	display: flex;
+	align-items: baseline;
+	justify-content: flex-end;
+	gap: 5px;
+	margin: 4px 0 0;
+}
+
+.roova-result__price strong {
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.94rem;
+	line-height: 1;
+	color: var(--roova-deep);
+}
+
+/*
+ * wc_price() is a nest of spans: the amount is a span, and the currency symbol
+ * is another span inside it. So both rules below are scoped with > — a
+ * descendant one would shrink the $ to the size of the "/ night" caption and
+ * print it as a superscript beside a 31px figure.
+ */
+.roova-result__price strong > .amount {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	color: inherit;
+}
+
+.roova-result__price > span {
+	font-size: .78rem;
+	color: var(--roova-faint);
+}
+
+.roova-result__total {
+	margin: 5px 0 0;
+	font-size: .72rem;
+	color: var(--roova-faint);
+}
+
+.roova-result__total .amount {
+	font-size: inherit;
+	color: inherit;
+}
+
+.roova-result__aside .roova-room__scarcity {
+	display: block;
+	margin-bottom: 6px;
+}
+
+.roova-result__cta {
+	display: flex;
+	width: 100%;
+	margin-top: 14px;
+	padding: 13px 20px;
+	border-radius: 8px;
+}
+
+.roova-result__cta .roova-icon {
+	transition: transform .25s var(--roova-ease);
+}
+
+.roova-result__cta:hover .roova-icon {
+	transform: translateX(3px);
+}
+
+.roova-result__aside .roova-unavailable {
+	margin: 0;
+}
+
+/* --------------------------------------------------------------- Foot */
+
+.roova-sp__content {
+	margin-top: 48px;
+}
+
+.roova-sp__foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 24px 40px 40px;
+	border-top: 1px solid var(--roova-hairline);
+	font-size: .8rem;
+	color: var(--roova-faint);
+}
+
+.roova-sp__foot p {
+	margin: 0;
+}
+
+.roova-sp__foot-menu {
+	display: flex;
+	gap: 20px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.roova-sp__foot-menu a {
+	color: var(--roova-faint);
+}
+
+.roova-sp__foot-menu a:hover {
+	color: var(--roova-deep);
+}
+
+/* --------------------------------------------------------- Narrower */
+
+@media (max-width: 1100px) {
+	.roova-result {
+		grid-template-columns: 240px minmax(0, 1fr) 210px;
+	}
+}
+
+@media (max-width: 1000px) {
+	.roova-result {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-result__media {
+		min-height: 0;
+		height: 210px;
+	}
+
+	.roova-result__aside {
+		flex-direction: row;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 16px;
+		border-left: 0;
+		border-top: 1px solid var(--roova-hairline);
+		text-align: left;
+	}
+
+	.roova-result__buy {
+		width: auto;
+		margin-left: auto;
+		text-align: right;
+	}
+
+	.roova-result__cta {
+		display: inline-flex;
+		width: auto;
+	}
+}
+
+@media (max-width: 900px) {
+	/*
+	 * Behind the hamburger, as a white panel under the bar — theme.js toggles
+	 * .is-open on .roova-sp__bar-inner, the same class and the same handler the
+	 * site header uses.
+	 */
+	.roova-sp__menu {
+		display: none;
+	}
+
+	/*
+	 * The panel hangs off .roova-sp__bar-inner's padding box, so its insets are
+	 * that bar's own side padding — they have to move with it at 760px or the
+	 * panel sits wider than the wordmark it drops from.
+	 */
+	.roova-sp__bar-inner.is-open .roova-sp__menu {
+		display: block;
+		position: absolute;
+		top: 100%;
+		left: 40px;
+		right: 40px;
+		background: #fff;
+		border-radius: 12px;
+		padding: 16px;
+		box-shadow: var(--roova-shadow);
+		z-index: 30;
+	}
+
+	.roova-sp__bar-inner.is-open .roova-menu {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+	}
+
+	.roova-sp__bar-inner.is-open .roova-menu a {
+		color: var(--roova-ink);
+	}
+
+	.roova-sp__bar-inner.is-open .roova-menu a:hover,
+	.roova-sp__bar-inner.is-open .roova-menu .current-menu-item > a {
+		color: var(--roova-deep);
+		border-color: var(--roova-gold);
+	}
+
+	.roova-sp__toggle {
+		display: block;
+	}
+
+	/* Stacked: the first field takes the top corners instead of the left ones. */
+	.roova-sp__search .roova-search__field:first-child {
+		border-radius: 14px 14px 0 0;
+	}
+
+	.roova-sp__search .roova-search__submit {
+		border-radius: 12px;
+		margin: 10px;
+		padding: 14px 24px;
+	}
+}
+
+@media (max-width: 760px) {
+	.roova-sp__bar-inner,
+	.roova-sp__search,
+	.roova-sp__inner,
+	.roova-sp__foot {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.roova-sp__bar-inner.is-open .roova-sp__menu {
+		left: 20px;
+		right: 20px;
+	}
+
+	/* The wordmark takes the row on its own rather than wrapping mid-name. */
+	.roova-sp__tagline {
+		display: none;
+	}
+
+	.roova-sp__logo {
+		font-size: 1.5rem;
+	}
+
+	.roova-sp__head h1 {
+		font-size: 2rem;
+	}
+
+	.roova-sp__sort {
+		width: 100%;
+		flex-wrap: wrap;
+	}
+
+	.roova-result__body,
+	.roova-result__aside {
+		padding: 20px;
+	}
+
+	.roova-result__buy {
+		width: 100%;
+		margin-left: 0;
+	}
+
+	.roova-result__cta {
+		display: flex;
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.roova-result,
+	.roova-result__cta .roova-icon {
+		transition: none;
+	}
+
+	.roova-result:hover {
+		transform: none;
+	}
+}

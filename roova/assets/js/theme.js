@@ -551,7 +551,8 @@
 
 	qsa( '[data-roova-nav-toggle]' ).forEach( function ( button ) {
 		button.addEventListener( 'click', function () {
-			var inner = button.closest( '.roova-nav__inner' );
+			// The search results page prints its own bar; same toggle, same menu.
+			var inner = button.closest( '.roova-nav__inner, .roova-sp__bar-inner' );
 			var open = inner.classList.toggle( 'is-open' );
 			button.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 		} );
@@ -911,6 +912,30 @@
 				document.dispatchEvent( new CustomEvent( 'roova:like', { detail: detail } ) );
 			} ).catch( function () {
 				delete button.dataset.busy;
+			} );
+		} );
+	}() );
+
+	/* -------------------------------------------------------- auto-submit */
+
+	/*
+	 * The search results sort. The form works on its own — it has a submit
+	 * button and posts the page back to itself — so all this does is save the
+	 * visitor a click, and hide the button it just made redundant.
+	 */
+	( function initAutoSubmit() {
+		qsa( '[data-roova-autosubmit]' ).forEach( function ( field ) {
+			var form = field.form;
+			if ( ! form ) {
+				return;
+			}
+
+			field.addEventListener( 'change', function () {
+				form.submit();
+			} );
+
+			qsa( '[data-roova-autosubmit-go]', form ).forEach( function ( button ) {
+				button.hidden = true;
 			} );
 		} );
 	}() );

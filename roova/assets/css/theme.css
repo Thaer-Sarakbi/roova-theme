@@ -2853,117 +2853,6 @@ a.roova-contact__phone:focus-visible {
 	color: var(--roova-ocean);
 }
 
-/* ------------------------------------------------------- Search results */
-
-.roova-search-header {
-	background: var(--roova-deep);
-	padding: 26px 0 40px;
-}
-
-.roova-search-results {
-	padding: 34px 0 70px;
-}
-
-.roova-search-header .roova-search {
-	margin-top: 0;
-}
-
-.roova-results {
-	display: flex;
-	flex-direction: column;
-	gap: 18px;
-}
-
-.roova-result {
-	display: grid;
-	grid-template-columns: 260px 1fr 220px;
-	gap: 22px;
-	border: 1px solid var(--roova-line);
-	border-radius: var(--roova-radius);
-	overflow: hidden;
-	background: #fff;
-}
-
-.roova-result--unavailable {
-	opacity: .75;
-}
-
-.roova-result__media {
-	display: block;
-	min-height: 200px;
-	position: relative;
-	overflow: hidden;
-}
-
-.roova-result__media img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.roova-result__body {
-	padding: 20px 0;
-}
-
-.roova-result__body h2 {
-	font-size: 1.2rem;
-	margin-bottom: 6px;
-}
-
-.roova-result__body h2 a {
-	color: var(--roova-ink);
-}
-
-.roova-result__loc {
-	display: flex;
-	align-items: center;
-	gap: 7px;
-	color: var(--roova-muted);
-	font-size: .88rem;
-}
-
-.roova-result__amenities {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 14px;
-	margin-top: 12px;
-}
-
-.roova-result__amenities span {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	font-size: .82rem;
-	color: var(--roova-muted);
-}
-
-.roova-result__aside {
-	border-left: 1px solid var(--roova-line);
-	padding: 20px;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	justify-content: center;
-	gap: 10px;
-	text-align: right;
-}
-
-.roova-result__price span {
-	font-size: .8rem;
-	color: var(--roova-muted);
-}
-
-.roova-result__price strong {
-	display: block;
-	font-family: var(--roova-font-display);
-	font-size: 1.4rem;
-}
-
-.roova-search-results__count {
-	color: var(--roova-muted);
-	font-size: .9rem;
-}
-
 /* ------------------------------------------------------------ Post lists */
 
 .roova-archive,
@@ -3226,18 +3115,6 @@ a.roova-contact__phone:focus-visible {
 		order: -1;
 	}
 
-	.roova-result {
-		grid-template-columns: 200px 1fr;
-	}
-
-	.roova-result__aside {
-		grid-column: 1 / -1;
-		border-left: 0;
-		border-top: 1px solid var(--roova-line);
-		align-items: flex-start;
-		text-align: left;
-	}
-
 	.roova-posts {
 		grid-template-columns: repeat(2, 1fr);
 	}
@@ -3404,20 +3281,6 @@ a.roova-contact__phone:focus-visible {
 
 	.roova-landmarks {
 		gap: 20px;
-	}
-
-	.roova-result,
-	.roova-result__media {
-		grid-template-columns: 1fr;
-		min-height: 0;
-	}
-
-	.roova-result__media {
-		height: 200px;
-	}
-
-	.roova-result__body {
-		padding: 0 18px;
 	}
 
 	.roova-section {

@@ -221,3 +221,94 @@ function roova_destination_suggestions( $search = '' ) {
 
 	return $suggestions;
 }
+
+/**
+ * Is this the search results page?
+ *
+ * The page template rather than the stored page ID, so a page the client
+ * rebuilt by hand and assigned the template still counts — the same rule
+ * roova_is_auth_page() follows.
+ *
+ * @return bool
+ */
+function roova_is_search_page() {
+	return is_page_template( 'template-search.php' );
+}
+
+/**
+ * The orders the results can be listed in: key => label.
+ *
+ * @return array
+ */
+function roova_search_sort_options() {
+	return array(
+		'recommended' => __( 'Recommended', 'roova' ),
+		'price-low'   => __( 'Price · low to high', 'roova' ),
+		'price-high'  => __( 'Price · high to low', 'roova' ),
+		'rating'      => __( 'Guest rating', 'roova' ),
+	);
+}
+
+/**
+ * The order the visitor asked for.
+ *
+ * A plain query argument, like the review list's sort: the select posts the
+ * page back to itself, so sorting works with JavaScript blocked and a sorted
+ * list can be linked to.
+ *
+ * @return string
+ */
+function roova_search_sort() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- sorts a public list; it changes nothing.
+	$sort = isset( $_GET['roova_sort'] ) ? sanitize_key( wp_unslash( $_GET['roova_sort'] ) ) : 'recommended';
+
+	return array_key_exists( $sort, roova_search_sort_options() ) ? $sort : 'recommended';
+}
+
+/**
+ * Put search results in the visitor's chosen order.
+ *
+ * Hotels with nothing free for these dates stay at the bottom whatever the
+ * sort: "price, low to high" that opens with a sold-out room is not a price
+ * list, it is a disappointment in three clicks.
+ *
+ * @param array[] $results Results from roova_search_hotels().
+ * @param string  $sort    One of roova_search_sort_options().
+ * @return array[]
+ */
+function roova_sort_search_results( $results, $sort = '' ) {
+	$sort = $sort ? $sort : roova_search_sort();
+
+	if ( 'recommended' === $sort || count( $results ) < 2 ) {
+		return $results;
+	}
+
+	usort( $results, function ( $a, $b ) use ( $sort ) {
+		if ( $a['has_availability'] !== $b['has_availability'] ) {
+			return $a['has_availability'] ? -1 : 1;
+		}
+
+		if ( 'rating' === $sort ) {
+			$left  = function_exists( 'roova_hotel_rating' ) ? roova_hotel_rating( $a['hotel_id'] ) : 0.0;
+			$right = function_exists( 'roova_hotel_rating' ) ? roova_hotel_rating( $b['hotel_id'] ) : 0.0;
+
+			if ( $left === $right ) {
+				return 0;
+			}
+			return ( $left > $right ) ? -1 : 1;
+		}
+
+		// A hotel with no rate has no price to compare; leave it where it is.
+		if ( null === $a['rate'] || null === $b['rate'] || $a['rate'] === $b['rate'] ) {
+			return 0;
+		}
+
+		if ( 'price-high' === $sort ) {
+			return ( $a['rate'] > $b['rate'] ) ? -1 : 1;
+		}
+
+		return ( $a['rate'] < $b['rate'] ) ? -1 : 1;
+	} );
+
+	return $results;
+}
