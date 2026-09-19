@@ -114,6 +114,10 @@ function roova_icon_library() {
 		'tag'           => array( __( 'Offer', 'roova' ), '<path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="7.5" r="1.5"/>' ),
 		'arrow-right'   => array( __( 'Continue', 'roova' ), '<path d="M4 12h15"/><path d="M13 6l6 6-6 6"/>' ),
 		'check-circle'  => array( __( 'Confirmed', 'roova' ), '<circle cx="12" cy="12" r="9"/><path d="M8.4 12.4l2.4 2.4 4.8-5.2"/>' ),
+		// The contact page: a message thread, the clipboard and the way there.
+		'chat'          => array( __( 'Message us', 'roova' ), '<path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.5A8.5 8.5 0 1 1 21 11.5z"/>' ),
+		'copy'          => array( __( 'Copy', 'roova' ), '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>' ),
+		'directions'    => array( __( 'Get directions', 'roova' ), '<path d="M3 11l19-9-9 19-2-8z"/>' ),
 
 		// Account chrome.
 		'user'          => array( __( 'Account', 'roova' ), '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5v-.9A5.6 5.6 0 0 1 10.1 14h3.8a5.6 5.6 0 0 1 5.6 5.6v.9"/>' ),

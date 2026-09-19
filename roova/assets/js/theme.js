@@ -551,8 +551,10 @@
 
 	qsa( '[data-roova-nav-toggle]' ).forEach( function ( button ) {
 		button.addEventListener( 'click', function () {
-			// The search results page prints its own bar; same toggle, same menu.
-			var inner = button.closest( '.roova-nav__inner, .roova-sp__bar-inner' );
+			// The search results and contact pages print their own bars; same
+			// toggle, same menu. A new page with its own header adds its inner
+			// to this selector rather than copying the handler.
+			var inner = button.closest( '.roova-nav__inner, .roova-sp__bar-inner, .roova-cp__bar-inner' );
 			var open = inner.classList.toggle( 'is-open' );
 			button.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 		} );

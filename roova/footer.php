@@ -63,7 +63,18 @@ $roova_footer_columns = array(
 								} elseif ( 'contact_phone' === $roova_key ) {
 									printf( '<a href="%s">%s</a>', esc_url( 'tel:' . preg_replace( '/[^0-9+]/', '', $roova_value ) ), esc_html( $roova_value ) );
 								} else {
-									echo esc_html( $roova_value );
+									/*
+									 * The address is several lines — a postal one
+									 * always is — and this row is a single inline
+									 * line, so the lines are joined with commas
+									 * rather than collapsed into spaces by the
+									 * browser. See roova_contact_address_inline().
+									 */
+									echo esc_html(
+										function_exists( 'roova_contact_address_inline' )
+											? roova_contact_address_inline()
+											: $roova_value
+									);
 								}
 								?>
 							</span>

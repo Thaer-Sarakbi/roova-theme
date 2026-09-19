@@ -418,10 +418,150 @@ function roova_customize_register( $wp_customize ) {
 		) ) );
 	}
 
+	/* ------------------------------------------------------- Contact page */
+
+	/*
+	 * The Contact us page. The phone, email and address here are the same three
+	 * settings the footer prints — one place to fill them in, so the footer and
+	 * the contact page can never disagree about how to reach the company.
+	 */
+	$wp_customize->add_section( 'roova_contact', array(
+		'title'       => __( 'Contact page', 'roova' ),
+		'panel'       => 'roova_panel',
+		'description' => __( 'The "Contact us" page, and the contact details the footer shows. Clear a channel to drop its card — an empty one is worse than none. The phone, email and address are shared with the footer.', 'roova' ),
+	) );
+
+	// The defaults are repeated at the call sites in inc/contact.php:
+	// get_theme_mod() falls back to what the caller passes, not to the default
+	// registered here, so each pair has to match.
+	$contact_text = array(
+		'contact_title'         => array( __( 'Headline', 'roova' ), __( 'Talk to a real person about your stay', 'roova' ), '' ),
+		'contact_phone'         => array( __( 'Phone number', 'roova' ), '', __( 'Written however you want it read — spaces and brackets are stripped out of the dial link.', 'roova' ) ),
+		'contact_phone_note'    => array( __( 'Under the phone number', 'roova' ), __( 'Have your booking reference to hand.', 'roova' ), '' ),
+		'contact_whatsapp'      => array( __( 'WhatsApp number', 'roova' ), '', __( 'In full, with the country code — it becomes a wa.me link.', 'roova' ) ),
+		'contact_whatsapp_note' => array( __( 'Under the WhatsApp number', 'roova' ), __( 'Best for a change to a stay that starts soon.', 'roova' ), '' ),
+		'contact_email'         => array( __( 'Email address', 'roova' ), '', '' ),
+		'contact_email_note'    => array( __( 'Under the email address', 'roova' ), __( 'Invoices, refunds and anything that needs a paper trail.', 'roova' ), '' ),
+	);
+
+	foreach ( $contact_text as $key => $data ) {
+		$wp_customize->add_setting( 'roova_' . $key, array(
+			'default'           => $data[1],
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'roova_' . $key, array(
+			'label'       => $data[0],
+			'description' => $data[2],
+			'section'     => 'roova_contact',
+			'type'        => 'text',
+		) );
+	}
+
+	$contact_areas = array(
+		'contact_intro'   => array(
+			__( 'Opening paragraph', 'roova' ),
+			__( 'Our reservations desk handles booking changes, invoices, cashback and anything a hotel has not sorted out for you.', 'roova' ),
+			'',
+		),
+		'contact_address' => array(
+			__( 'Office address', 'roova' ),
+			'',
+			__( 'One line per line, as you would write it on an envelope. It is the map pin, the directions link and the line in the footer.', 'roova' ),
+		),
+		'contact_hours'   => array(
+			__( 'Opening hours', 'roova' ),
+			'',
+			__( 'One row per line, "Days | Times" — for example "Monday — Saturday | 9:00 am — 6:00 pm". The first row is also the line beside the phone number at the top of the page. Left empty, the page shows no hours.', 'roova' ),
+		),
+	);
+
+	foreach ( $contact_areas as $key => $data ) {
+		$wp_customize->add_setting( 'roova_' . $key, array(
+			'default'           => $data[1],
+			'sanitize_callback' => 'sanitize_textarea_field',
+		) );
+		$wp_customize->add_control( 'roova_' . $key, array(
+			'label'       => $data[0],
+			'description' => $data[2],
+			'section'     => 'roova_contact',
+			'type'        => 'textarea',
+		) );
+	}
+
+	$wp_customize->add_setting( 'roova_contact_image', array(
+		'default'           => '',
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'roova_contact_image', array(
+		'label'       => __( 'Photo beside the headline', 'roova' ),
+		'description' => __( 'Your office, your reception, your team. No photo ships for this page — leave it empty and the headline runs the full width rather than sitting beside somebody else\'s building.', 'roova' ),
+		'section'     => 'roova_contact',
+		'mime_type'   => 'image',
+	) ) );
+
+	/*
+	 * The map is a Google Maps embed, not the Maps JavaScript API the hotel
+	 * pages use: that one needs a billable key, and an address is enough here.
+	 * Coordinates are optional and only worth filling in when the address
+	 * lands Google on the wrong side of the street.
+	 */
+	$contact_pin = array(
+		'contact_lat' => array( __( 'Latitude (optional)', 'roova' ), __( 'Only needed when the address alone puts the pin in the wrong place.', 'roova' ) ),
+		'contact_lng' => array( __( 'Longitude (optional)', 'roova' ), '' ),
+	);
+
+	foreach ( $contact_pin as $key => $data ) {
+		$wp_customize->add_setting( 'roova_' . $key, array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'roova_' . $key, array(
+			'label'       => $data[0],
+			'description' => $data[1],
+			'section'     => 'roova_contact',
+			'type'        => 'text',
+		) );
+	}
+
+	$wp_customize->add_setting( 'roova_contact_map_zoom', array(
+		'default'           => 16,
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( 'roova_contact_map_zoom', array(
+		'label'       => __( 'Map zoom', 'roova' ),
+		'description' => __( 'Higher is closer. 16 shows the street, 13 the district.', 'roova' ),
+		'section'     => 'roova_contact',
+		'type'        => 'number',
+		'input_attrs' => array( 'min' => 1, 'max' => 21 ),
+	) );
+
+	/* ------------------------------------------------------ Social links */
+	$wp_customize->add_section( 'roova_social', array(
+		'title'       => __( 'Social links', 'roova' ),
+		'panel'       => 'roova_panel',
+		'description' => __( 'Full links to your own accounts. An empty one is left off the page rather than pointing at a profile that is not yours.', 'roova' ),
+	) );
+
+	// The list lives with the icons that draw it, in inc/contact.php.
+	$networks = function_exists( 'roova_social_networks' ) ? roova_social_networks() : array();
+
+	foreach ( $networks as $key => $label ) {
+		$wp_customize->add_setting( 'roova_social_' . $key, array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( 'roova_social_' . $key, array(
+			'label'   => $label,
+			'section' => 'roova_social',
+			'type'    => 'url',
+		) );
+	}
+
 	/* ------------------------------------------------------------- Footer */
 	$wp_customize->add_section( 'roova_footer', array(
-		'title' => __( 'Footer and contact', 'roova' ),
-		'panel' => 'roova_panel',
+		'title'       => __( 'Footer', 'roova' ),
+		'panel'       => 'roova_panel',
+		'description' => __( 'The phone, email and address the footer shows are set under Contact page. Column links live under Appearance > Menus.', 'roova' ),
 	) );
 
 	$footer_fields = array(
@@ -430,9 +570,6 @@ function roova_customize_register( $wp_customize ) {
 		'footer_heading_2' => array( __( 'Column 2 heading', 'roova' ), __( 'Guests', 'roova' ) ),
 		'footer_heading_3' => array( __( 'Column 3 heading', 'roova' ), __( 'Company', 'roova' ) ),
 		'footer_note'      => array( __( 'Bottom-right note', 'roova' ), __( 'Made in Malaysia', 'roova' ) ),
-		'contact_phone'    => array( __( 'Phone', 'roova' ), '' ),
-		'contact_email'    => array( __( 'Email', 'roova' ), '' ),
-		'contact_address'  => array( __( 'Address', 'roova' ), '' ),
 	);
 
 	foreach ( $footer_fields as $key => $data ) {

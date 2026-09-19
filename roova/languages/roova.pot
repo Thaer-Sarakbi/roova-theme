@@ -22,7 +22,7 @@ msgstr ""
 msgid "Back to the homepage"
 msgstr ""
 
-#: account.php:34 checkout.php:44 header.php:27 order-received.php:85 template-signin.php:30 template-signup.php:33 view-order.php:45
+#: account.php:34 checkout.php:44 header.php:27 order-received.php:85 template-contact.php:33 template-signin.php:30 template-signup.php:33 view-order.php:45
 msgid "Skip to content"
 msgstr ""
 
@@ -46,27 +46,27 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: checkout.php:68 footer.php:106 order-received.php:398 template-search.php:125
+#: checkout.php:68 footer.php:117 order-received.php:398 template-contact.php:71 template-search.php:125
 msgid "© %1$s %2$s"
 msgstr ""
 
-#: footer.php:15 inc/customizer.php:429 inc/admin/order-metabox.php:53
+#: footer.php:15 inc/customizer.php:569 inc/admin/order-metabox.php:53
 msgid "Stay"
 msgstr ""
 
-#: footer.php:16 inc/customizer.php:430 inc/icons.php:103 inc/order.php:316 inc/admin/bookings-page.php:239 inc/admin/order-metabox.php:55 inc/booking/class-roova-cart.php:597 inc/booking/class-roova-cart.php:802
+#: footer.php:16 inc/customizer.php:570 inc/icons.php:103 inc/order.php:316 inc/admin/bookings-page.php:239 inc/admin/order-metabox.php:55 inc/booking/class-roova-cart.php:597 inc/booking/class-roova-cart.php:802
 msgid "Guests"
 msgstr ""
 
-#: footer.php:17 inc/customizer.php:431
+#: footer.php:17 inc/customizer.php:571
 msgid "Company"
 msgstr ""
 
-#: footer.php:28 inc/customizer.php:428
+#: footer.php:28 inc/customizer.php:568
 msgid "Malaysian hotels, booked direct. Klang Valley and Malacca."
 msgstr ""
 
-#: footer.php:113 inc/customizer.php:432
+#: footer.php:124 inc/customizer.php:572
 msgid "Made in Malaysia"
 msgstr ""
 
@@ -98,27 +98,27 @@ msgstr ""
 msgid "Explore our destinations"
 msgstr ""
 
-#: functions.php:110
+#: functions.php:114
 msgid "Roova needs WooCommerce."
 msgstr ""
 
-#: functions.php:113
+#: functions.php:117
 msgid "Hotels, rooms, bookings and checkout all run on WooCommerce. %s to finish setting up the theme."
 msgstr ""
 
-#: functions.php:114
+#: functions.php:118
 msgid "Install WooCommerce"
 msgstr ""
 
-#: header.php:45 inc/setup.php:43 inc/template-tags.php:1134
+#: header.php:45 inc/contact.php:462 inc/setup.php:43 inc/template-tags.php:1134
 msgid "Primary menu"
 msgstr ""
 
-#: header.php:70 inc/customizer.php:256 inc/icons.php:160
+#: header.php:70 inc/customizer.php:256 inc/icons.php:164
 msgid "Support"
 msgstr ""
 
-#: header.php:85 inc/template-tags.php:1154
+#: header.php:85 inc/contact.php:482 inc/template-tags.php:1154
 msgid "Menu"
 msgstr ""
 
@@ -314,7 +314,7 @@ msgstr ""
 msgid "Send the link again"
 msgstr ""
 
-#: template-signin.php:70 template-signup.php:123 inc/account-tabs.php:263 inc/checkout.php:381 inc/icons.php:125 inc/order.php:361
+#: template-signin.php:70 template-signup.php:123 inc/account-tabs.php:263 inc/checkout.php:381 inc/customizer.php:443 inc/icons.php:129 inc/order.php:361
 msgid "Email address"
 msgstr ""
 
@@ -394,7 +394,7 @@ msgstr ""
 msgid "Ahmad"
 msgstr ""
 
-#: template-signup.php:132 inc/account-tabs.php:252 inc/checkout.php:371 inc/order.php:351
+#: template-signup.php:132 inc/account-tabs.php:252 inc/checkout.php:371 inc/customizer.php:439 inc/order.php:351
 msgid "Phone number"
 msgstr ""
 
@@ -442,7 +442,7 @@ msgstr ""
 msgid "Order details"
 msgstr ""
 
-#: inc/account-tabs.php:42 inc/icons.php:120
+#: inc/account-tabs.php:42 inc/icons.php:124
 msgid "Sign out"
 msgstr ""
 
@@ -474,7 +474,7 @@ msgstr ""
 msgid "These details appear on your booking vouchers."
 msgstr ""
 
-#: inc/account-tabs.php:270 inc/icons.php:131
+#: inc/account-tabs.php:270 inc/icons.php:135
 msgid "Verified"
 msgstr ""
 
@@ -754,7 +754,7 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: inc/account.php:191 inc/icons.php:130 inc/admin/bookings-page.php:16 inc/admin/bookings-page.php:17 inc/admin/bookings-page.php:159 inc/admin/order-metabox.php:21
+#: inc/account.php:191 inc/icons.php:134 inc/admin/bookings-page.php:16 inc/admin/bookings-page.php:17 inc/admin/bookings-page.php:159 inc/admin/order-metabox.php:21
 msgid "Bookings"
 msgstr ""
 
@@ -802,19 +802,19 @@ msgstr ""
 msgid "That form had expired. Please try again."
 msgstr ""
 
-#: inc/account.php:715 inc/assets.php:142 inc/assets.php:189 inc/auth.php:619
+#: inc/account.php:715 inc/assets.php:159 inc/assets.php:206 inc/auth.php:619
 msgid "Enter your first name."
 msgstr ""
 
-#: inc/account.php:719 inc/assets.php:143 inc/assets.php:190 inc/auth.php:623
+#: inc/account.php:719 inc/assets.php:160 inc/assets.php:207 inc/auth.php:623
 msgid "Enter your last name."
 msgstr ""
 
-#: inc/account.php:725 inc/assets.php:111 inc/assets.php:145 inc/assets.php:191 inc/auth.php:633
+#: inc/account.php:725 inc/assets.php:128 inc/assets.php:162 inc/assets.php:208 inc/auth.php:633
 msgid "Enter a valid phone number."
 msgstr ""
 
-#: inc/account.php:739 inc/assets.php:192
+#: inc/account.php:739 inc/assets.php:209
 msgid "Enter your current password."
 msgstr ""
 
@@ -822,11 +822,11 @@ msgstr ""
 msgid "That is not your current password."
 msgstr ""
 
-#: inc/account.php:745 inc/assets.php:193
+#: inc/account.php:745 inc/assets.php:210
 msgid "New password needs 8+ characters with a letter and a number."
 msgstr ""
 
-#: inc/account.php:749 inc/assets.php:194
+#: inc/account.php:749 inc/assets.php:211
 msgid "New passwords don't match."
 msgstr ""
 
@@ -840,123 +840,123 @@ msgid_plural "Max %d adults"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/assets.php:109
+#: inc/assets.php:126
 msgid "Enter the guest's first name."
 msgstr ""
 
-#: inc/assets.php:110
+#: inc/assets.php:127
 msgid "Enter the guest's last name."
 msgstr ""
 
-#: inc/assets.php:112 inc/assets.php:144 inc/auth.php:531 inc/auth.php:627
+#: inc/assets.php:129 inc/assets.php:161 inc/auth.php:531 inc/auth.php:627
 msgid "Enter a valid email address."
 msgstr ""
 
-#: inc/assets.php:113 inc/checkout.php:458
+#: inc/assets.php:130 inc/checkout.php:458
 msgid "Please accept the booking terms to continue."
 msgstr ""
 
-#: inc/assets.php:114
+#: inc/assets.php:131
 msgid "Your hold has run out — refresh to check the rooms are still free."
 msgstr ""
 
-#: inc/assets.php:146 inc/auth.php:637
+#: inc/assets.php:163 inc/auth.php:637
 msgid "Use at least 8 characters, with a letter and a number."
 msgstr ""
 
-#: inc/assets.php:147 inc/auth.php:535
+#: inc/assets.php:164 inc/auth.php:535
 msgid "Enter your password."
 msgstr ""
 
-#: inc/assets.php:148 inc/auth.php:641
+#: inc/assets.php:165 inc/auth.php:641
 msgid "Passwords do not match."
 msgstr ""
 
-#: inc/assets.php:149 inc/auth.php:645
+#: inc/assets.php:166 inc/auth.php:645
 msgid "Please accept the terms to create your account."
 msgstr ""
 
-#: inc/assets.php:150 inc/assets.php:187 inc/auth.php:983 inc/icons.php:136
+#: inc/assets.php:167 inc/assets.php:204 inc/auth.php:983 inc/icons.php:140
 msgid "Show password"
 msgstr ""
 
-#: inc/assets.php:151 inc/assets.php:188 inc/icons.php:137
+#: inc/assets.php:168 inc/assets.php:205 inc/icons.php:141
 msgid "Hide password"
 msgstr ""
 
-#: inc/assets.php:152 inc/auth.php:1015
+#: inc/assets.php:169 inc/auth.php:1015
 msgid "Password strength"
 msgstr ""
 
-#: inc/assets.php:153
+#: inc/assets.php:170
 msgid "Weak"
 msgstr ""
 
-#: inc/assets.php:154
+#: inc/assets.php:171
 msgid "Fair"
 msgstr ""
 
-#: inc/assets.php:155
+#: inc/assets.php:172
 msgid "Good"
 msgstr ""
 
-#: inc/assets.php:156
+#: inc/assets.php:173
 msgid "Strong"
 msgstr ""
 
-#: inc/assets.php:186
+#: inc/assets.php:203
 msgid "Saved"
 msgstr ""
 
-#: inc/assets.php:195 inc/reviews.php:417
+#: inc/assets.php:212 inc/reviews.php:417
 msgid "Choose a rating from 1 to 5 stars."
 msgstr ""
 
-#: inc/assets.php:196 inc/reviews.php:422
+#: inc/assets.php:213 inc/reviews.php:422
 msgid "Tell other guests a little more — at least a sentence."
 msgstr ""
 
-#: inc/assets.php:346
+#: inc/assets.php:363
 msgid "room"
 msgstr ""
 
-#: inc/assets.php:347
+#: inc/assets.php:364
 msgid "rooms"
 msgstr ""
 
-#: inc/assets.php:348
+#: inc/assets.php:365
 msgid "guest"
 msgstr ""
 
-#: inc/assets.php:349
+#: inc/assets.php:366
 msgid "guests"
 msgstr ""
 
-#: inc/assets.php:350
+#: inc/assets.php:367
 msgid "night"
 msgstr ""
 
-#: inc/assets.php:351
+#: inc/assets.php:368
 msgid "nights"
 msgstr ""
 
-#: inc/assets.php:352
+#: inc/assets.php:369
 msgid "Select dates"
 msgstr ""
 
-#: inc/assets.php:353
+#: inc/assets.php:370
 msgid "Nothing matched that search."
 msgstr ""
 
-#: inc/assets.php:354
+#: inc/assets.php:371
 msgid "Loading…"
 msgstr ""
 
-#: inc/assets.php:355
+#: inc/assets.php:372
 msgid "Sold out"
 msgstr ""
 
-#: inc/assets.php:356 inc/icons.php:110 inc/template-tags.php:1033
+#: inc/assets.php:373 inc/icons.php:110 inc/template-tags.php:1033
 msgid "Close"
 msgstr ""
 
@@ -1170,6 +1170,111 @@ msgstr ""
 msgid "Nothing is being held right now. Pick your dates and we will find the rooms that are free."
 msgstr ""
 
+#: inc/contact.php:70 inc/contact.php:519
+msgid "Contact us"
+msgstr ""
+
+#: inc/contact.php:258
+msgid "Call us"
+msgstr ""
+
+#: inc/contact.php:261 inc/customizer.php:440
+msgid "Have your booking reference to hand."
+msgstr ""
+
+#: inc/contact.php:277
+msgid "WhatsApp"
+msgstr ""
+
+#: inc/contact.php:280 inc/customizer.php:442
+msgid "Best for a change to a stay that starts soon."
+msgstr ""
+
+#: inc/contact.php:289
+msgid "Email"
+msgstr ""
+
+#: inc/contact.php:292 inc/customizer.php:444
+msgid "Invoices, refunds and anything that needs a paper trail."
+msgstr ""
+
+#: inc/contact.php:366
+msgid "Instagram"
+msgstr ""
+
+#: inc/contact.php:367
+msgid "Facebook"
+msgstr ""
+
+#: inc/contact.php:368
+msgid "X"
+msgstr ""
+
+#: inc/contact.php:369
+msgid "TikTok"
+msgstr ""
+
+#: inc/contact.php:370
+msgid "YouTube"
+msgstr ""
+
+#: inc/contact.php:371
+msgid "LinkedIn"
+msgstr ""
+
+#: inc/contact.php:450 inc/customizer.php:273 inc/template-tags.php:1122
+msgid "Global hotel booking"
+msgstr ""
+
+#: inc/contact.php:507 inc/customizer.php:438
+msgid "Talk to a real person about your stay"
+msgstr ""
+
+#: inc/contact.php:508 inc/customizer.php:463
+msgid "Our reservations desk handles booking changes, invoices, cashback and anything a hotel has not sorted out for you."
+msgstr ""
+
+#: inc/contact.php:553
+msgid "Opening hours:"
+msgstr ""
+
+#: inc/contact.php:559
+msgctxt "opening hours"
+msgid "%1$s · %2$s"
+msgstr ""
+
+#: inc/contact.php:660
+msgid "Visit us"
+msgstr ""
+
+#: inc/contact.php:662
+msgid "Where to find us"
+msgstr ""
+
+#: inc/contact.php:694 inc/icons.php:120 inc/template-tags.php:931
+msgid "Get directions"
+msgstr ""
+
+#: inc/contact.php:711
+msgid "Address copied"
+msgstr ""
+
+#: inc/contact.php:714
+msgid "Copy address"
+msgstr ""
+
+#: inc/contact.php:724
+msgid "%s on Google Maps"
+msgstr ""
+
+#: inc/contact.php:772
+msgid "Follow %s"
+msgstr ""
+
+#: inc/contact.php:777
+msgid "Deals, new destinations and the quickest answers to short questions."
+msgstr ""
+
 #: inc/customizer.php:17
 msgid "Roova hotel theme"
 msgstr ""
@@ -1210,7 +1315,7 @@ msgstr ""
 msgid "Eyebrow"
 msgstr ""
 
-#: inc/customizer.php:56
+#: inc/customizer.php:56 inc/customizer.php:438
 msgid "Headline"
 msgstr ""
 
@@ -1386,10 +1491,6 @@ msgstr ""
 msgid "The \"Find a room\" page. It prints its own header — a navy band with the wordmark, the account button and the search bar."
 msgstr ""
 
-#: inc/customizer.php:273 inc/template-tags.php:1122
-msgid "Global hotel booking"
-msgstr ""
-
 #: inc/customizer.php:277
 msgid "Line beside the wordmark"
 msgstr ""
@@ -1498,40 +1599,120 @@ msgstr ""
 msgid "The same again for the sign-up page. Choose a different picture from the sign-in one."
 msgstr ""
 
-#: inc/customizer.php:423
-msgid "Footer and contact"
-msgstr ""
-
-#: inc/customizer.php:428
-msgid "Footer tagline"
-msgstr ""
-
 #: inc/customizer.php:429
-msgid "Column 1 heading"
-msgstr ""
-
-#: inc/customizer.php:430
-msgid "Column 2 heading"
+msgid "Contact page"
 msgstr ""
 
 #: inc/customizer.php:431
+msgid "The \"Contact us\" page, and the contact details the footer shows. Clear a channel to drop its card — an empty one is worse than none. The phone, email and address are shared with the footer."
+msgstr ""
+
+#: inc/customizer.php:439
+msgid "Written however you want it read — spaces and brackets are stripped out of the dial link."
+msgstr ""
+
+#: inc/customizer.php:440
+msgid "Under the phone number"
+msgstr ""
+
+#: inc/customizer.php:441
+msgid "WhatsApp number"
+msgstr ""
+
+#: inc/customizer.php:441
+msgid "In full, with the country code — it becomes a wa.me link."
+msgstr ""
+
+#: inc/customizer.php:442
+msgid "Under the WhatsApp number"
+msgstr ""
+
+#: inc/customizer.php:444
+msgid "Under the email address"
+msgstr ""
+
+#: inc/customizer.php:462
+msgid "Opening paragraph"
+msgstr ""
+
+#: inc/customizer.php:467
+msgid "Office address"
+msgstr ""
+
+#: inc/customizer.php:469
+msgid "One line per line, as you would write it on an envelope. It is the map pin, the directions link and the line in the footer."
+msgstr ""
+
+#: inc/customizer.php:472
+msgid "Opening hours"
+msgstr ""
+
+#: inc/customizer.php:474
+msgid "One row per line, \"Days | Times\" — for example \"Monday — Saturday | 9:00 am — 6:00 pm\". The first row is also the line beside the phone number at the top of the page. Left empty, the page shows no hours."
+msgstr ""
+
+#: inc/customizer.php:496
+msgid "Photo beside the headline"
+msgstr ""
+
+#: inc/customizer.php:497
+msgid "Your office, your reception, your team. No photo ships for this page — leave it empty and the headline runs the full width rather than sitting beside somebody else's building."
+msgstr ""
+
+#: inc/customizer.php:509
+msgid "Latitude (optional)"
+msgstr ""
+
+#: inc/customizer.php:509
+msgid "Only needed when the address alone puts the pin in the wrong place."
+msgstr ""
+
+#: inc/customizer.php:510
+msgid "Longitude (optional)"
+msgstr ""
+
+#: inc/customizer.php:531 inc/admin/metabox-hotel-details.php:146
+msgid "Map zoom"
+msgstr ""
+
+#: inc/customizer.php:532
+msgid "Higher is closer. 16 shows the street, 13 the district."
+msgstr ""
+
+#: inc/customizer.php:540
+msgid "Social links"
+msgstr ""
+
+#: inc/customizer.php:542
+msgid "Full links to your own accounts. An empty one is left off the page rather than pointing at a profile that is not yours."
+msgstr ""
+
+#: inc/customizer.php:562 inc/setup.php:198
+msgid "Footer"
+msgstr ""
+
+#: inc/customizer.php:564
+msgid "The phone, email and address the footer shows are set under Contact page. Column links live under Appearance > Menus."
+msgstr ""
+
+#: inc/customizer.php:568
+msgid "Footer tagline"
+msgstr ""
+
+#: inc/customizer.php:569
+msgid "Column 1 heading"
+msgstr ""
+
+#: inc/customizer.php:570
+msgid "Column 2 heading"
+msgstr ""
+
+#: inc/customizer.php:571
 msgid "Column 3 heading"
 msgstr ""
 
-#: inc/customizer.php:432
+#: inc/customizer.php:572
 msgid "Bottom-right note"
-msgstr ""
-
-#: inc/customizer.php:433
-msgid "Phone"
-msgstr ""
-
-#: inc/customizer.php:434
-msgid "Email"
-msgstr ""
-
-#: inc/customizer.php:435 inc/received.php:444 inc/admin/metabox-hotel-details.php:120
-msgid "Address"
 msgstr ""
 
 #: inc/helpers.php:36
@@ -1866,107 +2047,115 @@ msgstr ""
 msgid "Confirmed"
 msgstr ""
 
+#: inc/icons.php:118
+msgid "Message us"
+msgstr ""
+
 #: inc/icons.php:119
+msgid "Copy"
+msgstr ""
+
+#: inc/icons.php:123
 msgid "Account"
 msgstr ""
 
-#: inc/icons.php:124 inc/order.php:291 inc/admin/bookings-page.php:236 inc/booking/class-roova-cart.php:585 inc/booking/class-roova-cart.php:799
+#: inc/icons.php:128 inc/order.php:291 inc/admin/bookings-page.php:236 inc/booking/class-roova-cart.php:585 inc/booking/class-roova-cart.php:799
 msgid "Check in"
 msgstr ""
 
-#: inc/icons.php:126
+#: inc/icons.php:130
 msgid "Download"
 msgstr ""
 
-#: inc/icons.php:127
+#: inc/icons.php:131
 msgid "Membership"
 msgstr ""
 
-#: inc/icons.php:128
+#: inc/icons.php:132
 msgid "Rating"
 msgstr ""
 
-#: inc/icons.php:129
+#: inc/icons.php:133
 msgid "Saved stay"
 msgstr ""
 
-#: inc/icons.php:132 inc/order.php:722 inc/reviews.php:1165
+#: inc/icons.php:136 inc/order.php:722 inc/reviews.php:1165
 msgid "Write a review"
 msgstr ""
 
-#: inc/icons.php:133 inc/icons.php:140
+#: inc/icons.php:137 inc/icons.php:144
 msgid "Cashback"
 msgstr ""
 
-#: inc/icons.php:134
+#: inc/icons.php:138
 msgid "Priority support"
 msgstr ""
 
-#: inc/icons.php:135 inc/vip.php:98
+#: inc/icons.php:139 inc/vip.php:98
 msgid "Flexible cancellation"
 msgstr ""
 
-#: inc/icons.php:141
+#: inc/icons.php:145
 msgid "Long stay"
 msgstr ""
 
-#: inc/icons.php:142
+#: inc/icons.php:146
 msgid "Weekday stay"
 msgstr ""
 
-#: inc/icons.php:143
+#: inc/icons.php:147
 msgid "Referral"
 msgstr ""
 
-#: inc/icons.php:144
+#: inc/icons.php:148
 msgid "Repeat booking"
 msgstr ""
 
-#: inc/icons.php:145
+#: inc/icons.php:149
 msgid "Bonus"
 msgstr ""
 
-#: inc/icons.php:146
+#: inc/icons.php:150
 msgid "Earned"
 msgstr ""
 
-#: inc/icons.php:147
+#: inc/icons.php:151
 msgid "Redeemed"
 msgstr ""
 
-#: inc/icons.php:150
+#: inc/icons.php:154
 msgid "Secure"
 msgstr ""
 
-#: inc/icons.php:151
+#: inc/icons.php:155
 msgid "Online banking"
 msgstr ""
 
-#: inc/icons.php:152
+#: inc/icons.php:156
 msgid "Card"
 msgstr ""
 
-#: inc/icons.php:153
+#: inc/icons.php:157
 msgid "E-wallet"
 msgstr ""
 
-#: inc/icons.php:154
+#: inc/icons.php:158
 msgid "Pay at the hotel"
 msgstr ""
 
-#: inc/icons.php:157
+#: inc/icons.php:161
 msgid "Best rate"
 msgstr ""
 
-#: inc/icons.php:158
+#: inc/icons.php:162
 msgid "No booking fees"
 msgstr ""
 
-#: inc/icons.php:159
+#: inc/icons.php:163
 msgid "Instant confirmation"
 msgstr ""
 
-#: inc/icons.php:288
+#: inc/icons.php:292
 msgid "%d star hotel"
 msgid_plural "%d star hotel"
 msgstr[0] ""
@@ -2088,6 +2277,10 @@ msgstr ""
 
 #: inc/received.php:377
 msgid "View order details"
+msgstr ""
+
+#: inc/received.php:444 inc/admin/metabox-hotel-details.php:120
+msgid "Address"
 msgstr ""
 
 #: inc/received.php:457 inc/template-tags.php:959
@@ -2302,11 +2495,11 @@ msgstr ""
 msgid "Footer column 3"
 msgstr ""
 
-#: inc/setup.php:105
-msgid "Footer"
+#: inc/setup.php:111
+msgid "Home"
 msgstr ""
 
-#: inc/setup.php:107
+#: inc/setup.php:200
 msgid "Shown in the footer columns."
 msgstr ""
 
@@ -2428,10 +2621,6 @@ msgstr[1] ""
 
 #: inc/template-tags.php:926
 msgid "Open in Google Maps"
-msgstr ""
-
-#: inc/template-tags.php:931
-msgid "Get directions"
 msgstr ""
 
 #: inc/template-tags.php:957
@@ -2970,10 +3159,6 @@ msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:141
 msgid "The second number from the same Google Maps coordinates."
-msgstr ""
-
-#: inc/admin/metabox-hotel-details.php:146
-msgid "Map zoom"
 msgstr ""
 
 #: inc/admin/metabox-hotel-details.php:160

@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROOVA_VERSION', '1.10.2' );
+define( 'ROOVA_VERSION', '1.11.1' );
 define( 'ROOVA_DIR', trailingslashit( get_template_directory() ) );
 define( 'ROOVA_URI', trailingslashit( get_template_directory_uri() ) );
 
@@ -41,6 +41,10 @@ roova_require( 'inc/customizer.php' );
 roova_require( 'inc/template-tags.php' );
 roova_require( 'inc/auth.php' );
 roova_require( 'inc/verification.php' );
+
+// The contact page is in this group on purpose: a guest looking for a phone
+// number should still find one on a site whose WooCommerce is switched off.
+roova_require( 'inc/contact.php' );
 
 if ( roova_has_woocommerce() ) {
 	roova_require( 'inc/attributes.php' );

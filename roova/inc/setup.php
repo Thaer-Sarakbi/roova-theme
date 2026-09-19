@@ -52,6 +52,99 @@ function roova_setup() {
 }
 add_action( 'after_setup_theme', 'roova_setup' );
 
+/* -------------------------------------------------------------------------
+ * The Home page
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Make sure the front page has a Home page behind it, under Pages.
+ *
+ * `front-page.php` renders the front page regardless of what Settings ->
+ * Reading says — whether it's "your latest posts" or a static page — so
+ * this changes nothing a visitor sees. What it fixes is that a fresh site
+ * has no page post for the front page at all, so it never shows up in the
+ * Pages list the way Checkout, My account, Sign in, Sign up and Find a room
+ * already do.
+ *
+ * A static front page that is already configured is adopted as it stands,
+ * the same way an existing Checkout or Sign in page is.
+ */
+function roova_ensure_home_page() {
+	$page_id = (int) get_option( 'roova_home_page_id' );
+
+	if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
+		if ( 'page' !== get_option( 'show_on_front' ) || (int) get_option( 'page_on_front' ) !== $page_id ) {
+			update_option( 'show_on_front', 'page' );
+			update_option( 'page_on_front', $page_id );
+		}
+		return;
+	}
+
+	if ( 'page' === get_option( 'show_on_front' ) ) {
+		$existing_front = (int) get_option( 'page_on_front' );
+		if ( $existing_front && 'publish' === get_post_status( $existing_front ) ) {
+			update_option( 'roova_home_page_id', $existing_front );
+			return;
+		}
+	}
+
+	$existing = get_page_by_path( 'home' );
+	if ( $existing && 'page' === $existing->post_type ) {
+		if ( 'trash' === $existing->post_status ) {
+			wp_untrash_post( $existing->ID );
+		}
+
+		if ( 'publish' !== get_post_status( $existing->ID ) ) {
+			wp_update_post( array(
+				'ID'          => $existing->ID,
+				'post_status' => 'publish',
+			) );
+		}
+
+		update_option( 'roova_home_page_id', $existing->ID );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $existing->ID );
+		return;
+	}
+
+	$new_id = wp_insert_post( array(
+		'post_title'     => __( 'Home', 'roova' ),
+		'post_name'      => 'home',
+		'post_status'    => 'publish',
+		'post_type'      => 'page',
+		'post_content'   => '',
+		'comment_status' => 'closed',
+	) );
+
+	if ( $new_id && ! is_wp_error( $new_id ) ) {
+		update_option( 'roova_home_page_id', $new_id );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $new_id );
+	}
+}
+add_action( 'after_switch_theme', 'roova_ensure_home_page' );
+
+/**
+ * Check again on admin load, once per release.
+ *
+ * `after_switch_theme` never fires for a theme updated in place, and the
+ * page can be trashed long after activation — the same reasoning as the
+ * checkout and auth pages' own once-per-release checks.
+ */
+function roova_maybe_ensure_home_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	if ( get_option( 'roova_home_version' ) === ROOVA_VERSION ) {
+		return;
+	}
+
+	roova_ensure_home_page();
+	update_option( 'roova_home_version', ROOVA_VERSION );
+}
+add_action( 'admin_init', 'roova_maybe_ensure_home_page' );
+
 /**
  * Declare HPOS / cart-checkout blocks compatibility.
  */

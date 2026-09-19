@@ -355,10 +355,16 @@ Each order also has a **Bookings** panel on its edit screen.
 
 ## 13. Menus and pages
 
+* Activating the theme creates a **Home** page and sets it as your site's front page under
+  **Settings → Reading**. It shows up under **Pages** alongside Checkout, My account, Sign in,
+  Sign up, Find a room and Contact, so every page the theme relies on is listed in one place — but what a
+  visitor sees at your homepage is still drawn entirely by the theme; the Home page's own content
+  is never shown. If you already had a static front page configured, the theme leaves it exactly
+  as it was.
 * Create a menu and assign it to **Primary**; a good set is Hotels, Destinations, Why book direct.
   It is drawn in the site header on every page, and in the navy bar at the top of the **Find a room**
-  results page. On a narrow screen both collapse behind the ☰ button. Assign no menu and neither
-  header shows one.
+  results page and the **Contact us** page. On a narrow screen all three collapse behind the ☰
+  button. Assign no menu and none of those headers shows one.
 * The footer has three link columns, each its own menu location — **Footer column 1 / 2 / 3**. The
   design fills them with Stay (Our hotels, Destinations, Long stays), Guests (Manage booking, Contact
   us, FAQ) and Company (About, Careers, Privacy). A column with no menu assigned is left out, and the
@@ -633,7 +639,47 @@ the theme keeps the figure and shows it, and your front desk honours it, exactly
 written benefits work. (A RoovaVIP tier's **checkout discount** and **free nights** are the exception
 to that rule — those really do come off the total.) So only offer what you will actually pay out.
 
-## 20. Developer notes
+## 20. The contact page
+
+Activating the theme creates a **Contact** page (`/contact/`) and gives it the "Contact us" page
+template. Everything on it is filled in from **Appearance → Customize**, in two panels.
+
+**Contact page** holds:
+
+| Field | What it does |
+| --- | --- |
+| Page title | The big heading. |
+| Intro paragraph | The sentence under it. |
+| Phone number | The **Call us** card, and the gold Call button in the heading. Also used in the footer. (With no phone number, whichever card comes first takes that button.) |
+| WhatsApp number | The **WhatsApp** card. Include the country code; the link is built from the digits. |
+| Email address | The **Email us** card. Also used in the footer. |
+| Note under each number | Optional small print — "Daily, 9am–9pm", "Replies within a day". |
+| Office address | One line per line of the address. Also used in the footer, joined with commas. |
+| Opening hours | One row per line, written `Days \| Time` — e.g. `Monday – Friday \| 9:00am – 6:00pm`. A line with no `\|` prints as a heading row on its own. |
+| Photograph | The picture beside the heading. Leave it empty and the heading simply runs full width. |
+| Map latitude / longitude | Optional. Fill in **both** to place the pin exactly; leave them empty and the map finds your address instead. |
+| Map zoom | 1 (the whole world) to 21 (a single building). 16 is a city block. |
+
+**Social links** holds one field per network — Instagram, Facebook, X, TikTok, YouTube, LinkedIn.
+Paste the full address of your profile. The row at the foot of the page shows only the ones you fill
+in, and disappears entirely if you fill in none.
+
+Three things worth knowing:
+
+* **An empty field removes its card rather than printing an empty one.** No WhatsApp number, no
+  WhatsApp card. No address, no office panel. A page with nothing filled in shows its heading and
+  nothing else — the theme never invents a number or an address for you.
+* **The line beside the Call button is your first row of opening hours**, repeated — not a sentence
+  of its own, so the two can never disagree about when the desk is open. If you want something else
+  read there, make that the first row.
+* **The middle of the page is the page's own content.** Anything you write in the WordPress editor on
+  the Contact page — a paragraph, a form from a plugin, an Elementor section — is drawn between the
+  office panel and the social links. The rest of the page comes from the fields above.
+
+The phone number, email address and office address are **shared with the footer**, so you only type
+them once and the two can never disagree.
+
+## 21. Developer notes
 
 * Bookings live in `{prefix}roova_bookings`; `Roova_Availability` is the only thing that reads it for
   availability decisions.

@@ -63,6 +63,23 @@ function roova_enqueue_search_assets() {
 add_action( 'wp_enqueue_scripts', 'roova_enqueue_search_assets', 20 );
 
 /**
+ * The contact page's own stylesheet and script.
+ *
+ * Loaded only there. The page prints its own document, so the styles are a
+ * page's worth of rules nothing else uses; the script does one thing — copy the
+ * address — and the button it belongs to stays hidden until it runs.
+ */
+function roova_enqueue_contact_assets() {
+	if ( ! function_exists( 'roova_is_contact_page' ) || ! roova_is_contact_page() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'roova-contact', ROOVA_URI . 'assets/css/contact.css', array( 'roova-style' ), ROOVA_VERSION );
+	wp_enqueue_script( 'roova-contact', ROOVA_URI . 'assets/js/contact.js', array(), ROOVA_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'roova_enqueue_contact_assets', 20 );
+
+/**
  * Checkout's own stylesheet and script.
  *
  * Both are loaded only on the checkout, order-pay and order-received views —

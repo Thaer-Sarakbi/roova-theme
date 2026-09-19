@@ -1,0 +1,777 @@
+/**
+ * Contact us.
+ *
+ * Loaded only on the Contact us page (see roova_enqueue_contact_assets), on top
+ * of theme.css — every colour here is one of its tokens.
+ *
+ * Its own token header rather than a shared block, like checkout.css, auth.css,
+ * account.css, order.css, received.css and search.css: each page in this theme
+ * that prints its own document ships its own stylesheet, and this one has to
+ * stand up when none of the others is loaded.
+ */
+
+.roova-contact-page {
+	--roova-card-line: rgba(13, 58, 82, .12);
+	--roova-card-line-hover: rgba(13, 58, 82, .24);
+
+	/* The dot beside the opening hours. Green on navy, nowhere else. */
+	--roova-open: #5fc79a;
+
+	background: #fff;
+}
+
+/* ------------------------------------------------------------- Top band */
+
+/*
+ * The page's own header — the wordmark, the Primary menu and the account
+ * button, on navy. It is the site header's content in the page's own colours,
+ * the same arrangement the search results page uses.
+ */
+.roova-cp__bar {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+.roova-cp__bar-inner {
+	max-width: 1280px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	padding: 20px 40px;
+
+	/* The collapsed menu hangs off this. */
+	position: relative;
+}
+
+.roova-cp__logo {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	color: var(--roova-cream);
+	font-family: var(--roova-font-display);
+	font-size: 1.81rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.02em;
+}
+
+.roova-cp__logo:hover {
+	color: var(--roova-cream);
+}
+
+.roova-cp__logo em {
+	font-style: normal;
+	color: var(--roova-gold-light);
+}
+
+.roova-cp__tagline {
+	font-family: var(--roova-font-body);
+	font-size: 9.5px;
+	font-weight: 400;
+	letter-spacing: .22em;
+	text-transform: uppercase;
+	color: rgba(251, 248, 243, .5);
+}
+
+/*
+ * theme.css paints .roova-menu for a cream header, so every colour in it is
+ * restated here for navy — the same job .roova-nav--over does over the hero.
+ */
+.roova-cp__menu .roova-menu {
+	display: flex;
+	align-items: center;
+	gap: 30px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-family: var(--roova-font-body);
+	font-size: 14px;
+	letter-spacing: .01em;
+}
+
+.roova-cp__menu .roova-menu a {
+	display: inline-block;
+	color: rgba(251, 248, 243, .78);
+	padding-bottom: 3px;
+	border-bottom: 1px solid transparent;
+	transition: color .3s var(--roova-ease), border-color .3s var(--roova-ease);
+}
+
+.roova-cp__menu .roova-menu a:hover,
+.roova-cp__menu .roova-menu .current-menu-item > a {
+	color: var(--roova-cream);
+	border-color: var(--roova-gold-light);
+}
+
+.roova-cp__actions {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+/*
+ * The hamburger is theme.css's, so only what navy changes is restated: its bars
+ * are painted --roova-deep there and would be invisible on this bar.
+ */
+.roova-cp__toggle {
+	border-color: rgba(251, 248, 243, .32);
+}
+
+.roova-cp__toggle span[aria-hidden] {
+	background: var(--roova-cream);
+	box-shadow: 0 -6px 0 var(--roova-cream), 0 6px 0 var(--roova-cream);
+}
+
+/* The account button reads on navy here the way it does over the hero. */
+.roova-cp__bar .roova-btn--nav {
+	background: rgba(251, 248, 243, .12);
+	border-color: rgba(251, 248, 243, .32);
+	color: var(--roova-cream);
+}
+
+.roova-cp__bar .roova-btn--nav:hover {
+	background: var(--roova-cream);
+	border-color: var(--roova-cream);
+	color: var(--roova-deep);
+}
+
+/* ----------------------------------------------------------------- Hero */
+
+.roova-cp__hero {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+/*
+ * Two columns: the copy on the left, the photograph running to the right edge
+ * of the window. The left cell is capped and pushed to its inner edge so the
+ * headline lines up with the page's own gutter rather than floating in the
+ * middle of a very wide column.
+ */
+.roova-cp__hero-inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+	align-items: stretch;
+}
+
+.roova-cp__hero-copy {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 22px;
+	width: 100%;
+	max-width: 640px;
+	margin-left: auto;
+	padding: 64px 40px;
+}
+
+/* No photograph: one column, and the copy keeps the page's left gutter. */
+.roova-cp__hero--plain .roova-cp__hero-inner {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.roova-cp__hero--plain .roova-cp__hero-copy {
+	max-width: 1280px;
+	margin: 0 auto;
+}
+
+.roova-cp__hero-copy .roova-eyebrow {
+	margin-bottom: 0;
+	font-size: 10.5px;
+	letter-spacing: .22em;
+}
+
+.roova-cp__hero-copy h1 {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: clamp(2.1rem, 4.2vw, 2.88rem);
+	line-height: 1.04;
+	letter-spacing: -.025em;
+	color: var(--roova-cream);
+	text-wrap: balance;
+}
+
+.roova-cp__lede {
+	margin: 0;
+	max-width: 46ch;
+	font-size: .97rem;
+	line-height: 1.7;
+	color: rgba(251, 248, 243, .72);
+	text-wrap: pretty;
+}
+
+.roova-cp__hero-actions {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-wrap: wrap;
+	margin-top: 4px;
+}
+
+/*
+ * The number is the one thing on the page somebody in a hurry is looking for,
+ * so it is the only gold button on it. Gold on navy at 16px/500 clears AA.
+ */
+.roova-cp__call {
+	display: inline-flex;
+	align-items: center;
+	gap: 11px;
+	padding: 16px 26px;
+	border-radius: 10px;
+	background: var(--roova-gold-light);
+	color: var(--roova-ink);
+	font-size: 1rem;
+	font-weight: 500;
+	white-space: nowrap;
+	transition: background .25s ease, transform .3s var(--roova-ease), box-shadow .3s ease;
+}
+
+.roova-cp__call:hover {
+	background: var(--roova-cream);
+	color: var(--roova-ink);
+	transform: translateY(-2px);
+	box-shadow: 0 16px 30px -18px rgba(4, 22, 32, .8);
+}
+
+/* A number with no digits in it — "ask at the desk" — is not a link. */
+.roova-cp__call--flat,
+.roova-cp__call--flat:hover {
+	background: rgba(251, 248, 243, .12);
+	color: var(--roova-cream);
+	transform: none;
+	box-shadow: none;
+}
+
+.roova-cp__open {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: .79rem;
+	color: rgba(251, 248, 243, .6);
+}
+
+.roova-cp__dot {
+	width: 7px;
+	height: 7px;
+	flex: none;
+	border-radius: 50%;
+	background: var(--roova-open);
+}
+
+.roova-cp__hero-media {
+	position: relative;
+	min-height: 420px;
+	overflow: hidden;
+}
+
+.roova-cp__hero-media img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/*
+ * The wash carries the copy's column into the photograph so the headline never
+ * sits on a bright edge of it. Change the photo and check the left third of it
+ * still reads as navy.
+ */
+.roova-cp__hero-scrim {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(105deg, rgba(13, 58, 82, .62) 0%, rgba(13, 58, 82, .14) 45%, rgba(13, 58, 82, 0) 100%);
+}
+
+/* ---------------------------------------------------------------- Inner */
+
+.roova-cp__inner {
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 56px 40px 88px;
+}
+
+/* The eyebrow with its gold rule, on white — theme.css's ruled one is for
+ * dark bands and paints itself cream. */
+.roova-cp__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	font-size: 10.5px;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+}
+
+.roova-cp__eyebrow::before {
+	content: "";
+	width: 24px;
+	height: 1px;
+	flex: none;
+	background: var(--roova-gold);
+}
+
+/* ------------------------------------------------------------- Channels */
+
+.roova-cp__channels {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.roova-cp__channel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 26px 26px 24px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 14px;
+	background: #fff;
+	color: var(--roova-ink);
+	transition: box-shadow .3s ease, transform .3s var(--roova-ease), border-color .3s ease;
+}
+
+a.roova-cp__channel:hover {
+	color: var(--roova-ink);
+	border-color: var(--roova-card-line-hover);
+	box-shadow: 0 26px 46px -32px rgba(8, 38, 53, .45);
+	transform: translateY(-2px);
+}
+
+.roova-cp__channel-icon {
+	width: 42px;
+	height: 42px;
+	flex: none;
+	border-radius: 11px;
+	background: var(--roova-cream);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--roova-gold);
+}
+
+.roova-cp__channel-label {
+	font-size: 11px;
+	letter-spacing: .16em;
+	text-transform: uppercase;
+	color: var(--roova-faint);
+
+	/* The label and the value read as one block, so the gap between them is
+	 * theirs rather than the card's. */
+	margin-bottom: -6px;
+}
+
+.roova-cp__channel-value {
+	font-family: var(--roova-font-display);
+	font-size: 1.37rem;
+	line-height: 1.2;
+	letter-spacing: -.01em;
+	color: var(--roova-deep);
+
+	/* An email address is long and has no spaces to break at. */
+	overflow-wrap: anywhere;
+}
+
+.roova-cp__channel-note {
+	font-size: .81rem;
+	line-height: 1.6;
+	color: var(--roova-muted);
+}
+
+/* --------------------------------------------------------------- Office */
+
+.roova-cp__office {
+	display: grid;
+	grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+	margin-top: 56px;
+	border: 1px solid var(--roova-card-line);
+	border-radius: 16px;
+	overflow: hidden;
+}
+
+.roova-cp__office--nomap {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.roova-cp__office-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	padding: 38px 34px;
+}
+
+.roova-cp__office-copy h2 {
+	margin: 13px 0 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.87rem;
+	line-height: 1.1;
+	letter-spacing: -.02em;
+	color: var(--roova-deep);
+}
+
+/* The eyebrow and the heading are one block; the flex gap is for what follows. */
+.roova-cp__office-copy > .roova-cp__eyebrow {
+	margin-bottom: -22px;
+}
+
+.roova-cp__address {
+	display: flex;
+	gap: 13px;
+	font-style: normal;
+	font-size: .97rem;
+	line-height: 1.75;
+	color: var(--roova-ink);
+}
+
+.roova-cp__address .roova-icon {
+	flex: none;
+	margin-top: 4px;
+	color: var(--roova-gold);
+}
+
+.roova-cp__hours {
+	display: grid;
+	gap: 1px;
+	background: rgba(13, 58, 82, .1);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.roova-cp__hours-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 13px 16px;
+	background: var(--roova-cream);
+	font-size: .84rem;
+	color: var(--roova-soft);
+}
+
+.roova-cp__hours-time {
+	color: var(--roova-ink);
+	white-space: nowrap;
+}
+
+.roova-cp__office-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.roova-cp__btn {
+	padding: 13px 22px;
+	border-radius: 9px;
+	font-size: .91rem;
+}
+
+.roova-cp__btn .roova-icon {
+	flex: none;
+}
+
+/* Copied: the button says so for a couple of seconds rather than a toast
+ * appearing somewhere else on the page. */
+.roova-cp__copy.is-copied,
+.roova-cp__copy.is-copied:hover {
+	background: rgba(13, 107, 79, .08);
+	border-color: #0d6b4f;
+	color: #0d6b4f;
+}
+
+.roova-cp__map {
+	position: relative;
+	min-height: 420px;
+	background: var(--roova-sand);
+	border-left: 1px solid var(--roova-card-line);
+}
+
+.roova-cp__map iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+/*
+ * The card over the map repeats the first two lines of the address, so the pin
+ * is labelled even when Google has centred on the district rather than the
+ * door. It is pointer-events: none so it never eats a drag meant for the map
+ * underneath.
+ *
+ * Top right, not the design's bottom left: an embedded map carries Google's
+ * "Map data ©" credit along its bottom edge and the "Open in Maps" button in
+ * its top left corner. Covering the credit is a breach of the Maps terms, and
+ * the button is the way out to directions on a phone.
+ */
+.roova-cp__map-card {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	max-width: calc(100% - 40px);
+	padding: 12px 17px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, .96);
+	box-shadow: 0 16px 34px -20px rgba(8, 38, 53, .6);
+	pointer-events: none;
+	font-size: .81rem;
+	line-height: 1.45;
+	color: var(--roova-ink);
+}
+
+.roova-cp__map-card .roova-icon {
+	flex: none;
+	color: var(--roova-gold);
+}
+
+.roova-cp__map-card strong {
+	display: block;
+	font-weight: 500;
+}
+
+.roova-cp__map-card span span {
+	color: var(--roova-faint);
+	font-size: .75rem;
+}
+
+/* --------------------------------------------------------------- Follow */
+
+.roova-cp__content {
+	margin-top: 48px;
+}
+
+.roova-cp__follow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 26px;
+	flex-wrap: wrap;
+	margin-top: 44px;
+	padding-top: 34px;
+	border-top: 1px solid var(--roova-card-line);
+}
+
+.roova-cp__follow h2 {
+	margin: 0;
+	font-family: var(--roova-font-display);
+	font-weight: 400;
+	font-size: 1.5rem;
+	letter-spacing: -.015em;
+	color: var(--roova-ink);
+}
+
+.roova-cp__follow p {
+	margin: 8px 0 0;
+	font-size: .84rem;
+	color: var(--roova-muted);
+}
+
+.roova-cp__socials {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.roova-cp__social {
+	width: 50px;
+	height: 50px;
+	border: 1px solid var(--roova-hairline-strong);
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--roova-deep);
+	transition: background .25s ease, color .25s ease, border-color .25s ease, transform .3s var(--roova-ease);
+}
+
+.roova-cp__social:hover {
+	background: var(--roova-deep);
+	border-color: var(--roova-deep);
+	color: var(--roova-cream);
+	transform: translateY(-3px);
+}
+
+/* ----------------------------------------------------------------- Foot */
+
+.roova-cp__foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 24px 40px 40px;
+	border-top: 1px solid var(--roova-hairline);
+	font-size: .8rem;
+	color: var(--roova-faint);
+}
+
+.roova-cp__foot p {
+	margin: 0;
+}
+
+.roova-cp__foot-menu {
+	display: flex;
+	gap: 20px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.roova-cp__foot-menu a {
+	color: var(--roova-faint);
+}
+
+.roova-cp__foot-menu a:hover {
+	color: var(--roova-deep);
+}
+
+/* ------------------------------------------------------------- Narrower */
+
+@media (max-width: 1080px) {
+	.roova-cp__channels {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 960px) {
+	.roova-cp__hero-inner {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-cp__hero-copy {
+		max-width: none;
+		margin-left: 0;
+		padding: 52px 40px;
+	}
+
+	.roova-cp__hero-media {
+		min-height: 280px;
+	}
+
+	/* Stacked, the wash reads top-to-bottom instead of left-to-right. */
+	.roova-cp__hero-scrim {
+		background: linear-gradient(180deg, rgba(13, 58, 82, .5) 0%, rgba(13, 58, 82, .1) 60%, rgba(13, 58, 82, 0) 100%);
+	}
+
+	.roova-cp__office,
+	.roova-cp__office--nomap {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-cp__map {
+		min-height: 340px;
+		border-left: 0;
+		border-top: 1px solid var(--roova-card-line);
+	}
+}
+
+@media (max-width: 900px) {
+	/*
+	 * Behind the hamburger, as a white panel under the bar — theme.js toggles
+	 * .is-open on .roova-cp__bar-inner, the same class and the same handler the
+	 * site header and the search page both use.
+	 */
+	.roova-cp__menu {
+		display: none;
+	}
+
+	/*
+	 * The panel hangs off .roova-cp__bar-inner's padding box, so its insets are
+	 * that bar's own side padding — they have to move with it at 760px or the
+	 * panel sits wider than the wordmark it drops from.
+	 */
+	.roova-cp__bar-inner.is-open .roova-cp__menu {
+		display: block;
+		position: absolute;
+		top: 100%;
+		left: 40px;
+		right: 40px;
+		background: #fff;
+		border-radius: 12px;
+		padding: 16px;
+		box-shadow: var(--roova-shadow);
+		z-index: 30;
+	}
+
+	.roova-cp__bar-inner.is-open .roova-menu {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+	}
+
+	.roova-cp__bar-inner.is-open .roova-menu a {
+		color: var(--roova-ink);
+	}
+
+	.roova-cp__bar-inner.is-open .roova-menu a:hover,
+	.roova-cp__bar-inner.is-open .roova-menu .current-menu-item > a {
+		color: var(--roova-deep);
+		border-color: var(--roova-gold);
+	}
+
+	.roova-cp__toggle {
+		display: block;
+	}
+}
+
+@media (max-width: 720px) {
+	.roova-cp__channels {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.roova-cp__bar-inner,
+	.roova-cp__hero-copy,
+	.roova-cp__inner,
+	.roova-cp__foot {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.roova-cp__bar-inner.is-open .roova-cp__menu {
+		left: 20px;
+		right: 20px;
+	}
+
+	.roova-cp__inner {
+		padding-top: 40px;
+		padding-bottom: 64px;
+	}
+
+	.roova-cp__office-copy {
+		padding: 30px 24px;
+	}
+
+	.roova-cp__call,
+	.roova-cp__btn {
+		flex: 1 1 auto;
+		justify-content: center;
+	}
+
+	.roova-cp__follow {
+		align-items: flex-start;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.roova-cp__channel,
+	.roova-cp__call,
+	.roova-cp__social {
+		transition: none;
+	}
+
+	a.roova-cp__channel:hover,
+	.roova-cp__call:hover,
+	.roova-cp__social:hover {
+		transform: none;
+	}
+}

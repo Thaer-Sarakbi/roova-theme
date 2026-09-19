@@ -310,12 +310,30 @@ p {
 	color: var(--roova-cream);
 }
 
-.roova-nav--over .roova-menu a,
+/*
+ * The menu pair carries .roova-nav twice on purpose. `.roova-nav .roova-menu a`
+ * below paints the links slate for a cream header and matches this at exactly
+ * the same specificity, so the later rule won and the Primary menu was drawn in
+ * --roova-soft over the hero photograph: "Hotels" and "Destinations" landed on
+ * the dark half of the picture and were invisible. Doubling the class makes
+ * these win on specificity rather than on source order, so moving either block
+ * cannot bring the bug back. The mobile panel's own rule is more specific still
+ * and keeps its ink links on the white sheet.
+ */
+.roova-nav.roova-nav--over .roova-menu a,
 .roova-nav--over .roova-nav__support {
-	color: rgba(251, 248, 243, .8);
+	/*
+	 * .9, not the .78 the navy bars use: those sit on a solid --roova-deep, and
+	 * this sits on a photograph a client replaces. Against the lightest pixel
+	 * behind the menu on the bundled hero it measures 4.58:1 — over AA for 14px
+	 * text, where .8 gave 4.00 and failed it. Change the hero photo and re-check:
+	 * hide .roova-nav__menu, screenshot the band, and sample the strip the menu
+	 * occupies (.testenv/ratio.js does the arithmetic).
+	 */
+	color: rgba(251, 248, 243, .9);
 }
 
-.roova-nav--over .roova-menu a:hover,
+.roova-nav.roova-nav--over .roova-menu a:hover,
 .roova-nav--over .roova-nav__support:hover {
 	color: var(--roova-cream);
 }

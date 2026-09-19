@@ -31,14 +31,15 @@ php tests/test-cashback.php               # cashback rules and balances (42 asse
 php tests/test-vip.php                    # VIP tiers, free nights and the discount (78 assertions, no WordPress)
 php tests/test-received.php               # confirmation: who may see it, cashback forecast, next steps (52 assertions)
 php tests/test-search.php                 # results page: the featured landmark and the sort order (21 assertions)
+php tests/test-contact.php                # contact channels, address, hours, map query, socials (57 assertions)
 php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
 php bin/makepot.php roova roova/languages/roova.pot      # identical output, for machines without Python
 bin/testenv.sh                            # build a throwaway WP+WooCommerce site with the theme installed
 ```
 
-`test-availability.php`, `test-cashback.php`, `test-vip.php`, `test-received.php` and `test-search.php`
-are single flat scripts with a
+`test-availability.php`, `test-cashback.php`, `test-vip.php`, `test-received.php`, `test-search.php`
+and `test-contact.php` are single flat scripts with a
 `check( $label, $actual, $expected )` helper — there is no test runner and no per-test filtering. Add
 assertions by calling `check()`; they exit non-zero on any failure. Each stubs the handful of
 WordPress functions the pure logic touches, so they run anywhere PHP does. `test-cashback.php` stubs
@@ -56,15 +57,20 @@ the file exists; see *Order received*.
 `test-search.php` stubs hotel meta and `roova_hotel_rating()`, so it covers the two pieces of the
 results page that are pure decisions: which popular landmark a card features — and that the same
 hotel features the same one every time — and the order the list is put in. See *Search results*.
+`test-contact.php` stubs the Customizer, so it covers what the contact page does with what a client
+typed: which channel cards appear and what each one links to, how the address and opening-hours
+textareas are parsed, which query the map embed is built from, and which social links survive. Every
+one of those is a pure function of theme mods. See *Contact us*.
 
 `bin/build.sh` refuses to package if the lint fails, if `style.css` has lost its theme header, or if
 `screenshot.png` is missing.
 
 ## Verifying real behaviour
 
-Lint and the six test scripts cover syntax, include-time fatals, the pure booking maths, the
-cashback rules, what a VIP tier takes off a cart, who may see a confirmation, and how the results
-page picks a landmark and orders its list. Anything
+Lint and the seven test scripts cover syntax, include-time fatals, the pure booking maths, the
+cashback rules, what a VIP tier takes off a cart, who may see a confirmation, how the results
+page picks a landmark and orders its list, and what the contact page makes of the fields a client
+filled in. Anything
 touching hooks, the database or templates needs a real site: run `bin/testenv.sh`, serve it with
 `php -S 127.0.0.1:8099 -t .testenv/site`, and drive it with curl (a cookie jar per "guest" is enough
 to simulate several visitors competing for the same room).
@@ -114,6 +120,11 @@ booking line and the cashback rules.
 `inc/auth.php` is in the unconditional group on purpose: `header.php` calls `roova_account_control()`
 on every page, and signing in has to keep working on a site whose WooCommerce is switched off. Its
 WooCommerce calls are each guarded by `function_exists()`.
+
+`inc/contact.php` is unconditional for the same kind of reason: a reception phone number and an
+address are the last things that should vanish from a site whose shop is switched off, and nothing on
+that page touches WooCommerce at all. `footer.php` also calls `roova_contact_address_inline()` on
+every page.
 
 ### Products
 
@@ -176,7 +187,7 @@ the order is paid, so the last layer, the status mapping, is the one that books 
 ends up overbooked is never silently dropped: it stays booked and `flag_overbooking()` adds a loud order
 note for the front desk to resolve.
 
-### Four traps this code has already fallen into
+### Five traps this code has already fallen into
 
 **A CSS rule matching a descendant, not a child, will find WooCommerce's price markup.** A formatted
 price is a nest of `<span>`s; `.some-list span { display: block }` puts the currency symbol on a line
@@ -195,6 +206,16 @@ shipped on the results page at 1.10.0 and was fixed in 1.10.2 — corners belong
 own them (`.roova-search__field:first-child` on the left, `.roova-search__submit` on the right), which
 is how `theme.css` has always drawn the homepage's bar. The same goes for any new wrapper put around
 a search form.
+
+**Two rules of equal specificity are decided by source order, and the override block here comes
+first.** `.roova-nav--over .roova-menu a` (the cream links over the hero) and `.roova-nav .roova-menu a`
+(the slate links for a cream header) are both one-class-one-class-one-element, and the base block sits
+*below* the override block in `theme.css` — so the base won and the homepage's Primary menu was drawn
+in `--roova-soft` on the hero photograph, where "Hotels" and "Destinations" fell on the dark half of
+the picture and were invisible. Nothing was missing from the markup, which is why it reads as "the
+menu isn't on the homepage". The fix is to win on specificity rather than on position
+(`.roova-nav.roova-nav--over …`, the class doubled on the element that carries both), so moving either
+block cannot bring it back. When overriding a base rule, count the selector: matching it is losing it.
 
 **A cart item key is not unique to a visitor.** WooCommerce hashes the product plus its cart item
 data, so two guests booking the same room for the same dates get the *identical* key. Every lookup or
@@ -272,8 +293,9 @@ own document is still a page of this site, and the results page is the one a sea
 likely to land a stranger on — a header with no way out of it is a dead end. Three things follow:
 
 - **`theme.js`'s toggle resolves its scope with
-  `button.closest( '.roova-nav__inner, .roova-sp__bar-inner' )`.** One handler, two bars; adding a
-  third page with its own header means adding its inner to that selector, not copying the handler.
+  `button.closest( '.roova-nav__inner, .roova-sp__bar-inner, .roova-cp__bar-inner' )`.** One handler,
+  three bars — `header.php`, this page and the contact page; a fourth page with its own header means
+  adding its inner to that selector, not copying the handler.
 - **Every colour in the menu is restated for navy** in `search.css`, the job `.roova-nav--over` does
   over the hero — `theme.css` paints `.roova-menu` for a cream header, and its hamburger bars are
   `--roova-deep`, invisible here.
@@ -370,6 +392,87 @@ a long time and shown nowhere — the card is what made it mean anything.
   display face is loaded at 300/400/500 only, so the 1.28rem/600 Newsreader this started as was being
   faux-bolded by the browser. Re-colour the number and the arithmetic has to be redone.
 
+### Contact us
+
+How a guest reaches roova itself, rather than one of its hotels. `inc/contact.php` owns the page,
+`template-contact.php` renders it, and `assets/css/contact.css` + `assets/js/contact.js` load only
+there. It prints its own document behind a navy bar carrying the wordmark, the **Primary menu**, the
+hamburger and the account button — the same shape as the results page's, and its inner
+(`.roova-cp__bar-inner`) is in `theme.js`'s toggle selector for that reason. The sections are the
+hero, the three channel cards, the office panel with its map, the page's own editor content, and the
+social row.
+
+**Every word and number on it is a Customizer setting**, under **Contact page** and **Social links**
+— that was the whole request. The theme was asked for Elementor and answered with its own Customizer
+section: the fields are read through `roova_option()` like every other theme option, so the page
+needs no plugin and a client edits it where they already edit the homepage. Elementor, if a site
+installs it, still reaches the editor content in the middle of the page.
+
+- **Three of the fields already existed.** `contact_phone`, `contact_email` and `contact_address`
+  were the footer's, and the page reuses them rather than adding a second set — a site cannot end up
+  printing one number in the footer and another on the contact page. `contact_address` was widened
+  from one line to a textarea, so `footer.php` now reads it through
+  `roova_contact_address_inline()`, which joins the lines with commas; the raw value collapsed into
+  one run of spaces there.
+- **The page is guaranteed**, the same way the checkout, auth, account and Home pages are:
+  `roova_ensure_contact_page()` adopts, untrashes or creates `/contact/` on `after_switch_theme` and
+  again once per release behind `roova_contact_version`, and re-asserts `_wp_page_template` on the
+  page it finds — a client who assigned a different template gets the contact page back, because the
+  footer links to it. `roova_contact_page_id()` insists on `publish`, and `roova_contact_url()` falls
+  back to the home page, for the reason the account page's own check does: `get_permalink()` is just
+  as happy to build a URL for a trashed page.
+- **`roova_is_contact_page()` matches the template, not the stored ID** — the rule
+  `roova_is_search_page()` and `roova_is_auth_page()` follow, so a page the client rebuilt by hand
+  and assigned the template still counts.
+- **A field left empty removes its card, never prints an empty one.** `roova_contact_channels()`
+  returns only the channels that have a number or address behind them, and the row draws nothing at
+  all when none do; the same holds for the hours, the socials and the map. A fresh install with
+  nothing filled in is a page with a heading and no fabricated detail — the rule
+  `roova_hotel_contact()` follows, applied to the whole page.
+- **The opening hours ship empty, while the title and the intro ship with copy.** That looks
+  inconsistent and is not: copy is something a client rewrites, and opening hours are a fact a guest
+  turns up on. A plausible stock set ("Monday — Saturday | 9:00 am — 6:00 pm") had a fresh install
+  promising the desk was staffed at nine on Saturday before anyone had said so — the same reason
+  there are no default cashback offers and sign-up dropped "get a discount when you register". The
+  field's description says what leaving it empty does, and carries the format example the default
+  used to demonstrate.
+- **A channel card is a link when its value can be one, and a plain `<div>` when it cannot.** The
+  phone goes through `roova_tel_href()` (which returns nothing for a field holding words, so the
+  number is then printed as text rather than made a dead link), WhatsApp through
+  `https://wa.me/` + the digits only, and the email through `mailto:` **only if `is_email()` agrees**
+  — a typo'd address should not become a link that opens a mail client on nothing.
+- **The map is a `google.com/maps?output=embed` iframe, deliberately not the Maps JavaScript API the
+  hotel pages use.** That API needs a billable key; this page needs one pin. It is built from
+  `contact_lat`/`contact_lng` when **both** are numeric and from the address otherwise, so a client
+  who types an address gets a map without touching coordinates and one who wants the pin exactly
+  right can place it. Zoom is clamped to 1–21, the range Google accepts.
+- **The map card sits top *right*, not the design's bottom left.** Google's embed puts its
+  "Map data ©" credit along the bottom edge and its own "Open in Maps" control in the top left
+  corner; covering the credit breaches the Maps terms, and covering the control breaks the map. The
+  card's text is the first two address lines rather than a field of its own — the design's "6 min
+  walk from Jelatek LRT" is a fact about one particular office, not something a theme can know.
+- **Nothing on this page carries `data-roova-reveal`.** `theme.css` paints anything that does at
+  `opacity: 0` until `theme.js` adds `.is-revealed`, and on a page whose entire job is to carry a
+  phone number, an address and a map, a script that failed to load would hide exactly what the
+  visitor came for. The homepage can afford to lose an animation; this page cannot afford to lose its
+  content.
+- **"Copy address" is rendered `hidden` and unhidden by `contact.js`**, because copying cannot be
+  done without a script and a dead button is worse than none. It tries
+  `navigator.clipboard.writeText()` and falls back to a selected textarea plus `document.execCommand`
+  — and the fallback has to be chained onto the promise's **rejection**, not just the API's absence:
+  `writeText` exists and refuses in an unfocused document, which left the button doing nothing at
+  all. (Which is also why proving it works in the test harness needs
+  `Emulation.setFocusEmulationEnabled` and `Browser.grantPermissions`.)
+- **The brand glyphs are their own function.** `roova_social_icon()` exists beside `roova_icon()`
+  because the library's icons are hardcoded `fill="none" stroke="currentColor"` line art and a
+  brand mark is a filled path — rendering Instagram through the normal library gives an invisible
+  icon. `roova_social_networks()` is the one list of the six networks, and `inc/customizer.php` loops
+  it to register the fields, so adding a seventh is one array entry (guarded with `function_exists()`
+  there, because the customizer file loads before `inc/contact.php`).
+- The section headings and the channel notes are ordinary translatable strings, not settings — the
+  client asked for the title, the copy, the numbers, the map and the socials to be editable, and
+  inventing settings for the rest would have handed them a wall of fields.
+
 ### Templates
 
 `single-hotel.php` is routed by `template_include` (not a WooCommerce template override).
@@ -399,6 +502,10 @@ would otherwise claim it first. See *Order received*.
 `template-search.php` is the seventh — a page template again, like the two auth pages. See
 *Search results*.
 
+`template-contact.php` is the eighth, a page template too, and the only one of them that renders the
+page's **own editor content** (in `.roova-prose`) between the sections it draws — a contact page is
+the one a client is most likely to want to add a paragraph to. See *Contact us*.
+
 `header.php` and `footer.php` are shared by every other page: one header and a cream footer of three
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
 site name through `roova_wordmark()`, which picks out a domain suffix in gold ("roova**.my**").
@@ -406,7 +513,13 @@ site name through `roova_wordmark()`, which picks out a domain suffix in gold ("
 The header has two states, decided by `$roova_over_hero` (front page, not paged):
 
 - **Over the hero** (`.roova-nav--over`) — lifted out of the flow with `position: absolute` and laid
-  on the photograph, so the hero runs to the very top of the window. Everything in it turns cream.
+  on the photograph, so the hero runs to the very top of the window. Everything in it turns cream —
+  the menu links at `.9` rather than the `.78` the navy bars use, because those sit on a solid
+  `--roova-deep` and this sits on a photograph the client replaces. Against the lightest pixel behind
+  the menu on the bundled hero that measures 4.58:1, over AA for 14px text; `.8` gave 4.00 and failed
+  it. Change the hero photo and re-check, the same rule the checkout banner and the auth scrims
+  follow: hide `.roova-nav__menu`, screenshot the band, sample the strip the menu occupies. The menu
+  pair also carries `.roova-nav` twice — see the specificity trap above.
 - **Everywhere else** — in flow, transparent over the cream page, with a hairline underneath.
 
 It is **never sticky and never has its own background**, and the hero is **full bleed with square
@@ -1042,6 +1155,19 @@ each text box.
 `roova_hero()` → `roova_guarantees_row()` → `roova_image_band()` → hotels grid → destinations mosaic →
 `roova_image_band()` again → `roova_coverage_map()`. Every section's copy is a Customizer setting.
 
+**`roova_ensure_home_page()` (`inc/setup.php`) gives the front page a page post**, so it shows up
+under Pages next to Checkout, My account, Sign in, Sign up, Find a room and Contact instead of being the one
+themed page with nothing to click on in the dashboard. `front-page.php` renders the front page
+regardless of Settings → Reading — WordPress falls back to it whether the setting is "your latest
+posts" or a static page — so this changes nothing a visitor sees; the Home page's own content is
+never read. The function still points Settings → Reading at it (`show_on_front` / `page_on_front`),
+because that is what makes the page real to WordPress and to plugins that ask it who the front page
+is. A site that already has a static front page configured is adopted as-is, the same way an
+existing Checkout or Sign in page is — this never overwrites a deliberate choice. Runs on
+`after_switch_theme` and again on `admin_init` once per release, gated on its own
+`roova_home_version` option, the same shape as the checkout page's and the two auth pages' own
+checks, and for the same reason: `after_switch_theme` never fires for a theme updated in place.
+
 Two things bite here:
 
 - **`get_theme_mod()` ignores the Customizer's registered default** — it falls back to whatever the
@@ -1083,6 +1209,8 @@ jQuery's — see *Checkout*. It loads only on checkout pages, alongside `assets/
 `assets/js/account.js` likewise, on the My account dashboard, alongside `assets/css/account.css`,
 and `assets/js/order.js` on the single-order page with `assets/css/order.css` — that one does a single
 thing, print the voucher, and the page is otherwise all links, so a blocked script costs one button.
+`assets/js/contact.js` is the same shape on the contact page (`assets/css/contact.css`): one button,
+copying the address, and it is printed `hidden` and unhidden by the script — see *Contact us*.
 The saved-stays heart is the exception to that split: it lives in `theme.js`, because the same button
 is on hotel cards site-wide, and account.js only listens for the `roova:like` event it fires.
 Dates are handled as `Y-m-d` strings and only converted to `Date` at local midnight so a stay never
@@ -1113,7 +1241,8 @@ Prefer a token over a literal; the handful of literals left are the multi-stop s
 `rgba(13,58,82,…)` hairlines.
 
 Each page that prints its own document also carries its own stylesheet with its own token header —
-`checkout.css`, `auth.css`, `account.css`, `order.css`, `received.css`, `search.css`. The repetition is the convention here, not an
+`checkout.css`, `auth.css`, `account.css`, `order.css`, `received.css`, `search.css`,
+`contact.css`. The repetition is the convention here, not an
 oversight: the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the
 two are never loaded together and each page has to stand up alone.
 
@@ -1131,7 +1260,8 @@ two are never loaded together and each page has to stand up alone.
   rows that are still holds and have no order.
 - **Releases:** `ROOVA_VERSION` in `functions.php` and `Version:` in `style.css` must match. Bumping it
   also re-runs the once-per-release setup on the next `admin_init` (`roova_setup_version` for the
-  checkout page and tax rates, `roova_auth_version` for the two account pages).
+  checkout page and tax rates, `roova_auth_version` for the two account pages,
+  `roova_home_version` for the front page, `roova_contact_version` for the contact page).
   **Bump it for any CSS or JS change that ships to a live site.** Every asset is enqueued with
   `?ver=ROOVA_VERSION`, so an unchanged version means an unchanged URL: browsers, host caches and
   caching plugins keep serving the old file while the new PHP prints markup it does not style. The
