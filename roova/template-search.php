@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$roova_criteria = roova_get_criteria();
+$roova_criteria = roova_has_woocommerce() ? roova_search_page_criteria() : roova_get_criteria();
 $roova_results  = roova_has_woocommerce() ? roova_search_hotels( $roova_criteria ) : array();
 $roova_results  = roova_has_woocommerce() ? roova_sort_search_results( $roova_results ) : $roova_results;
 $roova_nights   = roova_nights( $roova_criteria['check_in'], $roova_criteria['check_out'] );
@@ -87,7 +87,7 @@ $roova_resolved = roova_has_woocommerce() ? roova_resolve_destination( $roova_cr
 			</div>
 
 			<?php if ( roova_has_woocommerce() ) : ?>
-				<?php roova_search_sort_form( count( $roova_results ) ); ?>
+				<?php roova_search_sort_form( count( $roova_results ), $roova_criteria ); ?>
 			<?php endif; ?>
 		</header>
 

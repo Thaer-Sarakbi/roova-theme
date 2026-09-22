@@ -41,7 +41,8 @@ roova_image_band( array(
 					</div>
 
 					<?php if ( $roova_total > count( $roova_shown ) ) : ?>
-						<a class="roova-section__more" href="<?php echo esc_url( roova_criteria_url( roova_search_url() ) ); ?>">
+						<?php // "View all" means all: the dates travel, a remembered destination does not. ?>
+						<a class="roova-section__more" href="<?php echo esc_url( roova_criteria_url( roova_search_url(), array_merge( roova_get_criteria(), array( 'destination' => '' ) ) ) ); ?>">
 							<?php
 							printf(
 								/* translators: %d: number of hotels */

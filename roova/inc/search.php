@@ -94,6 +94,29 @@ function roova_resolve_destination( $destination ) {
 }
 
 /**
+ * The criteria the "Find a room" page lists hotels for.
+ *
+ * The dates and party come from roova_get_criteria() as everywhere else, but
+ * the destination and hotel filters come from this request's URL only, never
+ * from the session. The page lists every hotel unless the guest submitted a
+ * destination or hotel name (or followed a destination link), so a search
+ * from last week cannot quietly narrow the list when they open the page from
+ * the menu.
+ *
+ * @return array
+ */
+function roova_search_page_criteria() {
+	$criteria = roova_get_criteria();
+
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only, shareable GET search.
+	$criteria['destination'] = isset( $_GET['roova_dest'] ) ? sanitize_text_field( wp_unslash( $_GET['roova_dest'] ) ) : '';
+	$criteria['hotel_id']    = isset( $_GET['roova_hotel'] ) ? absint( $_GET['roova_hotel'] ) : 0;
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+	return $criteria;
+}
+
+/**
  * Hotels matching the search criteria, with their availability worked out.
  *
  * @param array $criteria Search criteria.

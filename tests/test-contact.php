@@ -121,6 +121,32 @@ function add_query_arg( $args, $url ) {
 	return $url . '?' . implode( '&', $pairs );
 }
 
+/**
+ * The company's own name, which roova_contact_place_url() searches Google Maps
+ * with so the office opens as a place rather than a pin.
+ *
+ * @return string
+ */
+function get_bloginfo( $show = 'name' ) {
+	unset( $show );
+	return 'Roova Test';
+}
+
+function esc_url_raw( $url, $protocols = null ) {
+	$url = trim( (string) $url );
+
+	if ( ! preg_match( '#^https?://#i', $url ) ) {
+		return '';
+	}
+
+	unset( $protocols );
+	return $url;
+}
+
+function wp_parse_url( $url, $component = -1 ) {
+	return parse_url( $url, $component );
+}
+
 require __DIR__ . '/../roova/inc/helpers.php';
 require __DIR__ . '/../roova/inc/contact.php';
 
@@ -187,7 +213,7 @@ check( 'nothing filled in means no channel cards', roova_contact_channels(), arr
 check( 'and no address lines', roova_contact_address_lines(), array() );
 check( 'and nothing to put on one line', roova_contact_address_inline(), '' );
 check( 'and no map', roova_contact_map_url(), '' );
-check( 'and no directions link', roova_contact_directions_url(), '' );
+check( 'and nowhere to open on Google Maps', roova_contact_place_url(), '' );
 check( 'and no social links', roova_contact_socials(), array() );
 
 /*
@@ -290,11 +316,75 @@ check(
 	true
 );
 check( 'at the stock zoom', false !== strpos( roova_contact_map_url(), 'z=16' ), true );
+/*
+ * Tapping the map opens the office as a *place* — by name and address, never
+ * by coordinates, which would land on an unnamed pin.
+ */
 check(
-	'and directions point at the same place',
-	roova_contact_directions_url(),
-	'https://www.google.com/maps/dir/?api=1&destination=3%20Towers%2C%20Jalan%20Ampang'
+	'tapping the map searches for the office by name and address',
+	roova_contact_place_url(),
+	'https://www.google.com/maps/search/?api=1&query=Roova%20Test%2C%203%20Towers%2C%20Jalan%20Ampang'
 );
+
+customize( array(
+	'contact_address'  => "3 Towers\nJalan Ampang",
+	'contact_map_link' => 'https://maps.app.goo.gl/67BUxgY2UywQvDKS9',
+) );
+check(
+	'a pasted Share link wins over everything',
+	roova_contact_place_url(),
+	'https://maps.app.goo.gl/67BUxgY2UywQvDKS9'
+);
+
+customize( array(
+	'contact_address'  => "3 Towers\nJalan Ampang",
+	'contact_map_link' => 'https://example.com/not-google',
+) );
+check(
+	'a link that is not Google Maps is ignored, not printed',
+	roova_contact_place_url(),
+	'https://www.google.com/maps/search/?api=1&query=Roova%20Test%2C%203%20Towers%2C%20Jalan%20Ampang'
+);
+
+customize( array(
+	'contact_address'  => "3 Towers\nJalan Ampang",
+	'contact_place_id' => 'ChIJ5-rvAcpJzDERfSgcL1jZeNU',
+) );
+check(
+	'the place the Customizer search found is carried on the link',
+	roova_contact_place_url(),
+	'https://www.google.com/maps/search/?api=1&query=Roova%20Test%2C%203%20Towers%2C%20Jalan%20Ampang&query_place_id=ChIJ5-rvAcpJzDERfSgcL1jZeNU'
+);
+
+customize( array( 'contact_address' => "Roova Test Sdn Bhd\nJalan Ampang" ) );
+check(
+	'an address that already names the company is not prefixed with it again',
+	roova_contact_place_url(),
+	'https://www.google.com/maps/search/?api=1&query=Roova%20Test%20Sdn%20Bhd%2C%20Jalan%20Ampang'
+);
+
+customize( array(
+	'contact_lat'      => '3.1637',
+	'contact_lng'      => '101.7263',
+	'contact_map_link' => '',
+) );
+check(
+	'with a pin and no address, the coordinates are the last resort',
+	roova_contact_place_url(),
+	'https://www.google.com/maps/search/?api=1&query=3.1637%2C101.7263'
+);
+
+/* ------------------------------------------------- what counts as a Maps link */
+
+check( 'a short Share link is a Maps link', roova_maps_link( 'https://maps.app.goo.gl/abc' ), 'https://maps.app.goo.gl/abc' );
+check( 'so is a long one', roova_maps_link( 'https://www.google.com/maps/place/X/@3.1,101.7,17z' ), 'https://www.google.com/maps/place/X/@3.1,101.7,17z' );
+check( 'so is a country domain', roova_maps_link( 'https://maps.google.com.my/?q=x' ), 'https://maps.google.com.my/?q=x' );
+check( 'somebody else\'s site is not', roova_maps_link( 'https://evil.example.com/maps' ), '' );
+check( 'nor is a look-alike host', roova_maps_link( 'https://google.com.evil.test/maps' ), '' );
+check( 'nor plain words', roova_maps_link( 'ask at the desk' ), '' );
+check( 'nor a script URL', roova_maps_link( 'javascript:alert(1)' ), '' );
+
+customize( array( 'contact_address' => "3 Towers\nJalan Ampang" ) );
 
 customize( array(
 	'contact_address' => 'Somewhere on Jalan Ampang',

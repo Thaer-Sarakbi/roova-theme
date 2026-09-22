@@ -916,9 +916,12 @@ function roova_hotel_reviews_section( $hotel_id ) {
 	/*
 	 * A review still in moderation is reason enough to draw the section: its
 	 * author has to be able to see that it exists, even on a hotel with nothing
-	 * else on it yet.
+	 * else on it yet. So is the link in the "Review us" email: the guest opening
+	 * it is usually signed out, and #reviews must have somewhere to land.
 	 */
-	if ( ! $list['total'] && ! $pending && 'ok' !== $gate ) {
+	$from_email = function_exists( 'roova_review_us_landing' ) && roova_review_us_landing();
+
+	if ( ! $list['total'] && ! $pending && 'ok' !== $gate && ! $from_email ) {
 		return;
 	}
 
@@ -1127,8 +1130,12 @@ function roova_hotel_review_form( $hotel_id, $gate = '' ) {
 	}
 
 	if ( 'ok' !== $gate ) {
+		$from_email = function_exists( 'roova_review_us_landing' ) && roova_review_us_landing();
+
 		$notes = array(
-			'signed-out' => __( 'Reviews are written by guests who have stayed here. Sign in to see whether you can add yours.', 'roova' ),
+			'signed-out' => $from_email
+				? __( 'Sign in to the account you booked with to write your review.', 'roova' )
+				: __( 'Reviews are written by guests who have stayed here. Sign in to see whether you can add yours.', 'roova' ),
 			'no-stay'    => __( 'Reviews are written by guests who have completed a stay here. Yours will open once you check out.', 'roova' ),
 			'reviewed'   => __( 'Thanks — you have already reviewed this hotel.', 'roova' ),
 		);

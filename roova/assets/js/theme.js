@@ -964,11 +964,23 @@
 				fullscreenControl: false
 			} );
 
-			new window.google.maps.Marker( {
+			var marker = new window.google.maps.Marker( {
 				position: position,
 				map: map,
 				title: canvas.dataset.title || ''
 			} );
+
+			/*
+			 * data-url makes the pin itself the way out to Google Maps — the
+			 * contact page asks for that, and only the pin: the map around it
+			 * stays a map you can drag and zoom. A hotel page sets no data-url,
+			 * because its whole card is already one link.
+			 */
+			if ( canvas.dataset.url ) {
+				marker.addListener( 'click', function () {
+					window.open( canvas.dataset.url, '_blank', 'noopener' );
+				} );
+			}
 		};
 
 		var script = document.createElement( 'script' );

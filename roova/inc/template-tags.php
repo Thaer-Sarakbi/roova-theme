@@ -242,13 +242,14 @@ function roova_coverage_map() {
 /**
  * The search card: destination, dates, guests, submit.
  *
- * @param array $args compact => bool, hotel_id => int.
+ * @param array $args compact => bool, hotel_id => int, blank_destination => bool.
  */
 function roova_search_form( $args = array() ) {
 	$args = wp_parse_args( $args, array(
-		'compact'  => false,
-		'hotel_id' => 0,
-		'class'    => '',
+		'compact'           => false,
+		'hotel_id'          => 0,
+		'class'             => '',
+		'blank_destination' => false,
 	) );
 
 	$criteria = roova_get_criteria();
@@ -258,7 +259,7 @@ function roova_search_form( $args = array() ) {
 	 * Destination links carry the term slug, so show the term's real name in the
 	 * box rather than "coastal-borneo". Either value searches the same.
 	 */
-	$destination_label = $criteria['destination'];
+	$destination_label = $args['blank_destination'] ? '' : $criteria['destination'];
 	if ( $destination_label && function_exists( 'roova_resolve_destination' ) ) {
 		$resolved = roova_resolve_destination( $destination_label );
 		if ( $resolved['term'] ) {
@@ -267,10 +268,17 @@ function roova_search_form( $args = array() ) {
 	}
 
 	/*
+	 * On a hotel page the first box is this hotel's name, fixed. The form
+	 * reloads this hotel whatever is typed there, so a box that invited a
+	 * different destination would be promising a search it never runs.
+	 */
+	$on_hotel = $args['compact'] && $args['hotel_id'];
+
+	/*
 	 * On a hotel page the form is an "update my stay" control, so it reloads
 	 * that hotel with the new dates rather than sending the guest to search.
 	 */
-	$action = ( $args['compact'] && $args['hotel_id'] )
+	$action = $on_hotel
 		? get_permalink( $args['hotel_id'] )
 		: roova_search_url();
 	?>
@@ -286,6 +294,26 @@ function roova_search_form( $args = array() ) {
 			<input type="hidden" name="roova_hotel" value="<?php echo esc_attr( $args['hotel_id'] ); ?>" />
 		<?php endif; ?>
 
+		<?php
+		/*
+		 * No data-roova-field, so theme.js opens no suggestion panel for it, and
+		 * no name, so the hotel's name is never posted as roova_dest: it would
+		 * be stored as the guest's destination and narrow their next search to
+		 * this one hotel.
+		 */
+		if ( $on_hotel ) :
+			?>
+			<div class="roova-search__field roova-search__field--hotel">
+				<label class="roova-search__label" for="roova-search-hotel-<?php echo esc_attr( $args['hotel_id'] ); ?>"><?php esc_html_e( 'Hotel name', 'roova' ); ?></label>
+				<div class="roova-search__value">
+					<?php roova_the_icon( 'pin', 16 ); ?>
+					<input type="text"
+						id="roova-search-hotel-<?php echo esc_attr( $args['hotel_id'] ); ?>"
+						value="<?php echo esc_attr( get_the_title( $args['hotel_id'] ) ); ?>"
+						readonly />
+				</div>
+			</div>
+		<?php else : ?>
 		<div class="roova-search__field" data-roova-field="destination">
 			<span class="roova-search__label"><?php esc_html_e( 'Destination or hotel name', 'roova' ); ?></span>
 			<div class="roova-search__value">
@@ -302,6 +330,7 @@ function roova_search_form( $args = array() ) {
 				<div class="roova-panel__list" data-roova-destination-list></div>
 			</div>
 		</div>
+		<?php endif; ?>
 
 		<span class="roova-search__divider" aria-hidden="true"></span>
 
@@ -465,6 +494,46 @@ function roova_hotel_card( $hotel_id, $args = array() ) {
 			<?php endif; ?>
 		</div>
 	</article>
+	<?php
+}
+
+/**
+ * "Other hotels": four other hotels, picked at random on each load, at the
+ * foot of a hotel page.
+ *
+ * The cards are the homepage's own, so each opens its hotel page and carries
+ * the guest's dates and party there. Nothing is drawn when this is the only
+ * hotel on the site.
+ *
+ * @param int $hotel_id The hotel being viewed, left out of the pick.
+ */
+function roova_other_hotels( $hotel_id ) {
+	$count = (int) apply_filters( 'roova_other_hotels_count', 4 );
+	if ( $count < 1 ) {
+		return;
+	}
+
+	$others = roova_get_hotel_ids( array(
+		'post__not_in'   => array( absint( $hotel_id ) ),
+		'orderby'        => 'rand',
+		'posts_per_page' => $count,
+	) );
+
+	if ( ! $others ) {
+		return;
+	}
+	?>
+	<section class="roova-other-hotels" aria-labelledby="roova-other-hotels-title">
+		<div class="roova-section__head">
+			<h2 id="roova-other-hotels-title"><?php esc_html_e( 'Other hotels', 'roova' ); ?></h2>
+		</div>
+
+		<div class="roova-hotels-grid">
+			<?php foreach ( $others as $other_id ) : ?>
+				<?php roova_hotel_card( $other_id ); ?>
+			<?php endforeach; ?>
+		</div>
+	</section>
 	<?php
 }
 
@@ -903,8 +972,7 @@ function roova_hotel_map( $hotel_id ) {
 		return;
 	}
 
-	$query = ( $lat && $lng ) ? $lat . ',' . $lng : $address;
-	$link  = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $query );
+	$link = roova_hotel_map_url( $hotel_id );
 	?>
 	<div class="roova-card roova-map">
 		<span class="roova-eyebrow"><?php esc_html_e( 'Location', 'roova' ); ?></span>
@@ -914,22 +982,42 @@ function roova_hotel_map( $hotel_id ) {
 		<?php endif; ?>
 
 		<?php if ( $key && $lat && $lng ) : ?>
-			<div class="roova-map__canvas"
-				data-roova-map
-				data-lat="<?php echo esc_attr( $lat ); ?>"
-				data-lng="<?php echo esc_attr( $lng ); ?>"
-				data-zoom="<?php echo esc_attr( (int) $details['map_zoom'] ); ?>"
-				data-title="<?php echo esc_attr( $title ); ?>"></div>
-		<?php else : ?>
+			<?php
+			/*
+			 * The whole map opens Google Maps (asked for directly), which is
+			 * why there is no "Get directions" link under it any more. The
+			 * anchor is laid *over* the canvas rather than wrapped around it:
+			 * the Maps script swallows clicks on its own tiles, and a map
+			 * inside an <a> would also be a map a guest cannot drag without
+			 * navigating. Panning and zooming go with it, and that is the
+			 * trade the card is here for — it is a picture of where the hotel
+			 * is, and one tap gets the real thing.
+			 */
+			?>
+			<div class="roova-map__frame">
+				<div class="roova-map__canvas"
+					data-roova-map
+					data-lat="<?php echo esc_attr( $lat ); ?>"
+					data-lng="<?php echo esc_attr( $lng ); ?>"
+					data-zoom="<?php echo esc_attr( (int) $details['map_zoom'] ); ?>"
+					data-title="<?php echo esc_attr( $title ); ?>"
+					aria-hidden="true"></div>
+
+				<?php if ( $link ) : ?>
+					<a class="roova-map__open" href="<?php echo esc_url( $link ); ?>" target="_blank" rel="noopener noreferrer">
+						<span class="roova-map__open-label">
+							<?php roova_the_icon( 'pin', 15 ); ?>
+							<span><?php esc_html_e( 'Open in Google Maps', 'roova' ); ?></span>
+						</span>
+					</a>
+				<?php endif; ?>
+			</div>
+		<?php elseif ( $link ) : ?>
 			<a class="roova-map__placeholder" href="<?php echo esc_url( $link ); ?>" target="_blank" rel="noopener noreferrer">
 				<?php roova_the_icon( 'pin', 26 ); ?>
 				<span><?php esc_html_e( 'Open in Google Maps', 'roova' ); ?></span>
 			</a>
 		<?php endif; ?>
-
-		<a class="roova-map__link" href="<?php echo esc_url( $link ); ?>" target="_blank" rel="noopener noreferrer">
-			<?php esc_html_e( 'Get directions', 'roova' ); ?>
-		</a>
 	</div>
 	<?php
 }
@@ -1159,7 +1247,13 @@ function roova_search_page_header() {
 		</div>
 
 		<?php if ( roova_has_woocommerce() ) : ?>
-			<div class="roova-sp__search"><?php roova_search_form(); ?></div>
+			<?php
+			/*
+			 * The destination box always opens empty here (asked for directly).
+			 * The heading below still names what the list is filtered by.
+			 */
+			?>
+			<div class="roova-sp__search"><?php roova_search_form( array( 'blank_destination' => true ) ); ?></div>
 		<?php endif; ?>
 	</header>
 	<?php
@@ -1173,16 +1267,18 @@ function roova_search_page_header() {
  * the submit button once it has wired the select to submit on change, so a
  * visitor running the script never sees a redundant button.
  *
- * @param int $count How many hotels matched.
+ * @param int        $count    How many hotels matched.
+ * @param array|null $criteria The criteria the list was built from, so a
+ *                             re-sort keeps exactly the same filter.
  */
-function roova_search_sort_form( $count ) {
+function roova_search_sort_form( $count, $criteria = null ) {
 	$action = roova_search_url();
 	$sort   = roova_search_sort();
 	?>
 	<form class="roova-sp__sort" method="get" action="<?php echo esc_url( $action ); ?>">
 		<?php
 		roova_query_fields( $action );
-		roova_criteria_fields();
+		roova_criteria_fields( $criteria );
 		?>
 
 		<span class="roova-sp__count">

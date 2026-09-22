@@ -20,123 +20,6 @@
 	background: #fff;
 }
 
-/* ------------------------------------------------------------- Top band */
-
-/*
- * The page's own header — the wordmark, the Primary menu and the account
- * button, on navy. It is the site header's content in the page's own colours,
- * the same arrangement the search results page uses.
- */
-.roova-cp__bar {
-	background: var(--roova-deep);
-	color: var(--roova-cream);
-}
-
-.roova-cp__bar-inner {
-	max-width: 1280px;
-	margin: 0 auto;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 32px;
-	padding: 20px 40px;
-
-	/* The collapsed menu hangs off this. */
-	position: relative;
-}
-
-.roova-cp__logo {
-	display: flex;
-	align-items: baseline;
-	gap: 10px;
-	color: var(--roova-cream);
-	font-family: var(--roova-font-display);
-	font-size: 1.81rem;
-	font-weight: 600;
-	line-height: 1;
-	letter-spacing: -.02em;
-}
-
-.roova-cp__logo:hover {
-	color: var(--roova-cream);
-}
-
-.roova-cp__logo em {
-	font-style: normal;
-	color: var(--roova-gold-light);
-}
-
-.roova-cp__tagline {
-	font-family: var(--roova-font-body);
-	font-size: 9.5px;
-	font-weight: 400;
-	letter-spacing: .22em;
-	text-transform: uppercase;
-	color: rgba(251, 248, 243, .5);
-}
-
-/*
- * theme.css paints .roova-menu for a cream header, so every colour in it is
- * restated here for navy — the same job .roova-nav--over does over the hero.
- */
-.roova-cp__menu .roova-menu {
-	display: flex;
-	align-items: center;
-	gap: 30px;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	font-family: var(--roova-font-body);
-	font-size: 14px;
-	letter-spacing: .01em;
-}
-
-.roova-cp__menu .roova-menu a {
-	display: inline-block;
-	color: rgba(251, 248, 243, .78);
-	padding-bottom: 3px;
-	border-bottom: 1px solid transparent;
-	transition: color .3s var(--roova-ease), border-color .3s var(--roova-ease);
-}
-
-.roova-cp__menu .roova-menu a:hover,
-.roova-cp__menu .roova-menu .current-menu-item > a {
-	color: var(--roova-cream);
-	border-color: var(--roova-gold-light);
-}
-
-.roova-cp__actions {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-}
-
-/*
- * The hamburger is theme.css's, so only what navy changes is restated: its bars
- * are painted --roova-deep there and would be invisible on this bar.
- */
-.roova-cp__toggle {
-	border-color: rgba(251, 248, 243, .32);
-}
-
-.roova-cp__toggle span[aria-hidden] {
-	background: var(--roova-cream);
-	box-shadow: 0 -6px 0 var(--roova-cream), 0 6px 0 var(--roova-cream);
-}
-
-/* The account button reads on navy here the way it does over the hero. */
-.roova-cp__bar .roova-btn--nav {
-	background: rgba(251, 248, 243, .12);
-	border-color: rgba(251, 248, 243, .32);
-	color: var(--roova-cream);
-}
-
-.roova-cp__bar .roova-btn--nav:hover {
-	background: var(--roova-cream);
-	border-color: var(--roova-cream);
-	color: var(--roova-deep);
-}
-
 /* ----------------------------------------------------------------- Hero */
 
 .roova-cp__hero {
@@ -498,21 +381,59 @@ a.roova-cp__channel:hover {
 	display: block;
 }
 
+/* The real Google map, drawn by theme.js where there is a Maps key and a pin. */
+.roova-cp__map-canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/*
+ * Only the keyless embed carries this: its red marker lives inside an
+ * <iframe>, where a click cannot be caught, so the corner offers the way out
+ * instead. It is a button-sized link, never a sheet over the map — tapping the
+ * map itself must not navigate. It sits above the "Map data ©" credit rather
+ * than over it, which is what the Maps terms ask.
+ */
+.roova-cp__map-open {
+	position: absolute;
+	right: 20px;
+	bottom: 34px;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 9px 14px;
+	border-radius: 999px;
+	background: #fff;
+	box-shadow: 0 16px 34px -20px rgba(8, 38, 53, .6);
+	color: var(--roova-deep);
+	font-size: .8rem;
+	font-weight: 700;
+}
+
+.roova-cp__map-open:hover,
+.roova-cp__map-open:focus-visible {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
 /*
  * The card over the map repeats the first two lines of the address, so the pin
  * is labelled even when Google has centred on the district rather than the
- * door. It is pointer-events: none so it never eats a drag meant for the map
- * underneath.
+ * door. It is pointer-events: none, so it never eats a drag meant for the map
+ * underneath, or a click meant for the red pin.
  *
- * Top right, not the design's bottom left: an embedded map carries Google's
- * "Map data ©" credit along its bottom edge and the "Open in Maps" button in
- * its top left corner. Covering the credit is a breach of the Maps terms, and
- * the button is the way out to directions on a phone.
+ * Top right, not the design's bottom left: a map carries Google's "Map data ©"
+ * credit along its bottom edge and its own controls in the corners, and
+ * covering the credit is a breach of the Maps terms.
  */
 .roova-cp__map-card {
 	position: absolute;
 	right: 20px;
 	top: 20px;
+	z-index: 3;
 	display: flex;
 	align-items: center;
 	gap: 11px;
@@ -675,71 +596,16 @@ a.roova-cp__channel:hover {
 	}
 }
 
-@media (max-width: 900px) {
-	/*
-	 * Behind the hamburger, as a white panel under the bar — theme.js toggles
-	 * .is-open on .roova-cp__bar-inner, the same class and the same handler the
-	 * site header and the search page both use.
-	 */
-	.roova-cp__menu {
-		display: none;
-	}
-
-	/*
-	 * The panel hangs off .roova-cp__bar-inner's padding box, so its insets are
-	 * that bar's own side padding — they have to move with it at 760px or the
-	 * panel sits wider than the wordmark it drops from.
-	 */
-	.roova-cp__bar-inner.is-open .roova-cp__menu {
-		display: block;
-		position: absolute;
-		top: 100%;
-		left: 40px;
-		right: 40px;
-		background: #fff;
-		border-radius: 12px;
-		padding: 16px;
-		box-shadow: var(--roova-shadow);
-		z-index: 30;
-	}
-
-	.roova-cp__bar-inner.is-open .roova-menu {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 14px;
-	}
-
-	.roova-cp__bar-inner.is-open .roova-menu a {
-		color: var(--roova-ink);
-	}
-
-	.roova-cp__bar-inner.is-open .roova-menu a:hover,
-	.roova-cp__bar-inner.is-open .roova-menu .current-menu-item > a {
-		color: var(--roova-deep);
-		border-color: var(--roova-gold);
-	}
-
-	.roova-cp__toggle {
-		display: block;
-	}
-}
-
 @media (max-width: 720px) {
 	.roova-cp__channels {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.roova-cp__bar-inner,
 	.roova-cp__hero-copy,
 	.roova-cp__inner,
 	.roova-cp__foot {
 		padding-left: 20px;
 		padding-right: 20px;
-	}
-
-	.roova-cp__bar-inner.is-open .roova-cp__menu {
-		left: 20px;
-		right: 20px;
 	}
 
 	.roova-cp__inner {

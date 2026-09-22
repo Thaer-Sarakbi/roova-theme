@@ -26,6 +26,15 @@ $roova_over_hero = is_front_page() && ! is_paged();
 
 <a class="skip-link screen-reader-text" href="#roova-content"><?php esc_html_e( 'Skip to content', 'roova' ); ?></a>
 
+<?php
+/*
+ * A hotel page wears the contact page's navy bar — the same function, so the
+ * two cannot drift apart. Its styles are in theme.css for that reason.
+ */
+if ( function_exists( 'roova_is_hotel_page' ) && roova_is_hotel_page() && function_exists( 'roova_contact_page_header' ) ) :
+	roova_contact_page_header();
+else :
+	?>
 <header class="roova-nav <?php echo $roova_over_hero ? 'roova-nav--over' : ''; ?>">
 	<div class="roova-nav__inner">
 		<div class="roova-nav__brand">
@@ -88,5 +97,6 @@ $roova_over_hero = is_front_page() && ! is_paged();
 		</div>
 	</div>
 </header>
+<?php endif; ?>
 
 <main id="roova-content" class="roova-main">

@@ -484,6 +484,8 @@ function roova_get_hotel_details( $hotel_id ) {
 		'lat'                => '',
 		'lng'                => '',
 		'map_zoom'           => '15',
+		'map_link'           => '',
+		'map_place_id'       => '',
 		'checkin_time'       => '15:00',
 		'checkout_time'      => '12:00',
 		'stars'              => '0',
@@ -660,6 +662,98 @@ function roova_is_hotel( $product_id ) {
 	$product = wc_get_product( absint( $product_id ) );
 
 	return (bool) $product && 'hotel' === $product->get_type();
+}
+
+/**
+ * A Google Maps URL, or '' for anything that is not one.
+ *
+ * The client pastes whatever the Share button gave them, so this accepts the
+ * short links (maps.app.goo.gl, goo.gl) as well as the long google.com/maps
+ * ones, on any of Google's country domains. Anything else is refused rather
+ * than printed: this URL is put behind the map on every hotel page.
+ *
+ * @param string $url Raw value.
+ * @return string
+ */
+function roova_maps_link( $url ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return '';
+	}
+
+	$url  = esc_url_raw( $url, array( 'http', 'https' ) );
+	$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+
+	if ( ! $host ) {
+		return '';
+	}
+
+	// google.com, google.com.my, google.co.uk … and the two short domains.
+	if ( preg_match( '/(^|\.)google\.[a-z]{2,3}(\.[a-z]{2})?$/', $host ) || preg_match( '/(^|\.)goo\.gl$/', $host ) ) {
+		return $url;
+	}
+
+	return '';
+}
+
+/**
+ * Where "open in Google Maps" goes for a hotel.
+ *
+ * Deliberately *not* the coordinates: a lat/lng query opens a dropped pin on a
+ * blank patch of map, with no name, no photos, no reviews and no hours. In
+ * order:
+ *
+ * 1. The Google Maps link the client pasted on the Hotel Details tab — the one
+ *    thing that is certainly the right place.
+ * 2. The place the address picker found, as a place ID alongside the address.
+ *    That opens Google's own listing for the hotel.
+ * 3. The hotel's name and address as a search.
+ * 4. The coordinates, only when there is nothing else to go on.
+ *
+ * @param int $hotel_id Hotel product ID.
+ * @return string
+ */
+function roova_hotel_map_url( $hotel_id ) {
+	$hotel_id = absint( $hotel_id );
+	$details  = roova_get_hotel_details( $hotel_id );
+
+	$link = roova_maps_link( $details['map_link'] );
+	if ( $link ) {
+		return $link;
+	}
+
+	$name     = get_the_title( $hotel_id );
+	$address  = trim( preg_replace( '/\s+/', ' ', (string) $details['address'] ) );
+	$place_id = trim( (string) $details['map_place_id'] );
+	$query    = trim( $name . ( $address ? ', ' . $address : '' ), ', ' );
+
+	if ( ! $query ) {
+		$lat = trim( (string) $details['lat'] );
+		$lng = trim( (string) $details['lng'] );
+
+		if ( ! $lat || ! $lng ) {
+			return '';
+		}
+
+		$query = $lat . ',' . $lng;
+	}
+
+	$args = array( 'api' => '1', 'query' => $query );
+
+	if ( $place_id ) {
+		$args['query_place_id'] = $place_id;
+	}
+
+	return add_query_arg( array_map( 'rawurlencode', $args ), 'https://www.google.com/maps/search/' );
+}
+
+/**
+ * Is this request a hotel's own page (single-hotel.php)?
+ *
+ * @return bool
+ */
+function roova_is_hotel_page() {
+	return is_singular( 'product' ) && roova_is_hotel( get_queried_object_id() );
 }
 
 /**

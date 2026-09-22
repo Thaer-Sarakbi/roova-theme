@@ -372,6 +372,17 @@ function roova_account_stay_status( $order, $check_out, $today ) {
 		return 'payment';
 	}
 
+	/*
+	 * An order set to "Completed" in the dashboard is the front desk saying the
+	 * stay is over — an early departure, or a booking closed off by hand — and
+	 * the site follows it rather than waiting for the check-out date. Every
+	 * surface reads this function, so the Bookings tab, the order page, the
+	 * review form, VIP and cashback all change together.
+	 */
+	if ( $order->has_status( 'completed' ) ) {
+		return 'completed';
+	}
+
 	if ( $check_out && $check_out <= $today ) {
 		return 'completed';
 	}

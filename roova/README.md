@@ -148,6 +148,12 @@ The results page has its own navy header rather than the site's cream one, and i
 **Primary** menu (see section 13), the wordmark, the Sign in / Manage account button and the search
 bar the results answer to. The page a guest is looking at is underlined in gold.
 
+The **Destination or hotel name** box always opens empty. The page lists **every hotel** unless the
+guest typed a destination or hotel name and pressed Search, or clicked a destination tile. Then the
+heading says what the list is filtered by ("Hotels in Ampang"). Opening the page from the menu later
+shows every hotel again, whatever the guest searched for before. Their dates and party size are
+still remembered.
+
 ### Sorting
 
 Guests can reorder the list with the **Sort** control: *Recommended*, *Price · low to high*,
@@ -166,7 +172,7 @@ bottom whichever order is chosen.
 | Amenities | **Hotel Details** tab → Amenities (or the Attributes tab) |
 | Facilities | **Hotel Details** tab → Facilities (or the Attributes tab) |
 | Badges | **Hotel Details** tab → Badges (or the Attributes tab) |
-| Address, latitude, longitude, map zoom | **Hotel Details** tab |
+| Address, latitude, longitude, map zoom | **Hotel Details** tab → the map (see below) |
 | Check-in / check-out times, star rating | **Hotel Details** tab |
 | Reception phone | **Hotel Details** tab → Reception phone |
 | Guest score and the Cleanliness / Location / Service bars | **Hotel Details** tab |
@@ -176,10 +182,45 @@ bottom whichever order is chosen.
 Hotels are never added to the cart; they are the page guests browse. Their price display is "From …",
 taken from the cheapest room.
 
+### Setting a hotel's address on the map
+
+Under **Hotel Details → Location** there is a Google map with a **Find on Google Maps** box above it.
+
+1. Type the hotel's name or street address and press **Search** (suggestions appear as you type if
+   your key has the Places API enabled).
+2. The pin drops on the result, and the **Address**, **Latitude** and **Longitude** fields below fill
+   in by themselves.
+3. **Drag the pin** to the exact entrance if the result is a little off. The address and coordinates
+   follow it. Clicking anywhere on the map moves the pin too.
+4. Zooming the map sets **Map zoom**, which is how close the map on the hotel page starts.
+
+Everything is still an ordinary field, so you can tidy the address by hand afterwards — write it the
+way you want a guest to read it. Nothing is saved until you **Update** the product.
+
+**Google Maps link** is optional and sits under the map. Open the hotel in Google Maps, press
+**Share**, copy the link (it looks like `https://maps.app.goo.gl/67BUxgY2UywQvDKS9`) and paste it
+here. Tapping the map on the hotel page then opens exactly that place. Leave it empty and the map
+opens the place the search above found. Only Google Maps links are kept; anything else is ignored.
+
+On the hotel page, **tapping anywhere on the map opens Google Maps** in a new tab, so there is no
+separate "Get directions" link under it any more. The map in the sidebar is a picture of where the
+hotel is; one tap gets the real thing, where a guest can get directions, see photos and read Google's
+own reviews. Because the whole map is a link, it no longer pans or zooms in place.
+
+This needs a Google Maps API key in **Appearance → Customize → Google Maps**, the same key the maps
+on hotel pages use, with **Maps JavaScript API** and **Geocoding API** enabled for it. Without a key
+the tab says so and you can type the address and coordinates in yourself, as before.
+
 The **reception phone** is shown in its own **Contact** panel down the side of the hotel page, as a
 number a guest can tap to call. Write it however you want it read — spaces, brackets and dashes
 are all fine, they are stripped out of the number that is actually dialled. Leave the field empty and
 the panel is left off that hotel's page entirely.
+
+At the foot of every hotel page, **Other hotels** shows four of your other hotels as cards, picked
+at random each time the page loads. The hotel being viewed is never one of them. Clicking a card
+opens that hotel's page, and the guest's dates come along with them. There is nothing to set up.
+If you have fewer than four other hotels, the row shows the ones you have. A site with only one
+hotel leaves the row off.
 
 ## 8. Add rooms
 
@@ -353,6 +394,21 @@ combined line, or turn tax off entirely under **Settings → General**, in which
 
 Each order also has a **Bookings** panel on its edit screen.
 
+### Order statuses and what guests see
+
+A paid booking sits at **Processing**. You don't need to change it: once the check-out date
+arrives, the website shows the stay as **Completed** on its own. That opens the review form for the
+guest, counts the stay toward their VIP tier and cashback, and sends the "Review us" email.
+
+Set an order to **Completed** by hand only when a stay is **over** before its check-out date, for
+example a guest who leaves early. The website then shows it as completed straight away, with
+everything above following, and the room stays booked for the original dates. Don't use
+Completed to mean "confirmed": Processing already means the booking is paid and the room is
+held, and marking an upcoming stay Completed tells the guest it has already happened.
+
+**Cancelled**, **Refunded** and **Failed** always show as cancelled and free the room. An unpaid
+order shows as **Payment due**.
+
 ## 13. Menus and pages
 
 * Activating the theme creates a **Home** page and sets it as your site's front page under
@@ -512,6 +568,37 @@ The **Reviews** tab in My account is the second way in — it lists a member's o
 gold "Rate your stay at ..." prompt for any stay still waiting for one, which is useful for a guest
 who never reopens the hotel page.
 
+### The "Review us" email
+
+After a guest checks out, the site emails them once, asking them to review the hotel. The button in
+the email opens the hotel page already scrolled down to **Write a review**. If they are not signed
+in on that device, they see a **Sign in** link there first, and it brings them straight back to the
+form.
+
+Find it under **WooCommerce → Settings → Emails → Review us**. You can:
+
+* switch it off or on (it is on when the theme is installed)
+* choose **Days after check-out**. The default is 1, so a guest who leaves on Monday gets it on
+  Tuesday morning. The email goes out around 9:00 am, site time.
+* rewrite the subject, the heading and the closing line. Use `{hotel_name}` anywhere to insert
+  the hotel's name. The default subject is "How was your stay at {hotel_name}?"
+* change its colours and logo along with every other store email, under the **Email template**
+  settings on the same screen.
+
+Who gets it:
+
+* **Only paid stays.** A cancelled, refunded or unpaid booking is never asked.
+* **Only guests with an account.** A review is checked against the account's own bookings, so a
+  guest who booked without signing up has nothing to check it against and is not emailed.
+* **Only guests who have not reviewed that hotel yet**, and only while reviews are switched on.
+* **Once per booking.** A note is added to the order when it is sent ("Review us" email sent to
+  the guest for …), so the front desk can see it.
+* **Recent stays only.** Switching the email on does not write to every guest you have ever had:
+  it covers stays that ended within the last week or so.
+
+The site's scheduled tasks need visitors to run, which is normal for WordPress. On a very quiet site
+an email can arrive a little later than 9:00. A missed morning is caught up the next day.
+
 ## 18. RoovaVIP
 
 Members climb tiers by **completing bookings** — a stay counts once the guest has checked out and the
@@ -657,14 +744,25 @@ template. Everything on it is filled in from **Appearance → Customize**, in tw
 | Office address | One line per line of the address. Also used in the footer, joined with commas. |
 | Opening hours | One row per line, written `Days \| Time` — e.g. `Monday – Friday \| 9:00am – 6:00pm`. A line with no `\|` prints as a heading row on its own. |
 | Photograph | The picture beside the heading. Leave it empty and the heading simply runs full width. |
-| Map latitude / longitude | Optional. Fill in **both** to place the pin exactly; leave them empty and the map finds your address instead. |
+| Find your office | A map with a search box. Type your company name or street, press **Search**, then drag the pin to the door. It fills in the address, the coordinates and the zoom below for you. Needs a Google Maps API key (**Customize → Google Maps**). |
+| Map latitude / longitude | Optional. Fill in **both** to place the pin exactly; leave them empty and the map finds your address instead. Normally the search above fills these in. |
+| Google Maps link | Optional. Open your office in Google Maps, press **Share** and paste the link (like `https://maps.app.goo.gl/67BUxgY2UywQvDKS9`). Tapping the map then opens exactly that place. Only Google Maps links are kept. |
 | Map zoom | 1 (the whole world) to 21 (a single building). 16 is a city block. |
 
 **Social links** holds one field per network — Instagram, Facebook, X, TikTok, YouTube, LinkedIn.
 Paste the full address of your profile. The row at the foot of the page shows only the ones you fill
 in, and disappears entirely if you fill in none.
 
-Three things worth knowing:
+Four things worth knowing:
+
+* **Clicking the red pin opens Google Maps** in a new tab, at your office — so there is no "Get
+  directions" button under the address any more. Google's own page has one, along with your photos,
+  reviews and opening hours. Clicking anywhere else on the map does nothing: the map stays a map you
+  can drag and zoom. With a **Google Maps link** pasted in it opens exactly that place; without one
+  it searches for your company name and address.
+  (The clickable pin needs a Google Maps API key and the map latitude and longitude — the **Find
+  your office** search fills those in. Without them the page shows the simpler map, which carries a
+  small "Open in Google Maps" button in its corner instead, because its pin cannot be clicked.)
 
 * **An empty field removes its card rather than printing an empty one.** No WhatsApp number, no
   WhatsApp card. No address, no office panel. A page with nothing filled in shows its heading and

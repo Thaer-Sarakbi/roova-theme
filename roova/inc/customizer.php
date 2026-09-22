@@ -500,6 +500,27 @@ function roova_customize_register( $wp_customize ) {
 	) ) );
 
 	/*
+	 * Find the office on a map rather than typing coordinates. The control
+	 * fills in the address, the pin and the zoom below it; what it stores
+	 * itself is Google's ID for the place, which is what opens the office's
+	 * own listing when a visitor taps the map — see roova_contact_place_url().
+	 */
+	roova_require( 'inc/customize-map-control.php' );
+
+	$wp_customize->add_setting( 'roova_contact_place_id', array(
+		'default'           => '',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+
+	if ( class_exists( 'Roova_Customize_Map_Control' ) ) {
+		$wp_customize->add_control( new Roova_Customize_Map_Control( $wp_customize, 'roova_contact_place_id', array(
+			'label'       => __( 'Find your office', 'roova' ),
+			'description' => __( 'Search for the office and the fields below fill themselves in.', 'roova' ),
+			'section'     => 'roova_contact',
+		) ) );
+	}
+
+	/*
 	 * The map is a Google Maps embed, not the Maps JavaScript API the hotel
 	 * pages use: that one needs a billable key, and an address is enough here.
 	 * Coordinates are optional and only worth filling in when the address
@@ -522,6 +543,22 @@ function roova_customize_register( $wp_customize ) {
 			'type'        => 'text',
 		) );
 	}
+
+	/*
+	 * Sanitized with roova_maps_link() rather than esc_url_raw: this one is
+	 * printed behind the map, so anything that is not a Google Maps URL is
+	 * dropped and the map falls back to searching for the office by name.
+	 */
+	$wp_customize->add_setting( 'roova_contact_map_link', array(
+		'default'           => '',
+		'sanitize_callback' => function_exists( 'roova_maps_link' ) ? 'roova_maps_link' : 'esc_url_raw',
+	) );
+	$wp_customize->add_control( 'roova_contact_map_link', array(
+		'label'       => __( 'Google Maps link', 'roova' ),
+		'description' => __( 'Optional. Open your office in Google Maps, press Share and paste the link here — tapping the map then opens exactly that place. Leave it empty and the map opens a search for your address.', 'roova' ),
+		'section'     => 'roova_contact',
+		'type'        => 'url',
+	) );
 
 	$wp_customize->add_setting( 'roova_contact_map_zoom', array(
 		'default'           => 16,
@@ -585,6 +622,47 @@ function roova_customize_register( $wp_customize ) {
 	}
 }
 add_action( 'customize_register', 'roova_customize_register' );
+
+/**
+ * The "Find your office" control's script and styles.
+ *
+ * Only with a Google Maps key: without one the control prints a note saying
+ * where the key goes and there is no map to drive.
+ */
+function roova_customize_map_assets() {
+	$key = roova_option( 'maps_api_key', '' );
+
+	if ( ! $key ) {
+		return;
+	}
+
+	wp_enqueue_script( 'roova-customize-map', ROOVA_URI . 'assets/js/customize-map.js', array( 'customize-controls' ), ROOVA_VERSION, true );
+	wp_localize_script(
+		'roova-customize-map',
+		'roovaCustomizeMap',
+		array(
+			'key'        => $key,
+			'defaultLat' => (string) apply_filters( 'roova_admin_map_default_lat', '4.2105' ),
+			'defaultLng' => (string) apply_filters( 'roova_admin_map_default_lng', '101.9758' ),
+			'i18n'       => array(
+				'searching' => __( 'Searching…', 'roova' ),
+				'updated'   => __( 'Address, pin and zoom updated below.', 'roova' ),
+				'notFound'  => __( 'Google Maps found nothing for that. Try the street address, or drag the pin instead.', 'roova' ),
+				'noAddress' => __( 'No address at that point — the pin was still moved.', 'roova' ),
+				'mapFailed' => __( 'The map could not load. Check the Google Maps API key and that Maps JavaScript and Geocoding are enabled for it.', 'roova' ),
+			),
+		)
+	);
+
+	$css = '.roova-cmap__search { display: flex; gap: 6px; margin-bottom: 8px; }'
+		. '.roova-cmap__input { flex: 1; }'
+		. '.roova-cmap__canvas { height: 240px; border: 1px solid #dcdcde; border-radius: 4px; background: #f0f0f1; }'
+		. '.roova-cmap__status:empty { display: none; }'
+		. '.roova-cmap .pac-container { z-index: 500000; }';
+
+	wp_add_inline_style( 'customize-controls', $css );
+}
+add_action( 'customize_controls_enqueue_scripts', 'roova_customize_map_assets' );
 
 /**
  * Checkbox sanitiser.

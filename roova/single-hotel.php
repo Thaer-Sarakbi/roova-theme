@@ -83,13 +83,14 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 				<?php roova_hotel_destination_links( $roova_hotel_id ); ?>
 			<?php endif; ?>
 
-			<?php if ( $roova_details['address'] || ( $roova_details['lat'] && $roova_details['lng'] ) ) : ?>
-				<?php
-				$roova_query = ( $roova_details['lat'] && $roova_details['lng'] )
-					? $roova_details['lat'] . ',' . $roova_details['lng']
-					: $roova_details['address'];
+			<?php
+			// The same door as the map card in the sidebar: the hotel's own
+			// place on Google Maps, never a pin dropped on its coordinates.
+			$roova_map_url = roova_hotel_map_url( $roova_hotel_id );
+
+			if ( $roova_map_url ) :
 				?>
-				<a href="<?php echo esc_url( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $roova_query ) ); ?>" target="_blank" rel="noopener noreferrer">
+				<a href="<?php echo esc_url( $roova_map_url ); ?>" target="_blank" rel="noopener noreferrer">
 					<?php esc_html_e( 'View on map', 'roova' ); ?>
 				</a>
 			<?php endif; ?>
@@ -231,6 +232,8 @@ $roova_image_ids = array_values( array_unique( array_filter( array_map( 'absint'
 			<?php roova_hotel_contact( $roova_hotel_id ); ?>
 		</aside>
 	</div>
+
+	<?php roova_other_hotels( $roova_hotel_id ); ?>
 </div>
 
 <?php

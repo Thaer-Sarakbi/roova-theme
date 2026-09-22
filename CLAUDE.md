@@ -32,14 +32,15 @@ php tests/test-vip.php                    # VIP tiers, free nights and the disco
 php tests/test-received.php               # confirmation: who may see it, cashback forecast, next steps (52 assertions)
 php tests/test-search.php                 # results page: the featured landmark and the sort order (21 assertions)
 php tests/test-contact.php                # contact channels, address, hours, map query, socials (57 assertions)
+php tests/test-stay-status.php            # upcoming / completed / cancelled / payment due for a booking (12 assertions)
 php tests/test-load.php [admin|no-wc]     # loads every file against WP stubs; catches include-time fatals
 python3 bin/makepot.py roova roova/languages/roova.pot   # regenerate translations after string changes
 php bin/makepot.php roova roova/languages/roova.pot      # identical output, for machines without Python
 bin/testenv.sh                            # build a throwaway WP+WooCommerce site with the theme installed
 ```
 
-`test-availability.php`, `test-cashback.php`, `test-vip.php`, `test-received.php`, `test-search.php`
-and `test-contact.php` are single flat scripts with a
+`test-availability.php`, `test-cashback.php`, `test-vip.php`, `test-received.php`, `test-search.php`,
+`test-contact.php` and `test-stay-status.php` are single flat scripts with a
 `check( $label, $actual, $expected )` helper — there is no test runner and no per-test filtering. Add
 assertions by calling `check()`; they exit non-zero on any failure. Each stubs the handful of
 WordPress functions the pure logic touches, so they run anywhere PHP does. `test-cashback.php` stubs
@@ -67,8 +68,8 @@ one of those is a pure function of theme mods. See *Contact us*.
 
 ## Verifying real behaviour
 
-Lint and the seven test scripts cover syntax, include-time fatals, the pure booking maths, the
-cashback rules, what a VIP tier takes off a cart, who may see a confirmation, how the results
+Lint and the eight test scripts cover syntax, include-time fatals, the pure booking maths, which
+state a booking is in, the cashback rules, what a VIP tier takes off a cart, who may see a confirmation, how the results
 page picks a landmark and orders its list, and what the contact page makes of the fields a client
 filled in. Anything
 touching hooks, the database or templates needs a real site: run `bin/testenv.sh`, serve it with
@@ -115,7 +116,8 @@ plain function files, so they need only the `roova_require()` line, but their or
 those reaches into `inc/account.php` only through a function call, never at include time, which is
 what lets them load before it. `inc/order.php` then `inc/received.php` load last of the group: the
 order page reads the stay status and the review rule, and the confirmation reads the order page's
-booking line and the cashback rules.
+booking line and the cashback rules. `inc/review-us.php` comes after them; it asks
+`roova_can_review()` at send time.
 
 `inc/auth.php` is in the unconditional group on purpose: `header.php` calls `roova_account_control()`
 on every page, and signing in has to keep working on a site whose WooCommerce is switched off. Its
@@ -279,6 +281,14 @@ WooCommerce session → defaults, then clamped by `roova_normalise_criteria()`. 
 page, the hotel page and add-to-cart all read it, which is why a stay survives navigation. Don't read
 `$_GET['checkin']` directly anywhere else.
 
+The one exception is the **first box on a hotel page**. The booking box's compact
+`roova_search_form()` (with `hotel_id`) replaces the destination field with a read-only
+**Hotel name** field holding that hotel's title (asked for directly). The form reloads this
+hotel whatever is typed there, so an editable destination promised a search it never ran. The
+field has no `data-roova-field`, so `theme.js` opens no suggestion panel, and **no `name`**. That
+is load-bearing: posted as `roova_dest`, the hotel's name would be saved as the guest's destination
+and narrow their next search to this one hotel. The dates and guests still come from the criteria.
+
 ### Search results
 
 The "Find a room" page, `template-search.php`. It prints its own document — the seventh page that
@@ -294,7 +304,7 @@ likely to land a stranger on — a header with no way out of it is a dead end. T
 
 - **`theme.js`'s toggle resolves its scope with
   `button.closest( '.roova-nav__inner, .roova-sp__bar-inner, .roova-cp__bar-inner' )`.** One handler,
-  three bars — `header.php`, this page and the contact page; a fourth page with its own header means
+  three bars — `header.php`, this page and the contact page (whose bar hotel pages also wear); a fourth page with its own header means
   adding its inner to that selector, not copying the handler.
 - **Every colour in the menu is restated for navy** in `search.css`, the job `.roova-nav--over` does
   over the hero — `theme.css` paints `.roova-menu` for a cream header, and its hamburger bars are
@@ -303,6 +313,26 @@ likely to land a stranger on — a header with no way out of it is a dead end. T
   assigned gets neither an empty `<nav>` nor a button that opens nothing.
 - The collapsed panel is absolutely positioned against `.roova-sp__bar-inner`'s *padding box*, so its
   `left`/`right` are that bar's own side padding and have to come down to 20px with it at 760px.
+
+**The bar's "Destination or hotel name" box always opens empty** (asked for directly: no default
+value). `roova_search_page_header()` passes `blank_destination => true` to `roova_search_form()`.
+The homepage's bar still prefills from the criteria.
+
+**The list is every hotel unless this request's URL says otherwise** (asked for directly: "all
+hotels unless destination or hotel name submitted by user"). `template-search.php` reads
+`roova_search_page_criteria()`, not `roova_get_criteria()`. That takes the dates and party from the
+criteria as usual, but `destination` and `hotel_id` **only from `$_GET['roova_dest']` /
+`$_GET['roova_hotel']`**, never from the session. Otherwise a search from last week would narrow the
+list when the guest next opens the page from the menu. What counts as submitted is anything in the
+URL: the search bar, a destination tile (`roova_destination_url()`), a shared link. Two consequences:
+
+- **The sort form must re-send the page's criteria, not the session's.** `roova_search_sort_form()`
+  takes them as its second argument and hands them to `roova_criteria_fields()`, so re-sorting a
+  filtered list keeps its filter and re-sorting the full list does not pick one up.
+- **Links *to* this page must not carry a remembered destination** unless they mean it. The
+  homepage's "View all N →" builds its URL with `destination` blanked, or it would put the stale
+  `roova_dest` back into the URL and the filter would apply after all. The `<h1>` ("Hotels in
+  Ampang" / "Results for …" / "All our hotels") is what tells the guest what the list is.
 
 One hotel is one `roova_search_result_card()`, in `inc/template-tags.php`. Everything on it is the
 hotel's own — the name, its destination, one popular landmark, five amenities, three facilities and
@@ -372,6 +402,66 @@ attribute to `roova_required_attributes()` only creates it on sites whose stored
 `roova_attributes_created` differs from `ROOVA_VERSION` — bump the version or the new attribute never
 appears on an existing install.
 
+### Where "open in Google Maps" goes
+
+`roova_hotel_map_url()` (`inc/helpers.php`) is the single answer, used by the map card
+(`roova_hotel_map()`) and the "View on map" link in `single-hotel.php`'s header. In order: the
+**Google Maps link** the client pasted on the Hotel Details tab (`_roova_map_link`) → the place the
+address picker found (`_roova_map_place_id`, as `query_place_id` beside the name-and-address query)
+→ name and address as a plain search → the coordinates, only when there is nothing else.
+
+- **Never the coordinates when anything better exists** (asked for directly: "don't open by lat and
+  long, open it by specific place or using google map share link"). A `query=3.15,101.71` link opens
+  a dropped pin on a blank patch of map — no name, no photos, no reviews, no opening hours. The
+  hotel's own listing is what a guest is after.
+- **`roova_maps_link()` is the gate on the pasted link.** It keeps `http`/`https` URLs on Google's
+  own hosts — `google.<tld>`, `goo.gl`, so `maps.app.goo.gl/…` short links and long
+  `google.com/maps/place/…` ones both pass — and returns `''` for anything else. It is applied on
+  save *and* through `roova_hotel_map_url()`, because this URL is printed on every page of the
+  hotel.
+- **The whole map is the link** (asked for directly), and **"Get directions" under it is gone**, with
+  `.roova-map__link` deleted from `theme.css` with it. The anchor `.roova-map__open` is laid *over*
+  `.roova-map__canvas` inside `.roova-map__frame`, not wrapped around it: the Maps script swallows
+  clicks on its own tiles, and a map inside an `<a>` cannot be dragged without navigating. The cost
+  is that the card no longer pans or zooms, which is the trade — it is a picture of where the hotel
+  is, and one tap gets the real thing. The canvas is `aria-hidden`; the anchor carries the label.
+- **The contact page goes to the same place but opens differently.** `roova_contact_place_url()` is
+  its `roova_hotel_map_url()` (pasted `contact_map_link` → the office by name and address → the
+  coordinates, last), and its "Get directions" button is gone with `roova_contact_directions_url()`.
+  But **only the red pin opens Maps there, never the map** — asked for directly, after the whole-map
+  overlay shipped. The name is dropped from the query when the address already contains it: "Roova,
+  Roova Travel Sdn Bhd, Level 9…" is a worse search than either half.
+
+### The hotel address picker
+
+Hotel Details → Location opens with a Google map (`roova_hotel_map_picker()` in
+`inc/admin/metabox-hotel-details.php`, `assets/js/admin-map.js`, styles at the foot of `admin.css`).
+Searching a place, dragging the pin or clicking the map writes `_roova_address`, `_roova_lat` and
+`_roova_lng`; zooming writes `_roova_map_zoom`. Asked for directly — "dynamic from Google map, not
+normal static address".
+
+- **The fields are still the stored values**, and still editable. The picker only fills them in, and
+  the existing save handler is untouched. An admin can tidy the formatted address Google returns,
+  which is the point of not replacing the field with a read-only one.
+- **Geocoding does the searching, not a Places widget.** `google.maps.Geocoder` needs no API beyond
+  Geocoding, and none of the Places autocomplete widgets Google keeps deprecating (the classic
+  `Autocomplete` was deprecated in 2025 for `PlaceAutocompleteElement`). Type-ahead is attached *as
+  well* when the key has Places enabled and the library still carries the classic widget — picking a
+  suggestion does what the Search button does, so nothing depends on it. Enter is intercepted, or it
+  would save a half-filled product.
+- **No key, no map.** With `maps_api_key` empty the panel prints a note linking to
+  `customize.php?autofocus[section]=roova_maps` and the fields stay as they were; `admin-map.js` is
+  not enqueued at all. Same rule the hotel page's own map follows.
+- **A map built inside the hidden Hotel Details panel lays out at zero size**, so the script
+  triggers a `resize` and re-centres the first time the tab is opened.
+- `google.maps.Marker` is deprecated in favour of `AdvancedMarkerElement`, which needs a Map ID
+  configured in the Google console. A theme cannot assume the client has one, so this stays on
+  `Marker`, as `theme.js`'s front-end map does.
+- Verified against a stand-in for the Maps API (the real script otherwise replaces `window.google`
+  and the test silently exercises Google instead of this code): search → address + both
+  coordinates, drag → reverse-geocoded address + coordinates, map click → coordinates, zoom → zoom
+  field. The no-key note and the enqueue were checked on the real product screen.
+
 ### Hotel contact
 
 The **reception phone** (`_roova_phone`, Hotel Details tab) is drawn by `roova_hotel_contact()` as its
@@ -391,6 +481,24 @@ a long time and shown nowhere — the card is what made it mean anything.
   18.66px-bold line where that threshold applies. It is also the only way to get a real bold: the
   display face is loaded at 300/400/500 only, so the 1.28rem/600 Newsreader this started as was being
   faux-bolded by the browser. Re-colour the number and the arithmetic has to be redone.
+
+### Other hotels
+
+`roova_other_hotels()` (in `inc/template-tags.php`) closes `single-hotel.php`, full width below
+`.roova-layout`: an "Other hotels" heading and up to four hotels, drawn with the homepage's own
+`roova_hotel_card()` in the same `.roova-hotels-grid`. The cards therefore link to the hotel page
+through `roova_criteria_url()`, so the guest's dates and party follow the click, and they keep
+the heart and the "from" price.
+
+- **Random on every load** (`orderby => rand` through `roova_get_hotel_ids()`), with the current
+  hotel left out through `post__not_in`. This is deliberately not seeded the way the results card's
+  landmark is: that landmark is a fact about one hotel and has to stay put, but this row is a
+  suggestion, and a new pick on every visit is the point. A page cache freezes it for the cache's
+  lifetime, which is harmless.
+- **A site with no other hotel draws nothing**, not an empty heading. `roova_other_hotels_count`
+  (default 4) sets the size, and 0 turns it off.
+- No `data-roova-reveal`: it sits below a long page, and a script that failed to load would leave
+  it at `opacity: 0`.
 
 ### Contact us
 
@@ -446,11 +554,29 @@ installs it, still reaches the editor content in the middle of the page.
   `contact_lat`/`contact_lng` when **both** are numeric and from the address otherwise, so a client
   who types an address gets a map without touching coordinates and one who wants the pin exactly
   right can place it. Zoom is clamped to 1–21, the range Google accepts.
-- **The map card sits top *right*, not the design's bottom left.** Google's embed puts its
-  "Map data ©" credit along the bottom edge and its own "Open in Maps" control in the top left
-  corner; covering the credit breaches the Maps terms, and covering the control breaks the map. The
-  card's text is the first two address lines rather than a field of its own — the design's "6 min
-  walk from Jelatek LRT" is a fact about one particular office, not something a theme can know.
+- **The office is found on a map, not typed.** `Roova_Customize_Map_Control`
+  (`inc/customize-map-control.php`, `assets/js/customize-map.js`) puts the Hotel Details picker in
+  the Customizer's Contact page section: search a place or drag the pin and it writes
+  `contact_address`, `contact_lat`, `contact_lng` and `contact_map_zoom` **through `wp.customize`**,
+  so the controls beside it update, the preview refreshes and nothing is saved until Publish. Its
+  own setting is `contact_place_id`, Google's ID for the place, which `roova_contact_place_url()`
+  carries as `query_place_id`. Google's one-line address is split at the commas, because the
+  address setting is a textarea of one line per line. No Maps key, no map: the control prints a note
+  saying where the key goes, and the script is not enqueued. Enter is intercepted — in the
+  Customizer it means save.
+- **The red pin opens Google Maps; the map around it does not** (asked for directly), and the "Get
+  directions" button under the address is gone. That needs a *real* marker to click, so the page
+  draws **two different maps**: with a Maps key and numeric `contact_lat`/`contact_lng` it prints
+  `.roova-cp__map-canvas[data-roova-map][data-url]` and `theme.js`'s own map initialiser draws it,
+  attaching a click on the marker that opens `data-url`. The map stays draggable and zoomable. With
+  no key or no pin it falls back to the keyless `output=embed` iframe, whose marker is inside the
+  frame where no click of ours can reach it — that one carries a small `.roova-cp__map-open` link in
+  the corner instead, which is the only thing on it that navigates. A hotel page sets no `data-url`,
+  so its marker stays inert and its whole-card link keeps working.
+- **The map card sits top *right*, not the design's bottom left**, clear of that credit. It is
+  `pointer-events: none` over the link, so a click on the card opens Maps like any other. Its text
+  is the first two address lines rather than a field of its own — the design's "6 min walk from
+  Jelatek LRT" is a fact about one particular office, not something a theme can know.
 - **Nothing on this page carries `data-roova-reveal`.** `theme.css` paints anything that does at
   `opacity: 0` until `theme.js` adds `.is-revealed`, and on a page whose entire job is to carry a
   phone number, an address and a map, a script that failed to load would hide exactly what the
@@ -510,7 +636,16 @@ the one a client is most likely to want to add a paragraph to. See *Contact us*.
 menu columns — `footer`, `footer-2`, `footer-3` — whose headings are Customizer settings. Both print the
 site name through `roova_wordmark()`, which picks out a domain suffix in gold ("roova**.my**").
 
-The header has two states, decided by `$roova_over_hero` (front page, not paged):
+**A hotel page wears the contact page's navy bar instead** (asked for directly, as "exactly like
+the contact page"). `header.php` checks `roova_is_hotel_page()` (in `inc/helpers.php`, also what
+`roova_body_classes()` reads) and prints `roova_contact_page_header()`. That is the same function,
+not a copy, so the two bars cannot drift apart. Because of that, the bar's CSS (the `.roova-cp__bar*`,
+logo, tagline, menu, toggle and account-button rules, plus their 900px and 720px pieces) moved from
+`contact.css` into `theme.css` under *Navy header*: theme.css is the one stylesheet both pages load.
+Keep the class names as they are; `theme.js`'s toggle selector already lists `.roova-cp__bar-inner`.
+The rest of the hotel page (breadcrumb, footer) still comes from `header.php` / `footer.php`.
+
+Everywhere else the header has two states, decided by `$roova_over_hero` (front page, not paged):
 
 - **Over the hero** (`.roova-nav--over`) — lifted out of the flow with `position: absolute` and laid
   on the photograph, so the hero runs to the very top of the window. Everything in it turns cream —
@@ -687,6 +822,16 @@ a password change or a review.
   the exception and says "Pay now", because nothing matters more than paying for it. A completed
   stay used to say "Book again" and go straight to the hotel, which was the one route that skipped
   the order page; re-booking now lives *on* it. See *View order*.
+- **The state is `roova_account_stay_status()`, and every surface reads it**: this tab, the order
+  page, the confirmation, who may review, VIP and cashback. Cancelled/refunded/failed → cancelled;
+  unpaid → payment; **an order set to "Completed" in the dashboard → completed, whatever the
+  dates**; otherwise the calendar decides (check-out on or before today → completed). The Completed
+  rule was added because a booking closed off by hand before its check-out date (an early departure)
+  kept reading "Upcoming" on the site. The site now follows the front desk. The cost is that an
+  admin who uses Completed to mean "confirmed" tells the guest the stay already happened, opens the
+  review form early and counts it toward VIP and cashback (earned on the check-out date); the client
+  README says not to. The booking row stays `confirmed` (`Roova_Orders::map_status()`), so the room
+  is not released for the unused nights. `tests/test-stay-status.php` covers all of it.
 - **VIP** counts *completed* stays only. The hero's "stays booked" figure is the looser count —
   everything that is neither cancelled nor unpaid.
 - **Cashback rewards** is the sixth tab, last in the strip, and the hero grew a second stat beside
@@ -862,6 +1007,50 @@ noise, not information.
   Without the second copy every rating paints five identical stars.
 - `theme.js` keeps the overall figure above the form up to date as the stars are picked. It is a
   preview only — the server computes the same number from the posted values.
+
+#### The "Review us" email
+
+A guest is emailed once after check-out with a button to the hotel page's review form. Two
+files: `inc/review-us.php` decides who and when, and `inc/emails/class-roova-email-review-us.php`
+(`Roova_Email_Review_Us`, id `roova_review_us`) is a real `WC_Email`. The client therefore edits it
+under **WooCommerce → Settings → Emails → Review us**: on/off (on by default), **Days after
+check-out** (`delay_days`, 1–60, default 1), subject/heading/closing text with a `{hotel_name}`
+placeholder, and the store's own email template around it. The class file is required inside the
+`woocommerce_email_classes` filter, the one moment `WC_Email` is guaranteed to exist.
+
+- **Not WooCommerce's own review-request email** (10.8+, behind the `customer_review_request`
+  feature flag, off by default). That one waits for the order to be marked **Completed**, which
+  nothing in this theme ever does, and asks about the products bought, which are rooms. Reviews
+  here belong to the hotel. For the same reason **the template is `emails/roova-review-us.php`, not
+  `customer-review-request.php`**: WooCommerce ships a template by that name, and a theme file with
+  the same name would silently replace theirs.
+- **The dates come from the bookings table, not the order.** A daily WP-Cron job
+  (`roova_review_us_daily`, scheduled on `init` for 9:00 site time and cleared on `switch_theme`)
+  asks `roova_review_us_candidates()` for `confirmed` rows whose `check_out` falls in a window
+  ending *delay* days ago. Only a paid order has `confirmed` rows; see *Availability*.
+- **The window reaches back 7 days (`roova_review_us_catch_up_days`) and no further.** Seven, so a
+  morning WP-Cron missed is caught up the next day. No further, so switching the email on does not
+  mail every guest the site has ever had. The overlap between one day's window and the next is
+  harmless, because each order records which hotels it was sent for in `_roova_review_us_sent` and
+  is never sent twice. Each send also adds an order note for the front desk.
+- **Sent only when `roova_can_review()` would let the guest write one**: a completed stay, no review
+  of that hotel yet, reviews open. So **guest-checkout orders are skipped**
+  (`roova_review_us_maybe_send()` returns `no-account`). The review rule checks the stay against the
+  member's own bookings, and a link to a form that then refuses them is worse than no email.
+- **The link is `roova_review_us_url()`: the hotel permalink + `?roova_review=1#reviews`.** The flag
+  is load-bearing. `roova_hotel_reviews_section()` draws nothing for a hotel with no reviews and a
+  visitor who cannot write one, which is exactly a signed-out guest opening the email on their
+  phone, so `#reviews` would scroll to nothing. With the flag (`roova_review_us_landing()`) the
+  section always draws, and its signed-out note reads "Sign in to the account you booked with to
+  write your review." The Sign in link returns to `#reviews`, where the form is then waiting.
+- **The button is drawn in the template**, not through WooCommerce's `emails/email-button.php`,
+  which only exists from 10.8. It uses the same colour rule: the store's email base colour, with
+  black or white text chosen by `wc_hex_is_light()`.
+
+Verified live: of five stays, the member who checked out yesterday was sent it, and the guest
+checkout, the stay checking out today, the one 30 days ago and the member who had already reviewed
+were not. A second run the same day sent nothing. The link lands with `#reviews` at the top of the
+viewport signed out (sign-in note, even on a hotel with no reviews) and signed in (the form).
 
 ### Saved stays
 
@@ -1240,7 +1429,7 @@ strokes, the pin haloes — reads `--roova-page`, never `--roova-cream`.
 Prefer a token over a literal; the handful of literals left are the multi-stop scrims and the
 `rgba(13,58,82,…)` hairlines.
 
-Each page that prints its own document also carries its own stylesheet with its own token header —
+Each page that prints its own document also carries its own stylesheet with its own token header (the navy header bar is the exception: it lives in `theme.css`, because hotel pages wear it too) —
 `checkout.css`, `auth.css`, `account.css`, `order.css`, `received.css`, `search.css`,
 `contact.css`. The repetition is the convention here, not an
 oversight: the field shell in `account.css` is a deliberate second copy of `auth.css`'s, because the

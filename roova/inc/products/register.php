@@ -138,6 +138,34 @@ function roova_admin_product_assets( $hook ) {
 	if ( $screen && 'product' === $screen->id ) {
 		wp_enqueue_script( 'roova-admin-product', ROOVA_URI . 'assets/js/admin-product.js', array( 'jquery', 'wc-enhanced-select' ), ROOVA_VERSION, true );
 		wp_enqueue_style( 'roova-admin', ROOVA_URI . 'assets/css/admin.css', array(), ROOVA_VERSION );
+
+		/*
+		 * The address picker in Hotel Details. Only with a Maps key: without
+		 * one there is no map to draw, and the panel says so instead.
+		 */
+		$maps_key = function_exists( 'roova_option' ) ? roova_option( 'maps_api_key', '' ) : '';
+
+		if ( $maps_key ) {
+			wp_enqueue_script( 'roova-admin-map', ROOVA_URI . 'assets/js/admin-map.js', array(), ROOVA_VERSION, true );
+			wp_localize_script(
+				'roova-admin-map',
+				'roovaAdminMap',
+				array(
+					'key' => $maps_key,
+					// Where the map opens for a hotel with no coordinates yet:
+					// the store's own country, not the middle of the ocean.
+					'defaultLat' => (string) apply_filters( 'roova_admin_map_default_lat', '4.2105' ),
+					'defaultLng' => (string) apply_filters( 'roova_admin_map_default_lng', '101.9758' ),
+					'i18n'       => array(
+						'searching'  => __( 'Searching…', 'roova' ),
+						'updated'    => __( 'Address and coordinates updated below.', 'roova' ),
+						'notFound'   => __( 'Google Maps found nothing for that. Try the street address, or drag the pin instead.', 'roova' ),
+						'noAddress'  => __( 'No address at that point — the coordinates were still updated.', 'roova' ),
+						'mapFailed'  => __( 'The map could not load. Check the Google Maps API key and that Maps JavaScript and Geocoding are enabled for it.', 'roova' ),
+					),
+				)
+			);
+		}
 	}
 
 	if ( $screen && in_array( $screen->id, array( 'edit-pa_amenity', 'edit-pa_destination' ), true ) ) {

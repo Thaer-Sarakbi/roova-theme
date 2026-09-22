@@ -343,17 +343,63 @@ function roova_contact_map_url() {
 }
 
 /**
- * The "Get directions" link — Google Maps' own directions view.
+ * Where tapping the map goes: the office on Google Maps.
+ *
+ * The same rule the hotel pages follow (roova_hotel_map_url()), and asked for
+ * in the same words: the link the client pasted from Google's Share button
+ * first, then the office by *name* and address, and the coordinates only when
+ * there is no address to search for. A lat/lng link opens a pin on a blank
+ * patch of map — no name, no photos, no opening hours — which is not where
+ * somebody looking for the office wants to land.
+ *
+ * It replaced the "Get directions" button under the address: the whole map is
+ * this link now, and Google's own page has a directions button on it.
  *
  * @return string URL, or ''.
  */
-function roova_contact_directions_url() {
-	$query = roova_contact_map_query();
+function roova_contact_place_url() {
+	$link = roova_maps_link( roova_option( 'contact_map_link', '' ) );
+	if ( $link ) {
+		return $link;
+	}
+
+	$address = roova_contact_address_inline();
+	$name = trim( (string) get_bloginfo( 'name' ) );
+
+	/*
+	 * The name goes in front of the address, because a name is what turns a
+	 * search into a place. Not when the address already opens with the company
+	 * on its own first line, though — "Roova, Roova Travel Sdn Bhd, Level 9…"
+	 * is a worse search than either half.
+	 */
+	if ( $name && $address && false !== stripos( $address, $name ) ) {
+		$name = '';
+	}
+
+	$query = $address ? trim( trim( $name . ', ' . $address ), ', ' ) : '';
+
+	if ( ! $query ) {
+		$query = roova_contact_map_query();
+	}
+
 	if ( ! $query ) {
 		return '';
 	}
 
-	return 'https://www.google.com/maps/dir/?api=1&destination=' . rawurlencode( $query );
+	$args = array(
+		'api'   => '1',
+		'query' => rawurlencode( $query ),
+	);
+
+	// Google's own ID for the place the Customizer's search found: it opens
+	// the office's listing rather than whatever the query happens to match.
+	$place_id = trim( (string) roova_option( 'contact_place_id', '' ) );
+
+	if ( $place_id ) {
+		$args['query_place_id'] = rawurlencode( $place_id );
+	}
+
+	return add_query_arg( $args, 'https://www.google.com/maps/search/' );
 }
 
 /**
@@ -646,10 +692,23 @@ function roova_contact_channels_row() {
  * hours — an empty "Visit us" panel on every install is noise, not information.
  */
 function roova_contact_office() {
-	$lines      = roova_contact_address_lines();
-	$hours      = roova_contact_hours();
-	$map        = roova_contact_map_url();
-	$directions = roova_contact_directions_url();
+	$lines = roova_contact_address_lines();
+	$hours = roova_contact_hours();
+	$map   = roova_contact_map_url();
+	$place = roova_contact_place_url();
+
+	/*
+	 * Two maps, and which one is drawn decides how a visitor opens Google Maps.
+	 * With a Maps key and a pin, the map is the real Maps JavaScript API and its
+	 * red marker is what opens Google — asked for directly: the pin, and nothing
+	 * else on the map. Without either, it stays the keyless embed, whose marker
+	 * lives inside an <iframe> where no click can reach it, so that one carries a
+	 * small "Open in Google Maps" link in the corner instead.
+	 */
+	$maps_key = roova_option( 'maps_api_key', '' );
+	$lat      = trim( (string) roova_option( 'contact_lat', '' ) );
+	$lng      = trim( (string) roova_option( 'contact_lng', '' ) );
+	$live_map = $maps_key && is_numeric( $lat ) && is_numeric( $lng );
 
 	if ( ! $lines && ! $hours ) {
 		return;
@@ -686,15 +745,8 @@ function roova_contact_office() {
 				</div>
 			<?php endif; ?>
 
-			<?php if ( $directions || $lines ) : ?>
+			<?php if ( $lines ) : ?>
 				<div class="roova-cp__office-actions">
-					<?php if ( $directions ) : ?>
-						<a class="roova-btn roova-cp__btn" href="<?php echo esc_url( $directions ); ?>" target="_blank" rel="noopener">
-							<?php roova_the_icon( 'directions', 15 ); ?>
-							<?php esc_html_e( 'Get directions', 'roova' ); ?>
-						</a>
-					<?php endif; ?>
-
 					<?php
 					/*
 					 * Hidden until assets/js/contact.js unhides it. Copying to
@@ -704,27 +756,42 @@ function roova_contact_office() {
 					 * search page's sort button, which is printed and then hidden
 					 * once the script has taken over.
 					 */
-					if ( $lines ) :
-						?>
-						<button class="roova-btn roova-btn--ghost roova-cp__btn roova-cp__copy" type="button"
-							data-roova-copy="<?php echo esc_attr( roova_contact_address_inline() ); ?>"
-							data-roova-copy-done="<?php esc_attr_e( 'Address copied', 'roova' ); ?>"
-							hidden>
-							<?php roova_the_icon( 'copy', 15 ); ?>
-							<span data-roova-copy-label><?php esc_html_e( 'Copy address', 'roova' ); ?></span>
-						</button>
-					<?php endif; ?>
+					?>
+					<button class="roova-btn roova-btn--ghost roova-cp__btn roova-cp__copy" type="button"
+						data-roova-copy="<?php echo esc_attr( roova_contact_address_inline() ); ?>"
+						data-roova-copy-done="<?php esc_attr_e( 'Address copied', 'roova' ); ?>"
+						hidden>
+						<?php roova_the_icon( 'copy', 15 ); ?>
+						<span data-roova-copy-label><?php esc_html_e( 'Copy address', 'roova' ); ?></span>
+					</button>
 				</div>
 			<?php endif; ?>
 		</div>
 
 		<?php if ( $map ) : ?>
 			<div class="roova-cp__map">
-				<iframe
-					title="<?php echo esc_attr( sprintf( /* translators: %s: site name */ __( '%s on Google Maps', 'roova' ), get_bloginfo( 'name' ) ) ); ?>"
-					src="<?php echo esc_url( $map ); ?>"
-					loading="lazy"
-					referrerpolicy="no-referrer-when-downgrade"></iframe>
+				<?php if ( $live_map ) : ?>
+					<?php
+					/*
+					 * data-url is what makes the marker clickable; theme.js reads
+					 * it. Everything else here is what a hotel page's map canvas
+					 * carries, so one initialiser draws both.
+					 */
+					?>
+					<div class="roova-cp__map-canvas"
+						data-roova-map
+						data-lat="<?php echo esc_attr( $lat ); ?>"
+						data-lng="<?php echo esc_attr( $lng ); ?>"
+						data-zoom="<?php echo esc_attr( max( 1, min( 21, (int) roova_option( 'contact_map_zoom', 16 ) ) ) ); ?>"
+						data-title="<?php esc_attr_e( 'Open in Google Maps', 'roova' ); ?>"
+						data-url="<?php echo esc_url( $place ); ?>"></div>
+				<?php else : ?>
+					<iframe
+						title="<?php echo esc_attr( sprintf( /* translators: %s: site name */ __( '%s on Google Maps', 'roova' ), get_bloginfo( 'name' ) ) ); ?>"
+						src="<?php echo esc_url( $map ); ?>"
+						loading="lazy"
+						referrerpolicy="no-referrer-when-downgrade"></iframe>
+				<?php endif; ?>
 
 				<?php
 				/*
@@ -744,6 +811,21 @@ function roova_contact_office() {
 							<?php endif; ?>
 						</span>
 					</div>
+				<?php endif; ?>
+
+				<?php
+				/*
+				 * Only for the embed: its marker is inside an <iframe>, where no
+				 * click of ours can reach it, so the corner carries the link
+				 * instead. The live map needs none — its red pin *is* the link,
+				 * and the map around it stays draggable.
+				 */
+				if ( $place && ! $live_map ) :
+					?>
+					<a class="roova-cp__map-open" href="<?php echo esc_url( $place ); ?>" target="_blank" rel="noopener">
+						<?php roova_the_icon( 'pin', 15 ); ?>
+						<span><?php esc_html_e( 'Open in Google Maps', 'roova' ); ?></span>
+					</a>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>

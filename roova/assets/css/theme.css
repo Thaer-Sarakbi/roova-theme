@@ -455,6 +455,186 @@ p {
 	box-shadow: 0 -6px 0 var(--roova-deep), 0 6px 0 var(--roova-deep);
 }
 
+/* ------------------------------------------------------------ Navy header */
+
+/*
+ * The navy header — the wordmark, the Primary menu and the account button, on
+ * --roova-deep. roova_contact_page_header() prints it for the contact page and
+ * header.php prints the same function on a hotel page, so the two are the
+ * same bar rather than two copies that drift. It lives here, not in
+ * contact.css, because theme.css is the one stylesheet both pages load.
+ */
+.roova-cp__bar {
+	background: var(--roova-deep);
+	color: var(--roova-cream);
+}
+
+.roova-cp__bar-inner {
+	max-width: 1280px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	padding: 20px 40px;
+
+	/* The collapsed menu hangs off this. */
+	position: relative;
+}
+
+.roova-cp__logo {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	color: var(--roova-cream);
+	font-family: var(--roova-font-display);
+	font-size: 1.81rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -.02em;
+}
+
+.roova-cp__logo:hover {
+	color: var(--roova-cream);
+}
+
+.roova-cp__logo em {
+	font-style: normal;
+	color: var(--roova-gold-light);
+}
+
+.roova-cp__tagline {
+	font-family: var(--roova-font-body);
+	font-size: 9.5px;
+	font-weight: 400;
+	letter-spacing: .22em;
+	text-transform: uppercase;
+	color: rgba(251, 248, 243, .5);
+}
+
+/*
+ * theme.css paints .roova-menu for a cream header, so every colour in it is
+ * restated here for navy — the same job .roova-nav--over does over the hero.
+ */
+.roova-cp__menu .roova-menu {
+	display: flex;
+	align-items: center;
+	gap: 30px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-family: var(--roova-font-body);
+	font-size: 14px;
+	letter-spacing: .01em;
+}
+
+.roova-cp__menu .roova-menu a {
+	display: inline-block;
+	color: rgba(251, 248, 243, .78);
+	padding-bottom: 3px;
+	border-bottom: 1px solid transparent;
+	transition: color .3s var(--roova-ease), border-color .3s var(--roova-ease);
+}
+
+.roova-cp__menu .roova-menu a:hover,
+.roova-cp__menu .roova-menu .current-menu-item > a {
+	color: var(--roova-cream);
+	border-color: var(--roova-gold-light);
+}
+
+.roova-cp__actions {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+/*
+ * The hamburger is theme.css's, so only what navy changes is restated: its bars
+ * are painted --roova-deep there and would be invisible on this bar.
+ */
+.roova-cp__toggle {
+	border-color: rgba(251, 248, 243, .32);
+}
+
+.roova-cp__toggle span[aria-hidden] {
+	background: var(--roova-cream);
+	box-shadow: 0 -6px 0 var(--roova-cream), 0 6px 0 var(--roova-cream);
+}
+
+/* The account button reads on navy here the way it does over the hero. */
+.roova-cp__bar .roova-btn--nav {
+	background: rgba(251, 248, 243, .12);
+	border-color: rgba(251, 248, 243, .32);
+	color: var(--roova-cream);
+}
+
+.roova-cp__bar .roova-btn--nav:hover {
+	background: var(--roova-cream);
+	border-color: var(--roova-cream);
+	color: var(--roova-deep);
+}
+
+@media (max-width: 900px) {
+	/*
+	 * Behind the hamburger, as a white panel under the bar — theme.js toggles
+	 * .is-open on .roova-cp__bar-inner, the same class and the same handler the
+	 * site header and the search page both use.
+	 */
+	.roova-cp__menu {
+		display: none;
+	}
+
+	/*
+	 * The panel hangs off .roova-cp__bar-inner's padding box, so its insets are
+	 * that bar's own side padding — they have to move with it at 760px or the
+	 * panel sits wider than the wordmark it drops from.
+	 */
+	.roova-cp__bar-inner.is-open .roova-cp__menu {
+		display: block;
+		position: absolute;
+		top: 100%;
+		left: 40px;
+		right: 40px;
+		background: #fff;
+		border-radius: 12px;
+		padding: 16px;
+		box-shadow: var(--roova-shadow);
+		z-index: 30;
+	}
+
+	.roova-cp__bar-inner.is-open .roova-menu {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+	}
+
+	.roova-cp__bar-inner.is-open .roova-menu a {
+		color: var(--roova-ink);
+	}
+
+	.roova-cp__bar-inner.is-open .roova-menu a:hover,
+	.roova-cp__bar-inner.is-open .roova-menu .current-menu-item > a {
+		color: var(--roova-deep);
+		border-color: var(--roova-gold);
+	}
+
+	.roova-cp__toggle {
+		display: block;
+	}
+}
+
+@media (max-width: 720px) {
+	.roova-cp__bar-inner {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.roova-cp__bar-inner.is-open .roova-cp__menu {
+		left: 20px;
+		right: 20px;
+	}
+}
+
 /* ------------------------------------------------------------------- Hero */
 
 .roova-hero {
@@ -1743,6 +1923,16 @@ p {
 	align-items: start;
 }
 
+/* "Other hotels" under a hotel page: the homepage's grid, closed off by a hairline. */
+.roova-other-hotels {
+	border-top: 1px solid var(--roova-line);
+	padding: 48px 0 76px;
+}
+
+.roova-other-hotels .roova-section__head h2 {
+	font-size: clamp(1.7rem, 3vw, 34px);
+}
+
 .roova-layout__main > .roova-card {
 	margin-bottom: 26px;
 }
@@ -2731,11 +2921,43 @@ p {
 	font-weight: 700;
 }
 
-.roova-map__link {
-	display: inline-block;
-	margin-top: 12px;
-	font-size: .85rem;
-	font-weight: 600;
+/*
+ * The map is one big link to Google Maps, so the anchor covers the canvas.
+ * The label sits in the corner, and the whole overlay tints on hover so it is
+ * obvious the picture is clickable.
+ */
+.roova-map__frame {
+	position: relative;
+}
+
+.roova-map__open {
+	position: absolute;
+	inset: 0;
+	border-radius: 10px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
+	padding: 10px;
+	background: transparent;
+	transition: background .25s var(--roova-ease);
+}
+
+.roova-map__open:hover,
+.roova-map__open:focus-visible {
+	background: rgba(13, 58, 82, .14);
+}
+
+.roova-map__open-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 11px;
+	border-radius: 999px;
+	background: #fff;
+	box-shadow: var(--roova-shadow-card);
+	color: var(--roova-deep);
+	font-size: .78rem;
+	font-weight: 700;
 }
 
 

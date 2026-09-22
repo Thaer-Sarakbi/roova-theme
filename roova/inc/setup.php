@@ -171,11 +171,8 @@ function roova_body_classes( $classes ) {
 		return $classes;
 	}
 
-	if ( is_singular( 'product' ) && function_exists( 'wc_get_product' ) ) {
-		$product = wc_get_product( get_queried_object_id() );
-		if ( $product && 'hotel' === $product->get_type() ) {
-			$classes[] = 'roova-page-white';
-		}
+	if ( roova_is_hotel_page() ) {
+		$classes[] = 'roova-page-white';
 	}
 
 	return $classes;

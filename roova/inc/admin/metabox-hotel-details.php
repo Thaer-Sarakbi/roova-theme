@@ -115,12 +115,14 @@ function roova_hotel_details_panel() {
 			</p>
 
 			<?php
+			roova_hotel_map_picker( $details );
+
 			woocommerce_wp_textarea_input( array(
 				'id'          => '_roova_address',
 				'label'       => __( 'Address', 'roova' ),
 				'value'       => $details['address'],
 				'desc_tip'    => true,
-				'description' => __( 'Shown on the hotel page and used for the "Get directions" link.', 'roova' ),
+				'description' => __( 'Filled in from the map above, and editable — write it the way a guest should read it. Shown on the hotel page and used for the "Get directions" link.', 'roova' ),
 			) );
 
 			woocommerce_wp_text_input( array(
@@ -129,7 +131,7 @@ function roova_hotel_details_panel() {
 				'value'       => $details['lat'],
 				'placeholder' => '3.0451',
 				'desc_tip'    => true,
-				'description' => __( 'Right-click the spot in Google Maps and copy the first number.', 'roova' ),
+				'description' => __( 'Set by the map above. You can still paste one in: right-click the spot in Google Maps and copy the first number.', 'roova' ),
 			) );
 
 			woocommerce_wp_text_input( array(
@@ -138,8 +140,26 @@ function roova_hotel_details_panel() {
 				'value'       => $details['lng'],
 				'placeholder' => '101.5860',
 				'desc_tip'    => true,
-				'description' => __( 'The second number from the same Google Maps coordinates.', 'roova' ),
+				'description' => __( 'Set by the map above, or the second number from the same Google Maps coordinates.', 'roova' ),
 			) );
+
+			woocommerce_wp_text_input( array(
+				'id'          => '_roova_map_link',
+				'label'       => __( 'Google Maps link', 'roova' ),
+				'value'       => $details['map_link'],
+				'placeholder' => 'https://maps.app.goo.gl/…',
+				'desc_tip'    => true,
+				'description' => __( 'Optional. Open the hotel in Google Maps, press Share and paste the link here — tapping the map on the hotel page then opens exactly that place. Leave it empty and the map opens the place found above instead.', 'roova' ),
+			) );
+
+			/*
+			 * Written by the address picker, never typed: Google's own ID for
+			 * the place it found, which is what opens the hotel's listing
+			 * rather than a pin on its coordinates.
+			 */
+			?>
+			<input type="hidden" id="_roova_map_place_id" name="_roova_map_place_id" value="<?php echo esc_attr( $details['map_place_id'] ); ?>" />
+			<?php
 
 			woocommerce_wp_text_input( array(
 				'id'                => '_roova_map_zoom',
@@ -278,6 +298,65 @@ function roova_hotel_details_panel() {
 add_action( 'woocommerce_product_data_panels', 'roova_hotel_details_panel' );
 
 /**
+ * The map that fills in the address: search a place or drag the pin, and the
+ * Address, Latitude, Longitude and Map zoom fields below write themselves.
+ *
+ * It needs the same Google Maps key the hotel pages use (Appearance →
+ * Customize → Google Maps). Without one there is no map to draw, so the fields
+ * stay as they were — typed by hand — and this says where the key goes rather
+ * than leaving an empty grey box on the screen.
+ *
+ * @param array $details roova_get_hotel_details().
+ */
+function roova_hotel_map_picker( $details ) {
+	$key = function_exists( 'roova_option' ) ? roova_option( 'maps_api_key', '' ) : '';
+
+	if ( ! $key ) {
+		?>
+		<p class="roova-panel-note roova-mappick__missing">
+			<?php
+			printf(
+				/* translators: %s: link to the Customizer's Google Maps section */
+				esc_html__( 'Add a Google Maps API key under %s to pick a hotel\'s address on a map instead of typing it.', 'roova' ),
+				'<a href="' . esc_url( admin_url( 'customize.php?autofocus[section]=roova_maps' ) ) . '">' . esc_html__( 'Customize → Google Maps', 'roova' ) . '</a>'
+			);
+			?>
+		</p>
+		<?php
+		return;
+	}
+	?>
+	<div class="roova-mappick"
+		data-roova-map-picker
+		data-lat="<?php echo esc_attr( $details['lat'] ); ?>"
+		data-lng="<?php echo esc_attr( $details['lng'] ); ?>"
+		data-zoom="<?php echo esc_attr( (int) $details['map_zoom'] ); ?>">
+
+		<p class="form-field roova-mappick__search">
+			<label for="roova_map_search"><?php esc_html_e( 'Find on Google Maps', 'roova' ); ?></label>
+			<span class="roova-mappick__search-row">
+				<input type="text"
+					id="roova_map_search"
+					class="short"
+					placeholder="<?php esc_attr_e( 'Hotel name, street or landmark…', 'roova' ); ?>"
+					autocomplete="off"
+					data-roova-map-search />
+				<button type="button" class="button" data-roova-map-go><?php esc_html_e( 'Search', 'roova' ); ?></button>
+			</span>
+		</p>
+
+		<div class="roova-mappick__canvas" data-roova-map-canvas></div>
+
+		<p class="roova-mappick__status" data-roova-map-status role="status"></p>
+
+		<p class="roova-panel-note">
+			<?php esc_html_e( 'Search for the hotel, then drag the pin to the entrance. The address and coordinates below follow the pin, and the zoom follows the map. Every field can still be edited by hand afterwards.', 'roova' ); ?>
+		</p>
+	</div>
+	<?php
+}
+
+/**
  * Save the hotel fields.
  *
  * @param WC_Product $product Product being saved.
@@ -296,6 +375,7 @@ function roova_save_hotel_details( $product ) {
 		'_roova_lat',
 		'_roova_lng',
 		'_roova_map_zoom',
+		'_roova_map_place_id',
 		'_roova_stars',
 		'_roova_score',
 		'_roova_score_label',
@@ -309,6 +389,17 @@ function roova_save_hotel_details( $product ) {
 		$value = isset( $_POST[ $field ] ) ? sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) : '';
 		$product->update_meta_data( $field, $value );
 	}
+
+	/*
+	 * A pasted Share link, kept only if it really is a Google Maps URL — it is
+	 * printed behind the map on every page of this hotel. A link that is not
+	 * one is dropped rather than stored, and the map falls back to the place
+	 * the picker found.
+	 */
+	$product->update_meta_data(
+		'_roova_map_link',
+		isset( $_POST['_roova_map_link'] ) ? roova_maps_link( wp_unslash( $_POST['_roova_map_link'] ) ) : ''
+	);
 
 	$textarea_fields = array(
 		'_roova_address',
