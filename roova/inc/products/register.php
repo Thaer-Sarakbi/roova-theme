@@ -168,7 +168,18 @@ function roova_admin_product_assets( $hook ) {
 		}
 	}
 
-	if ( $screen && in_array( $screen->id, array( 'edit-pa_amenity', 'edit-pa_destination' ), true ) ) {
+	/*
+	 * The term screens that carry a media picker. Built from the taxonomy
+	 * functions rather than typed out, so a renamed attribute cannot leave the
+	 * "Choose image" button on one of them dead.
+	 */
+	$term_screens = array(
+		'edit-' . roova_amenity_taxonomy(),
+		'edit-' . roova_destination_taxonomy(),
+		'edit-' . roova_landmark_taxonomy(),
+	);
+
+	if ( $screen && in_array( $screen->id, $term_screens, true ) ) {
 		wp_enqueue_media();
 		wp_enqueue_script( 'roova-admin-term', ROOVA_URI . 'assets/js/admin-term.js', array( 'jquery' ), ROOVA_VERSION, true );
 		wp_enqueue_style( 'roova-admin', ROOVA_URI . 'assets/css/admin.css', array(), ROOVA_VERSION );
