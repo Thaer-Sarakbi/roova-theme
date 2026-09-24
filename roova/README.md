@@ -15,7 +15,7 @@ through the normal WooCommerce cart, checkout and orders.
 2. Install and activate **WooCommerce** if it is not active yet (the theme shows a notice with a link).
 3. On activation the theme creates:
    * the bookings database table,
-   * the **Destination**, **Amenity**, **Facilities** and **Badge** product attributes,
+   * the **Destination**, **Amenity**, **Facilities**, **Badge**, **Landmark** and **Landmark category** product attributes,
    * a **Find a room** page using the *Hotel search results* template,
    * a **Checkout** page, if WooCommerce has not already made one,
    * two tax rates — **Tourism Tax** 5% and **SST** 10% — but only on a store that has no tax rates
@@ -100,6 +100,42 @@ every one is listed with a tick — so adding the term is all it takes. Choose t
 
 Amenities and facilities overlap on purpose: amenities are the illustrated highlights, facilities are
 the full list.
+
+### Landmarks
+
+**Products → Attributes → Landmark → Configure terms.**
+
+A landmark is a place your guests have heard of — Petronas Twin Towers, USJ 21 LRT Station, a mall,
+a beach. Keeping them here means each one is described once, instead of being retyped on every hotel
+that sits beside it.
+
+Each landmark carries:
+
+| Field | What it is for |
+|---|---|
+| **Name** | What it is called — the words a guest reads |
+| **Description** | A sentence about the place |
+| **Category** | What kind of place it is — *Cafe*, *Shopping mall*, *Restaurant*… |
+| **Title image** | A photo of the landmark itself |
+| **Distance** | How far away it is: a number, and whether that number is **km** or **m** |
+| **Location (Google Maps link)** | Open the landmark in Google Maps, press **Share**, copy the link and paste it here |
+
+**The categories are yours to edit: Products → Attributes → Landmark category → Configure terms.**
+*Cafe*, *Shopping mall* and *Restaurant* are created for you to start with — add *Night market*,
+*Hospital*, *Beach* or anything else the same way you add a badge, and they appear in the **Category**
+dropdown on every landmark. Drag them into the order you want them listed in. A landmark can be left
+on *— None —*.
+
+Notes worth knowing:
+
+* **The distance is a number, not a sentence.** Type `20.6` and choose *km*, or `470` and choose *m*.
+  Leave it empty if the distance is better left unsaid — an empty field simply shows nothing.
+  Anything that is not a distance (a word, a negative number) is cleared when you save.
+* **Only a Google Maps link is kept.** Anything else is dropped when you save, and the landmark is
+  then searched for by name instead — so the link never opens somewhere unexpected.
+* **A landmark is not yet shown on the site.** This release adds the attribute and its fields so you
+  can build the list; the landmarks printed on hotel pages and results cards still come from the
+  **Popular landmarks** and **Nearby landmarks** boxes on *Product data → Hotel Details* (section 7).
 
 ## 6. Badges and the search results page
 

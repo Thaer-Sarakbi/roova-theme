@@ -242,7 +242,7 @@ msgstr ""
 msgid "Read less"
 msgstr ""
 
-#: single-hotel.php:176 inc/attributes.php:58 inc/admin/metabox-hotel-details.php:239
+#: single-hotel.php:176 inc/attributes.php:85 inc/admin/metabox-hotel-details.php:239
 msgid "Facilities"
 msgstr ""
 
@@ -960,36 +960,64 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: inc/attributes.php:56 inc/admin/metabox-hotel-details.php:108
+#: inc/attributes.php:83 inc/admin/metabox-hotel-details.php:108
 msgid "Destination"
 msgstr ""
 
-#: inc/attributes.php:57
+#: inc/attributes.php:84
 msgid "Amenity"
 msgstr ""
 
-#: inc/attributes.php:59
+#: inc/attributes.php:86
 msgid "Badge"
 msgstr ""
 
-#: inc/attributes.php:450
+#: inc/attributes.php:87
+msgid "Landmark"
+msgstr ""
+
+#: inc/attributes.php:91
+msgid "Landmark category"
+msgstr ""
+
+#: inc/attributes.php:488
 msgid "Popular"
 msgstr ""
 
-#: inc/attributes.php:451
+#: inc/attributes.php:489
 msgid "Best sale"
 msgstr ""
 
-#: inc/attributes.php:452
+#: inc/attributes.php:490
 msgid "Best value"
 msgstr ""
 
-#: inc/attributes.php:453
+#: inc/attributes.php:491
 msgid "Top rated"
 msgstr ""
 
-#: inc/attributes.php:454
+#: inc/attributes.php:492
 msgid "New"
+msgstr ""
+
+#: inc/attributes.php:611
+msgid "km"
+msgstr ""
+
+#: inc/attributes.php:612
+msgid "m"
+msgstr ""
+
+#: inc/attributes.php:729
+msgid "Cafe"
+msgstr ""
+
+#: inc/attributes.php:730
+msgid "Shopping mall"
+msgstr ""
+
+#: inc/attributes.php:731 inc/icons.php:56
+msgid "Restaurant"
 msgstr ""
 
 #: inc/auth.php:42 inc/checkout.php:1051
@@ -1897,10 +1925,6 @@ msgstr ""
 
 #: inc/icons.php:55
 msgid "Breakfast"
-msgstr ""
-
-#: inc/icons.php:56
-msgid "Restaurant"
 msgstr ""
 
 #: inc/icons.php:57
@@ -2895,75 +2919,123 @@ msgstr[1] ""
 msgid "Taken off your total at checkout, up to the length of the stay."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:50
+#: inc/admin/amenity-icons.php:62
 msgid "None"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:71 inc/admin/amenity-icons.php:96 inc/admin/amenity-icons.php:144 inc/admin/cashback-settings.php:221 inc/admin/vip-settings.php:178
+#: inc/admin/amenity-icons.php:83 inc/admin/amenity-icons.php:108 inc/admin/amenity-icons.php:156 inc/admin/cashback-settings.php:221 inc/admin/vip-settings.php:178
 msgid "Icon"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:73 inc/admin/amenity-icons.php:99
+#: inc/admin/amenity-icons.php:85 inc/admin/amenity-icons.php:111
 msgid "Pick the icon shown next to this amenity on hotel and room pages."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:77 inc/admin/amenity-icons.php:103
+#: inc/admin/amenity-icons.php:89 inc/admin/amenity-icons.php:115
 msgid "Custom icon image"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:79 inc/admin/amenity-icons.php:106
+#: inc/admin/amenity-icons.php:91 inc/admin/amenity-icons.php:118
 msgid "Optional. Overrides the icon above with your own SVG or PNG."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:176 inc/admin/amenity-icons.php:214
+#: inc/admin/amenity-icons.php:188 inc/admin/amenity-icons.php:226
 msgid "Tile image"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:178 inc/admin/amenity-icons.php:217
+#: inc/admin/amenity-icons.php:190 inc/admin/amenity-icons.php:229
 msgid "Used for this destination on the homepage grid."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:182 inc/admin/amenity-icons.php:221
+#: inc/admin/amenity-icons.php:194 inc/admin/amenity-icons.php:233
 msgid "Tile colour"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:184 inc/admin/amenity-icons.php:224
+#: inc/admin/amenity-icons.php:196 inc/admin/amenity-icons.php:236
 msgid "Used when no tile image is set."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:188 inc/admin/amenity-icons.php:228 inc/admin/metabox-hotel-details.php:130
+#: inc/admin/amenity-icons.php:200 inc/admin/amenity-icons.php:240 inc/admin/metabox-hotel-details.php:130
 msgid "Latitude"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:193 inc/admin/amenity-icons.php:234 inc/admin/metabox-hotel-details.php:139
+#: inc/admin/amenity-icons.php:205 inc/admin/amenity-icons.php:246 inc/admin/metabox-hotel-details.php:139
 msgid "Longitude"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:195 inc/admin/amenity-icons.php:237
+#: inc/admin/amenity-icons.php:207 inc/admin/amenity-icons.php:249
 msgid "Where this destination is pinned on the homepage map. Malaysian towns the theme already knows can be left blank."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:292
-msgid "This attribute does not exist yet. Open Products → Attributes to create it."
+#: inc/admin/amenity-icons.php:308
+msgid "Distance unit"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:302
-msgid "No terms yet."
+#: inc/admin/amenity-icons.php:332
+msgid "No landmark categories yet."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:304
+#: inc/admin/amenity-icons.php:334 inc/admin/amenity-icons.php:559
 msgid "Add some first."
 msgstr ""
 
-#: inc/admin/amenity-icons.php:309
+#: inc/admin/amenity-icons.php:340
+msgid "— None —"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:357 inc/admin/amenity-icons.php:397 inc/admin/amenity-icons.php:490
+msgid "Category"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:359 inc/admin/amenity-icons.php:400
+msgid "What kind of place this is — a cafe, a shopping mall, a restaurant. The list is yours to edit under Products → Attributes → Landmark category."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:363 inc/admin/amenity-icons.php:404
+msgid "Title image"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:365 inc/admin/amenity-icons.php:407
+msgid "A photo of the landmark itself."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:369 inc/admin/amenity-icons.php:411 inc/admin/amenity-icons.php:491
+msgid "Distance"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:371 inc/admin/amenity-icons.php:414
+msgid "How far this landmark is. Leave it empty if the distance is better left unsaid."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:375 inc/admin/amenity-icons.php:418
+msgid "Location (Google Maps link)"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:377 inc/admin/amenity-icons.php:421
+msgid "Open the landmark in Google Maps, press Share and paste the link here. Anything that is not a Google Maps link is dropped, and the landmark is then searched for by name instead."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:487
+msgid "Image"
+msgstr ""
+
+#: inc/admin/amenity-icons.php:547
+msgid "This attribute does not exist yet. Open Products → Attributes to create it."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:557
+msgid "No terms yet."
+msgstr ""
+
+#: inc/admin/amenity-icons.php:564
 msgid "Type to search…"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:363
+#: inc/admin/amenity-icons.php:618
 msgid "Choose image"
 msgstr ""
 
-#: inc/admin/amenity-icons.php:364
+#: inc/admin/amenity-icons.php:619
 msgid "Remove"
 msgstr ""
 

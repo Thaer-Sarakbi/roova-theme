@@ -1,6 +1,7 @@
 <?php
 /**
- * Term extras: an icon for every amenity, an image and colour for every destination.
+ * Term extras: an icon for every amenity, an image and colour for every destination,
+ * and a category, picture, distance and Google Maps link for every landmark.
  *
  * @package Roova
  */
@@ -13,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 function roova_register_term_fields() {
 	$amenity     = roova_amenity_taxonomy();
 	$destination = roova_destination_taxonomy();
+	$landmark    = roova_landmark_taxonomy();
 
 	if ( taxonomy_exists( $amenity ) ) {
 		add_action( $amenity . '_add_form_fields', 'roova_amenity_add_fields' );
@@ -29,6 +31,16 @@ function roova_register_term_fields() {
 		add_action( $destination . '_edit_form_fields', 'roova_destination_edit_fields', 10, 1 );
 		add_action( 'created_' . $destination, 'roova_save_destination_fields' );
 		add_action( 'edited_' . $destination, 'roova_save_destination_fields' );
+	}
+
+	if ( taxonomy_exists( $landmark ) ) {
+		add_action( $landmark . '_add_form_fields', 'roova_landmark_add_fields' );
+		add_action( $landmark . '_edit_form_fields', 'roova_landmark_edit_fields', 10, 1 );
+		add_action( 'created_' . $landmark, 'roova_save_landmark_fields' );
+		add_action( 'edited_' . $landmark, 'roova_save_landmark_fields' );
+
+		add_filter( 'manage_edit-' . $landmark . '_columns', 'roova_landmark_columns' );
+		add_filter( 'manage_' . $landmark . '_custom_column', 'roova_landmark_column_content', 10, 3 );
 	}
 }
 add_action( 'admin_init', 'roova_register_term_fields' );
@@ -266,6 +278,249 @@ function roova_save_destination_fields( $term_id ) {
 		$value = trim( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 		update_term_meta( $term_id, $key, is_numeric( $value ) ? $value : '' );
 	}
+}
+
+/* -------------------------------------------------------------------------
+ * Landmarks
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The distance pair: a number and the unit it is in.
+ *
+ * One function rather than two copies, so the "add landmark" form and the
+ * "edit landmark" form cannot drift apart.
+ *
+ * @param string $distance Stored distance.
+ * @param string $unit     Stored unit key.
+ */
+function roova_landmark_distance_inputs( $distance = '', $unit = '' ) {
+	$units = roova_landmark_units();
+	$unit  = isset( $units[ $unit ] ) ? $unit : key( $units );
+	?>
+	<span class="roova-distance-field">
+		<input type="number"
+			name="roova_distance"
+			id="roova_distance"
+			value="<?php echo esc_attr( $distance ); ?>"
+			step="any"
+			min="0"
+			placeholder="20.6" />
+		<select name="roova_distance_unit" id="roova_distance_unit" aria-label="<?php esc_attr_e( 'Distance unit', 'roova' ); ?>">
+			<?php foreach ( $units as $key => $label ) : ?>
+				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $key, $unit ); ?>><?php echo esc_html( $label ); ?></option>
+			<?php endforeach; ?>
+		</select>
+	</span>
+	<?php
+}
+
+/**
+ * The category select: every term in the Landmark category attribute.
+ *
+ * A dropdown of real terms rather than a list typed into the theme, so a client
+ * can add "Night market" themselves. With no categories yet it says where they
+ * are added instead of printing a select with nothing in it.
+ *
+ * @param int $selected Chosen category term ID.
+ */
+function roova_landmark_category_select( $selected = 0 ) {
+	$categories = roova_landmark_category_terms();
+
+	if ( ! $categories ) {
+		printf(
+			'<span class="roova-panel-note">%s <a href="%s">%s</a></span>',
+			esc_html__( 'No landmark categories yet.', 'roova' ),
+			esc_url( admin_url( 'edit-tags.php?taxonomy=' . rawurlencode( roova_landmark_category_taxonomy() ) . '&post_type=product' ) ),
+			esc_html__( 'Add some first.', 'roova' )
+		);
+		return;
+	}
+	?>
+	<select name="roova_category" id="roova_category">
+		<option value="0"><?php esc_html_e( '— None —', 'roova' ); ?></option>
+		<?php foreach ( $categories as $category ) : ?>
+			<option value="<?php echo esc_attr( $category->term_id ); ?>" <?php selected( (int) $category->term_id, (int) $selected ); ?>>
+				<?php echo esc_html( $category->name ); ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
+	<?php
+}
+
+/**
+ * Fields on the "add landmark" form.
+ */
+function roova_landmark_add_fields() {
+	wp_nonce_field( 'roova_term_fields', 'roova_term_nonce' );
+	?>
+	<div class="form-field">
+		<label for="roova_category"><?php esc_html_e( 'Category', 'roova' ); ?></label>
+		<?php roova_landmark_category_select(); ?>
+		<p class="description"><?php esc_html_e( 'What kind of place this is — a cafe, a shopping mall, a restaurant. The list is yours to edit under Products → Attributes → Landmark category.', 'roova' ); ?></p>
+	</div>
+
+	<div class="form-field">
+		<label for="roova_image_id"><?php esc_html_e( 'Title image', 'roova' ); ?></label>
+		<?php roova_media_field( 'roova_image_id', 0 ); ?>
+		<p class="description"><?php esc_html_e( 'A photo of the landmark itself.', 'roova' ); ?></p>
+	</div>
+
+	<div class="form-field">
+		<label for="roova_distance"><?php esc_html_e( 'Distance', 'roova' ); ?></label>
+		<?php roova_landmark_distance_inputs(); ?>
+		<p class="description"><?php esc_html_e( 'How far this landmark is. Leave it empty if the distance is better left unsaid.', 'roova' ); ?></p>
+	</div>
+
+	<div class="form-field">
+		<label for="roova_map_link"><?php esc_html_e( 'Location (Google Maps link)', 'roova' ); ?></label>
+		<input type="url" name="roova_map_link" id="roova_map_link" value="" placeholder="https://maps.app.goo.gl/…" />
+		<p class="description"><?php esc_html_e( 'Open the landmark in Google Maps, press Share and paste the link here. Anything that is not a Google Maps link is dropped, and the landmark is then searched for by name instead.', 'roova' ); ?></p>
+	</div>
+	<?php
+}
+
+/**
+ * Fields on the "edit landmark" form.
+ *
+ * @param WP_Term $term Term.
+ */
+function roova_landmark_edit_fields( $term ) {
+	$image    = (int) get_term_meta( $term->term_id, 'roova_image_id', true );
+	$distance = (string) get_term_meta( $term->term_id, 'roova_distance', true );
+	$unit     = (string) get_term_meta( $term->term_id, 'roova_distance_unit', true );
+	$link     = (string) get_term_meta( $term->term_id, 'roova_map_link', true );
+	$category = roova_landmark_category( $term );
+
+	wp_nonce_field( 'roova_term_fields', 'roova_term_nonce' );
+	?>
+	<tr class="form-field">
+		<th scope="row"><label for="roova_category"><?php esc_html_e( 'Category', 'roova' ); ?></label></th>
+		<td>
+			<?php roova_landmark_category_select( $category ? $category->term_id : 0 ); ?>
+			<p class="description"><?php esc_html_e( 'What kind of place this is — a cafe, a shopping mall, a restaurant. The list is yours to edit under Products → Attributes → Landmark category.', 'roova' ); ?></p>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="roova_image_id"><?php esc_html_e( 'Title image', 'roova' ); ?></label></th>
+		<td>
+			<?php roova_media_field( 'roova_image_id', $image ); ?>
+			<p class="description"><?php esc_html_e( 'A photo of the landmark itself.', 'roova' ); ?></p>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="roova_distance"><?php esc_html_e( 'Distance', 'roova' ); ?></label></th>
+		<td>
+			<?php roova_landmark_distance_inputs( $distance, $unit ); ?>
+			<p class="description"><?php esc_html_e( 'How far this landmark is. Leave it empty if the distance is better left unsaid.', 'roova' ); ?></p>
+		</td>
+	</tr>
+	<tr class="form-field">
+		<th scope="row"><label for="roova_map_link"><?php esc_html_e( 'Location (Google Maps link)', 'roova' ); ?></label></th>
+		<td>
+			<input type="url" name="roova_map_link" id="roova_map_link" value="<?php echo esc_attr( $link ); ?>" placeholder="https://maps.app.goo.gl/…" class="large-text" />
+			<p class="description"><?php esc_html_e( 'Open the landmark in Google Maps, press Share and paste the link here. Anything that is not a Google Maps link is dropped, and the landmark is then searched for by name instead.', 'roova' ); ?></p>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
+ * Save landmark term meta.
+ *
+ * @param int $term_id Term ID.
+ */
+function roova_save_landmark_fields( $term_id ) {
+	if ( ! isset( $_POST['roova_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['roova_term_nonce'] ) ), 'roova_term_fields' ) ) {
+		return;
+	}
+
+	/*
+	 * The category is stored as the chosen term's ID, and only when that term
+	 * really is a landmark category — a posted ID from anywhere else is
+	 * cleared rather than trusted.
+	 */
+	if ( isset( $_POST['roova_category'] ) ) {
+		$category = get_term( absint( $_POST['roova_category'] ), roova_landmark_category_taxonomy() );
+		update_term_meta( $term_id, 'roova_category', ( $category instanceof WP_Term ) ? $category->term_id : 0 );
+	}
+
+	if ( isset( $_POST['roova_image_id'] ) ) {
+		update_term_meta( $term_id, 'roova_image_id', absint( $_POST['roova_image_id'] ) );
+	}
+
+	if ( isset( $_POST['roova_distance'] ) ) {
+		// Anything that is not a distance — a word, a negative number — is
+		// cleared rather than stored, the way an unparseable field always is
+		// here: nothing beats "-2 km" on a hotel page.
+		$distance = trim( sanitize_text_field( wp_unslash( $_POST['roova_distance'] ) ) );
+		$keep     = is_numeric( $distance ) && (float) $distance >= 0;
+		update_term_meta( $term_id, 'roova_distance', $keep ? $distance : '' );
+	}
+
+	if ( isset( $_POST['roova_distance_unit'] ) ) {
+		$unit  = sanitize_key( wp_unslash( $_POST['roova_distance_unit'] ) );
+		$units = roova_landmark_units();
+		update_term_meta( $term_id, 'roova_distance_unit', isset( $units[ $unit ] ) ? $unit : key( $units ) );
+	}
+
+	/*
+	 * Kept only if it really is a Google Maps URL — the same gate the hotel's
+	 * own pasted link goes through, because this one is printed wherever the
+	 * landmark is.
+	 */
+	if ( isset( $_POST['roova_map_link'] ) ) {
+		update_term_meta( $term_id, 'roova_map_link', roova_maps_link( wp_unslash( $_POST['roova_map_link'] ) ) );
+	}
+}
+
+/**
+ * Add image, category and distance columns to the landmark list table.
+ *
+ * @param array $columns Columns.
+ * @return array
+ */
+function roova_landmark_columns( $columns ) {
+	$new = array();
+	foreach ( $columns as $key => $label ) {
+		$new[ $key ] = $label;
+		if ( 'cb' === $key ) {
+			$new['roova_image'] = __( 'Image', 'roova' );
+		}
+		if ( 'name' === $key ) {
+			$new['roova_category'] = __( 'Category', 'roova' );
+			$new['roova_distance'] = __( 'Distance', 'roova' );
+		}
+	}
+	return $new;
+}
+
+/**
+ * Render the landmark columns.
+ *
+ * @param string $content Column content.
+ * @param string $column  Column key.
+ * @param int    $term_id Term ID.
+ * @return string
+ */
+function roova_landmark_column_content( $content, $column, $term_id ) {
+	if ( 'roova_image' === $column ) {
+		$image = (int) get_term_meta( $term_id, 'roova_image_id', true );
+		return $image ? wp_get_attachment_image( $image, array( 40, 40 ), false, array( 'style' => 'border-radius:4px;' ) ) : '';
+	}
+
+	if ( 'roova_category' === $column ) {
+		$category = roova_landmark_category( $term_id );
+		return $category ? esc_html( $category->name ) : '—';
+	}
+
+	if ( 'roova_distance' === $column ) {
+		return esc_html( roova_landmark_distance_label(
+			get_term_meta( $term_id, 'roova_distance', true ),
+			get_term_meta( $term_id, 'roova_distance_unit', true )
+		) );
+	}
+
+	return $content;
 }
 
 /* -------------------------------------------------------------------------

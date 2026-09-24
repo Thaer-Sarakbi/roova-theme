@@ -1,6 +1,7 @@
 <?php
 /**
- * The global product attributes the theme runs on: Destination, Amenity, Facilities and Badge.
+ * The global product attributes the theme runs on: Destination, Amenity, Facilities, Badge,
+ * Landmark and Landmark category.
  *
  * They are real WooCommerce attributes so the site owner can add new terms from
  * Products > Attributes without touching code.
@@ -47,16 +48,47 @@ function roova_badge_taxonomy() {
 }
 
 /**
+ * Taxonomy name for landmarks — the places a hotel is near.
+ *
+ * Each term carries its own name and description, a title image, a distance
+ * and the Google Maps link that opens it. See roova_landmark_details().
+ *
+ * @return string
+ */
+function roova_landmark_taxonomy() {
+	return 'pa_landmark';
+}
+
+/**
+ * Taxonomy name for what kind of place a landmark is.
+ *
+ * Its own attribute rather than a list in code, so the client can add "Night
+ * market" without a developer — the rule the badges follow. The slug is the one
+ * WooCommerce itself would make from the label, so an attribute a client
+ * created by hand first is adopted rather than duplicated.
+ *
+ * @return string
+ */
+function roova_landmark_category_taxonomy() {
+	return 'pa_landmark-category';
+}
+
+/**
  * The attributes the theme needs: slug => label.
  *
  * @return array
  */
 function roova_required_attributes() {
 	return array(
-		'destination' => __( 'Destination', 'roova' ),
-		'amenity'     => __( 'Amenity', 'roova' ),
-		'facilities'  => __( 'Facilities', 'roova' ),
-		'badge'       => __( 'Badge', 'roova' ),
+		'destination'       => __( 'Destination', 'roova' ),
+		'amenity'           => __( 'Amenity', 'roova' ),
+		'facilities'        => __( 'Facilities', 'roova' ),
+		'badge'             => __( 'Badge', 'roova' ),
+		'landmark'          => __( 'Landmark', 'roova' ),
+
+		// Keyed by the slug WooCommerce derives from the label, so the
+		// taxonomy is pa_landmark-category however it came to exist.
+		'landmark-category' => __( 'Landmark category', 'roova' ),
 	);
 }
 
@@ -125,6 +157,12 @@ function roova_ensure_attributes() {
 		 */
 		if ( in_array( 'badge', $created, true ) ) {
 			roova_seed_badge_terms();
+		}
+
+		// Same rule for the landmark categories: a starting vocabulary, seeded
+		// once, and never put back once the site has edited it.
+		if ( in_array( 'landmark-category', $created, true ) ) {
+			roova_seed_landmark_category_terms();
 		}
 
 		update_option( 'roova_attributes_created', ROOVA_VERSION );
@@ -515,11 +553,27 @@ function roova_get_badges( $product_id ) {
 		return array();
 	}
 
+	return roova_sort_terms_by_attribute_order( $terms, $taxonomy );
+}
+
+/**
+ * Put attribute terms in the order the "Configure terms" screen was dragged into.
+ *
+ * `order_{$taxonomy}` is the meta that screen writes. Neither
+ * wc_get_product_terms() nor get_terms() reads it for us, so anything that
+ * cares about the client's ordering sorts with this — the badges, whose first
+ * term is drawn in gold, and the landmark categories in their dropdown.
+ *
+ * @param WP_Term[] $terms    Terms to sort.
+ * @param string    $taxonomy Attribute taxonomy the order meta belongs to.
+ * @return WP_Term[]
+ */
+function roova_sort_terms_by_attribute_order( $terms, $taxonomy ) {
 	usort( $terms, function ( $a, $b ) use ( $taxonomy ) {
 		$left  = get_term_meta( $a->term_id, 'order_' . $taxonomy, true );
 		$right = get_term_meta( $b->term_id, 'order_' . $taxonomy, true );
 
-		// A badge nobody has placed in the order goes after the ones that have.
+		// A term nobody has placed in the order goes after the ones that have.
 		if ( '' === $left && '' === $right ) {
 			return strcmp( $a->name, $b->name );
 		}
@@ -537,4 +591,229 @@ function roova_get_badges( $product_id ) {
 	} );
 
 	return $terms;
+}
+
+/**
+ * The units a landmark's distance can be given in: key => label.
+ *
+ * Two, deliberately: a landmark is either minutes down the road or a drive
+ * away, and "470 m" and "20.6 km" are how the hotel pages have always read.
+ *
+ * @return array
+ */
+function roova_landmark_units() {
+	/**
+	 * Filter the units offered for a landmark's distance.
+	 *
+	 * @param array $units key => label.
+	 */
+	return apply_filters( 'roova_landmark_units', array(
+		'km' => __( 'km', 'roova' ),
+		'm'  => __( 'm', 'roova' ),
+	) );
+}
+
+/**
+ * A landmark's distance as it should read: "20.6 km", "470 m", or '' when the
+ * term carries no distance at all.
+ *
+ * The number is printed as it was typed, minus any trailing zeroes — a client
+ * who writes 20.60 means 20.6, and one who writes 470 does not mean 470.0.
+ *
+ * @param string $distance Stored distance.
+ * @param string $unit     Stored unit key.
+ * @return string
+ */
+function roova_landmark_distance_label( $distance, $unit = 'km' ) {
+	$distance = trim( (string) $distance );
+	if ( '' === $distance || ! is_numeric( $distance ) ) {
+		return '';
+	}
+
+	$units = roova_landmark_units();
+	$unit  = isset( $units[ $unit ] ) ? $unit : key( $units );
+
+	$decimals = 0;
+	if ( false !== strpos( $distance, '.' ) ) {
+		$decimals = strlen( rtrim( substr( $distance, strpos( $distance, '.' ) + 1 ), '0' ) );
+	}
+
+	return number_format_i18n( (float) $distance, min( $decimals, 3 ) ) . ' ' . $units[ $unit ];
+}
+
+/**
+ * Everything stored on one landmark term.
+ *
+ * The one door to a landmark: name and description are WordPress's own fields,
+ * the rest is term meta written on the Landmark term screen.
+ *
+ * @param int|WP_Term $term Term or term ID.
+ * @return array|null term, name, description, image_id, distance, unit, distance_label,
+ *                    category, category_name, map_url.
+ */
+function roova_landmark_details( $term ) {
+	$term = is_object( $term ) ? $term : get_term( absint( $term ), roova_landmark_taxonomy() );
+
+	if ( ! $term instanceof WP_Term ) {
+		return null;
+	}
+
+	$distance = (string) get_term_meta( $term->term_id, 'roova_distance', true );
+	$unit     = (string) get_term_meta( $term->term_id, 'roova_distance_unit', true );
+	$category = roova_landmark_category( $term );
+
+	return array(
+		'term'           => $term,
+		'name'           => $term->name,
+		'description'    => $term->description,
+		'image_id'       => (int) get_term_meta( $term->term_id, 'roova_image_id', true ),
+		'distance'       => $distance,
+		'unit'           => $unit ? $unit : 'km',
+		'distance_label' => roova_landmark_distance_label( $distance, $unit ),
+		'category'       => $category,
+		'category_name'  => $category ? $category->name : '',
+		'map_url'        => roova_landmark_map_url( $term ),
+	);
+}
+
+/**
+ * Where "open in Google Maps" goes for a landmark.
+ *
+ * The link the client pasted on the term screen, and otherwise the landmark's
+ * own name as a plain Google Maps search — never coordinates, the rule
+ * roova_hotel_map_url() follows and for the same reason: a dropped pin has no
+ * name, no photos and no opening hours.
+ *
+ * @param int|WP_Term $term Term or term ID.
+ * @return string Empty when the term does not exist.
+ */
+function roova_landmark_map_url( $term ) {
+	$term = is_object( $term ) ? $term : get_term( absint( $term ), roova_landmark_taxonomy() );
+
+	if ( ! $term instanceof WP_Term ) {
+		return '';
+	}
+
+	$link = roova_maps_link( (string) get_term_meta( $term->term_id, 'roova_map_link', true ) );
+
+	if ( $link ) {
+		return $link;
+	}
+
+	return add_query_arg(
+		array(
+			'api'   => 1,
+			'query' => rawurlencode( $term->name ),
+		),
+		'https://www.google.com/maps/search/'
+	);
+}
+
+/**
+ * The landmark categories shipped with a new install: slug => label.
+ *
+ * Three, the ones the site was asked for. A starting vocabulary rather than a
+ * complete one — the whole point of making this an attribute is that the client
+ * adds "Night market" and "Hospital" themselves, under Products → Attributes →
+ * Landmark category.
+ *
+ * @return array
+ */
+function roova_default_landmark_categories() {
+	/**
+	 * Filter the landmark categories a new install starts with.
+	 *
+	 * @param array $categories slug => label.
+	 */
+	return apply_filters( 'roova_default_landmark_categories', array(
+		'cafe'          => __( 'Cafe', 'roova' ),
+		'shopping-mall' => __( 'Shopping mall', 'roova' ),
+		'restaurant'    => __( 'Restaurant', 'roova' ),
+	) );
+}
+
+/**
+ * Put the default categories in the Landmark category attribute.
+ *
+ * Only ever called for an attribute roova_ensure_attributes() has just created,
+ * so it cannot resurrect a category the site deleted on purpose.
+ *
+ * @return void
+ */
+function roova_seed_landmark_category_terms() {
+	$taxonomy = roova_landmark_category_taxonomy();
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		return;
+	}
+
+	$order = 0;
+	foreach ( roova_default_landmark_categories() as $slug => $label ) {
+		$order++;
+
+		if ( term_exists( $slug, $taxonomy ) ) {
+			continue;
+		}
+
+		$term = wp_insert_term( $label, $taxonomy, array( 'slug' => $slug ) );
+		if ( is_wp_error( $term ) ) {
+			continue;
+		}
+
+		update_term_meta( $term['term_id'], 'order_' . $taxonomy, $order );
+	}
+}
+
+/**
+ * Every landmark category, in the order the client dragged them into.
+ *
+ * Sorted here rather than in the query, for the reason roova_get_badges() is:
+ * get_terms() does nothing with an attribute's own ordering, so a list left to
+ * it comes back alphabetical and "Configure terms" appears to do nothing.
+ *
+ * @return WP_Term[]
+ */
+function roova_landmark_category_terms() {
+	$taxonomy = roova_landmark_category_taxonomy();
+
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		return array();
+	}
+
+	$terms = get_terms( array(
+		'taxonomy'   => $taxonomy,
+		'hide_empty' => false,
+	) );
+
+	if ( is_wp_error( $terms ) || ! $terms ) {
+		return array();
+	}
+
+	return roova_sort_terms_by_attribute_order( $terms, $taxonomy );
+}
+
+/**
+ * The category a landmark was given, if it still exists.
+ *
+ * Stored as the category term's ID on the landmark term. A category deleted
+ * after it was chosen simply reads as no category — the landmark is not left
+ * pointing at a name nobody can see any more.
+ *
+ * @param int|WP_Term $term Landmark term or term ID.
+ * @return WP_Term|null
+ */
+function roova_landmark_category( $term ) {
+	$term = is_object( $term ) ? $term : get_term( absint( $term ), roova_landmark_taxonomy() );
+
+	if ( ! $term instanceof WP_Term ) {
+		return null;
+	}
+
+	$category_id = (int) get_term_meta( $term->term_id, 'roova_category', true );
+	if ( ! $category_id ) {
+		return null;
+	}
+
+	$category = get_term( $category_id, roova_landmark_category_taxonomy() );
+
+	return ( $category instanceof WP_Term ) ? $category : null;
 }

@@ -125,6 +125,20 @@
 	display: block;
 }
 
+/* ------------------------------------------------- Landmark distance */
+
+/* The number and its unit are one field, not two — keeping the select beside
+   the input rather than under it on the term screen's narrow column. */
+.roova-distance-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.roova-distance-field input[type="number"] {
+	width: 110px;
+}
+
 /* ----------------------------------------------------- Bookings screen */
 
 .roova-bookings__filters {

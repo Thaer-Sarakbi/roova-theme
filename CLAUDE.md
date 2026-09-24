@@ -21,7 +21,10 @@ without asking.
 
 ## Commands
 
-macOS has no system PHP; this repo assumes Homebrew PHP at `/opt/homebrew/bin/php`.
+macOS has no system PHP; this repo assumes Homebrew PHP at `/opt/homebrew/bin/php`. Windows has none
+either, and `bin/build.sh` / `bin/lint.sh` hardcode the Homebrew path — but `bin/testenv-win.sh`
+downloads a portable PHP to `.testenv/php/php.exe`, which runs the linter and every test script below
+(`.testenv/php/php.exe tests/test-vip.php`, `… -l roova/inc/attributes.php`).
 
 ```bash
 bin/build.sh                              # lint, then package dist/roova.zip
@@ -364,10 +367,11 @@ promise the site makes rather than a field to fill in.
 
 ### Taxonomies
 
-`pa_destination`, `pa_amenity`, `pa_facilities` and `pa_badge` are real WooCommerce global attributes, created
+`pa_destination`, `pa_amenity`, `pa_facilities`, `pa_badge`, `pa_landmark` and `pa_landmark-category` are real WooCommerce global attributes, created
 programmatically by `roova_ensure_attributes()` so the client can add terms in the UI without code.
-Term meta carries the amenity icon (`roova_icon`, or `roova_icon_image` for a custom upload) and the
-destination tile image / colour plus its map coordinates (`roova_lat` / `roova_lng`). Icons come from
+Term meta carries the amenity icon (`roova_icon`, or `roova_icon_image` for a custom upload), the
+destination tile image / colour plus its map coordinates (`roova_lat` / `roova_lng`), and a landmark's
+picture, distance and Maps link (below). Icons come from
 the inline SVG library in `inc/icons.php` —
 `roova_icon_library()` is filterable; icons are rendered inline so they inherit `currentColor`.
 
@@ -390,6 +394,41 @@ one thing the eye lands on. Which one is first comes from the term order on Prod
 Badge, and `roova_get_badges()` sorts by that `order_{taxonomy}` meta **itself** — modern
 `wc_get_product_terms()` is a thin wrapper around `wp_get_post_terms()` and does nothing with an
 attribute's ordering, so leaving it to WooCommerce would gild whichever badge happened to sort first.
+That sort is `roova_sort_terms_by_attribute_order()`, shared with the landmark categories —
+`get_terms()` ignores the ordering just as thoroughly (`orderby => menu_order` included), so anything
+that shows the client's own order has to sort for itself.
+
+Landmarks (`roova_landmark_taxonomy()`, added at 1.11.9) are the places a hotel is near, kept as terms
+so a landmark is described once and not retyped on every hotel that is beside it. A term carries its
+own name and description (WordPress's own fields) plus three of the theme's, written on the term
+screen in `inc/admin/amenity-icons.php` and read back through `roova_landmark_details()`:
+
+- **Category** (`roova_category`) — what kind of place it is. **Its own attribute**,
+  `pa_landmark-category` (`roova_landmark_category_taxonomy()`), not a list in code: the client adds
+  "Night market" under Products → Attributes → Landmark category without a developer, the rule the
+  badges follow. Three ship seeded — cafe, shopping mall, restaurant, from
+  `roova_default_landmark_categories()` — and, like the badges, **only for an attribute
+  `roova_ensure_attributes()` has just created**. The landmark stores the category term's **ID**, and
+  `roova_landmark_category()` returns null for one that has since been deleted rather than leaving a
+  landmark pointing at a name nobody can see. The slug is the one WooCommerce itself derives from the
+  label ("Landmark category" → `landmark-category`), so an attribute a client made by hand first is
+  adopted instead of duplicated.
+- **Title image** (`roova_image_id`, the same meta key a destination's tile uses) — a photo of the
+  landmark itself.
+- **Distance** — a number (`roova_distance`) and its unit (`roova_distance_unit`, km or m from
+  `roova_landmark_units()`), kept apart so the figure stays a figure. `roova_landmark_distance_label()`
+  is the one place they are put together, printing the number as typed minus trailing zeroes
+  ("20.60" → "20.6 km") and **nothing at all** for a field holding a word or a negative — the save
+  handler clears those rather than storing them, because "-2 km" on a hotel page is worse than silence.
+- **Location** — a pasted Google Maps share link (`roova_map_link`), gated through the same
+  `roova_maps_link()` the hotel's own pasted link goes through, so only `google.*` / `goo.gl` URLs
+  survive. `roova_landmark_map_url()` is the one door: that link, and otherwise the landmark's **name
+  as a Maps search** — never coordinates, the rule *Where "open in Google Maps" goes* sets out. The
+  term screen has no map picker; this was asked for as a link field.
+
+**Nothing on the front end reads these terms yet** (asked for directly: the attribute first). A hotel's
+landmarks still come from the two Popular / Nearby textareas on the Hotel Details tab — see
+`roova_parse_landmarks()` — so the two lists live side by side until the hotel side is moved over.
 
 Amenities, facilities and badges are also editable from the Hotel Details tab (`roova_attribute_picker()`), as
 type-to-search multi-selects handed to WooCommerce's own select2 via the `wc-enhanced-select` class —
